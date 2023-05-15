@@ -386,9 +386,9 @@ public:
 
 Mamy dwa obiekty ``x1`` i ``x2`` i dwa wątki próbujące je porównać, ale w odwrotną stronę:
 
-````{panels}
-Wątek #1
-^^^
+::::{grid}
+
+:::{grid-item-card} Wątek #1
 ```cpp
 if (x1 < x2) { /**/ }
 ```
@@ -400,9 +400,9 @@ x1.mtx_.lock(); // 1
 /*******************************/
 x1.mtx_.lock(); // 3 <- DEADLOCK
 ```
----
-Wątek #2
-^^^
+:::
+
+:::{grid-item-card} Wątek #2
 ```cpp
 if (x2 < x1) { /**/ }
 ```
@@ -414,7 +414,8 @@ x2.mtx_.lock(); // 2
 /*******************************/
 x1.mtx_.lock();
 ```
-````
+:::
+::::
 
 Dwa wątki pozyskają muteksy w odwrotnej kolejności, co może spowodować zakleszczenie.
 

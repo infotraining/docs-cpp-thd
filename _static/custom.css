@@ -2,10 +2,14 @@
 
 html[data-theme="dark"] {
   --pst-color-inline-code: #abe338;
+  --my-color-definition-background: var(--bs-gray-800);
+  --my-color-definition-border-bottom: var(--bs-gray-700);
 }
 
 html[data-theme="light"] {
   --pst-color-inline-code: #007020;
+  --my-color-definition-background: var(--bs-gray-100);
+  --my-color-definition-border-bottom: var(--bs-gray-200);
 }
 
 body {
@@ -78,8 +82,18 @@ code {
   font-size: 95% !important;
 }
 
-.admonition, div.admonition {
+.admonition,
+div.admonition {
   border-radius: 0px !important;
+}
+
+dt {
+  font-weight: 700;
+  font-size: 1.2em !important;
+  background-color: var(--my-color-definition-background);
+  border-bottom-color: var(--my-color-definition-border-bottom);
+  border-bottom-style: solid;
+  border-bottom-width: 1.2;
 }
 
 .h1 h1 {
