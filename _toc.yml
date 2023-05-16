@@ -5,3 +5,4 @@ sections:
   - file: threads
   - file: synchronization
   - file: async-futures
+  - file: atomics
