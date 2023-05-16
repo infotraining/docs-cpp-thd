@@ -1,0 +1,1266 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Synchronizacja wątków &#8212; Programowanie wielowątkowe w C++</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'synchronization';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Funkcje asynchroniczne" href="async-futures.html" />
+    <link rel="prev" title="Wątki" href="threads.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Programowanie wielowątkowe w C++
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="multithreading-intro.html">Wprowadzenie do programowania wielowątkowego</a></li>
+<li class="toctree-l1"><a class="reference internal" href="threads.html">Wątki</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Synchronizacja wątków</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async-futures.html">Funkcje asynchroniczne</a></li>
+<li class="toctree-l1"><a class="reference internal" href="atomics.html">Typy i zmienne atomowe</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/infotraining/docs-cpp-thd" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/synchronization.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Synchronizacja wątków</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#poprawnosc-programow-wspolbieznych">Poprawność programów współbieżnych</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#thread-safety">Thread-safety</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wspoldzielenie-danych">Współdzielenie danych</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wspoldzielenie-obiektow-biblioteki-standardowej">Współdzielenie obiektów biblioteki standardowej</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#kontenery-standardowe">Kontenery standardowe</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#strumienie">Strumienie</a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#synchronizowane-strumienie-c-20">Synchronizowane strumienie - C++20</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jawne-wykluczanie-explicit-locking">Jawne wykluczanie (<em>Explicit Locking</em>)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sekcja-krytyczna">Sekcja krytyczna</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#podstawowe-obiekty-blokad">Podstawowe obiekty blokad</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#zmienne-warunkowe-warunkowe-wzajemne-wykluczenie">Zmienne warunkowe - warunkowe wzajemne wykluczenie</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#muteksy-i-klasy-menadzerow-blokad">Muteksy i klasy menadżerów blokad</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#koncepty-basiclockable-lockable-i-klasa-std-mutex">Koncepty BasicLockable, Lockable i klasa <code class="docutils literal notranslate"><span class="pre">std::mutex</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#std-mutex"><code class="docutils literal notranslate"><span class="pre">std::mutex</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#std-recursive-mutex"><code class="docutils literal notranslate"><span class="pre">std::recursive_mutex</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#timedlockable-i-klasa-std-timed-mutex">TimedLockable i klasa <code class="docutils literal notranslate"><span class="pre">std::timed_mutex</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#blokady-wspoldzielone-c-14">Blokady współdzielone (C++14)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#koncept-sharedlockable">Koncept SharedLockable</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#klasa-std-shared-mutex-c-17">Klasa <code class="docutils literal notranslate"><span class="pre">std::shared_mutex</span></code> (C++17)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#menadzery-blokad">Menadżery blokad</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#klasa-std-lock-guard-mutex">Klasa <code class="docutils literal notranslate"><span class="pre">std::lock_guard&lt;Mutex&gt;</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#klasa-std-unique-lock-mutex">Klasa <code class="docutils literal notranslate"><span class="pre">std::unique_lock&lt;Mutex&gt;</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#transfer-wlasnosci-blokad-std-unique-lock-mutex">Transfer własności blokad <code class="docutils literal notranslate"><span class="pre">std::unique_lock&lt;Mutex&gt;</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zakleszczenie">Zakleszczenie</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#zapobieganie-zakleszczeniom">Zapobieganie zakleszczeniom</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#metoda-std-lock">Metoda <code class="docutils literal notranslate"><span class="pre">std::lock()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#klasa-std-scoped-lock-c-20">Klasa <code class="docutils literal notranslate"><span class="pre">std::scoped_lock</span></code> - C++20</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#synchronizacja-za-pomoca-zdarzen">Synchronizacja za pomocą zdarzeń</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#busy-waits-implementacje">Busy waits - implementacje</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#implementacja-z-wykorzystaniem-muteksu">Implementacja z wykorzystaniem muteksu</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#implementacja-z-wykorzystaniem-zmiennej-atomowej">Implementacja z wykorzystaniem zmiennej atomowej</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#idle-waits">Idle waits</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zmienne-warunkowe">Zmienne warunkowe</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zmienne-atomowe-c-20">Zmienne atomowe - C++20</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lokalna-pamiec-watku">Lokalna pamięć wątku</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modyfikator-thread-local">Modyfikator <code class="docutils literal notranslate"><span class="pre">thread_local</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="synchronizacja-watkow">
+<h1>Synchronizacja wątków<a class="headerlink" href="#synchronizacja-watkow" title="Permalink to this heading">#</a></h1>
+<section id="poprawnosc-programow-wspolbieznych">
+<h2>Poprawność programów współbieżnych<a class="headerlink" href="#poprawnosc-programow-wspolbieznych" title="Permalink to this heading">#</a></h2>
+<p>Właściwości związane z poprawnością programu współbieżnego:</p>
+<ul>
+<li><p><strong>Właściwość żywotności</strong> - program współbieżny jest żywotny, jeśli zapewnia, że każde pożądane zdarzenie w końcu zajdzie.</p>
+<ul class="simple">
+<li><p>Żywotność może być naruszona poprzez:</p>
+<ul>
+<li><p>deadlock</p></li>
+<li><p>zagłodzenie wątków</p></li>
+<li><p>livelock</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Właściwość bezpieczeństwa</strong> - program współbieżny jest bezpieczny, jeśli nigdy nie doprowadza do niepożądanego stanu.</p>
+<p>… - problem wzajemnego wykluczania - dwa współbieżne procesy nie mogą znaleźć się w tym samym czasie w tej samej sekcji krytycznej
+… - problem producentów i konsumentów - każda porcja danych zostanie skonsumowana w kolejności ich produkowania.</p>
+</li>
+</ul>
+<p>Niepoprawnie zaprojektowane zależności między wątkami często naruszają integralność i żywotność danych.</p>
+<section id="thread-safety">
+<h3>Thread-safety<a class="headerlink" href="#thread-safety" title="Permalink to this heading">#</a></h3>
+<p>Bezpieczeństwo wątków w programowaniu współbieżnym (<em>thread-safety</em>) jest pojęciem stosowanym w kontekście programów wielowątkowych.</p>
+<p>Segment kodu jest <strong>“thread-safe”</strong> jeśli manipuluje współdzielonym stanem w taki sposób, że gwarantowane jest bezpieczne (prawidłowe) wykonanie go przez wiele wątków pracujących w tym samym czasie.
+Oznacza to, że kod “thread-safe” musi w odpowiedni sposób chronić współdzielony między wątkami stan programu.</p>
+<p>Kod “unsafe” to kod, który:</p>
+<ul class="simple">
+<li><p>nieprawidłowo chroni współdzielone dane oraz zasoby (<em>shared state</em>)</p></li>
+<li><p>zależy od przechowywanego między wywołaniami stanu (np. funkcja <code class="docutils literal notranslate"><span class="pre">strtok()</span></code>, <code class="docutils literal notranslate"><span class="pre">rand()</span></code>)</p></li>
+<li><p>wywołuje kod, który jest “unsafe”</p></li>
+</ul>
+<p>Sposoby osiągnięcia bezpieczeństwa wielowątkowego:</p>
+<ul class="simple">
+<li><p>Stosowanie jawnego blokowanie (<em>Explicit Locking</em>) - muteksów, do ochrony danych współdzielonych. Operacje synchronizacji mogą znacznie spowolnić działanie programu.</p></li>
+<li><p>Niezmienność danych (<em>Immutability</em>) - stan obiektu nie może być zmieniony po jego utworzeniu. Obiekty mogą być bezpiecznie współdzielone, jeśli wątki mogą jedynie odczytywać ich stan.</p></li>
+<li><p>Atomowość (<em>Atomicity</em>) - stosowanie zmiennych i flag atomowych</p></li>
+</ul>
+</section>
+</section>
+<section id="wspoldzielenie-danych">
+<h2>Współdzielenie danych<a class="headerlink" href="#wspoldzielenie-danych" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Shared mutable state is an evil of all multithreading</strong></p></li>
+<li><p>Zmienne, które są niezmienne (<em>immutable</em>) mogą być bezpiecznie współdzielone bez blokad</p></li>
+<li><p>Modyfikator <code class="docutils literal notranslate"><span class="pre">const</span></code> oznacza od C++11 <em>thread-safe</em></p></li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Współbieżny dostęp do zmiennych, w czasie gdy przynajmniej jeden wątek modyfikuje stan współdzielonego obiektu (<strong>data race</strong>) może skutkować <strong>niezdefiniowanym zachowaniem</strong> (<em>undefined behaviour</em>).</p>
+</div>
+<section id="wspoldzielenie-obiektow-biblioteki-standardowej">
+<h3>Współdzielenie obiektów biblioteki standardowej<a class="headerlink" href="#wspoldzielenie-obiektow-biblioteki-standardowej" title="Permalink to this heading">#</a></h3>
+<section id="kontenery-standardowe">
+<h4>Kontenery standardowe<a class="headerlink" href="#kontenery-standardowe" title="Permalink to this heading">#</a></h4>
+<p>Dla kontenerów STL oraz adapterów kontenerów:</p>
+<ul class="simple">
+<li><p>Dozwolony jest współbieżny odczyt (operacje <em>read-only</em>) np:</p>
+<ul>
+<li><p>wywołanie metod <code class="docutils literal notranslate"><span class="pre">begin()</span></code>, <code class="docutils literal notranslate"><span class="pre">end()</span></code>, <code class="docutils literal notranslate"><span class="pre">rbegin()</span></code>, <code class="docutils literal notranslate"><span class="pre">rend()</span></code>, <code class="docutils literal notranslate"><span class="pre">front()</span></code>, <code class="docutils literal notranslate"><span class="pre">back()</span></code>, <code class="docutils literal notranslate"><span class="pre">lower_bound()</span></code>
+<code class="docutils literal notranslate"><span class="pre">upper_bound()</span></code>, <code class="docutils literal notranslate"><span class="pre">equal_range()</span></code>, <code class="docutils literal notranslate"><span class="pre">at()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">[]</span></code> - z wyjątkiem kontenerów asocjacyjnych</p></li>
+<li><p>dostęp za pomocą iteratorów, jeśli nie modyfikujemy stanu wskazywanych elementów</p></li>
+</ul>
+</li>
+<li><p>Dozwolony jest współbieżny dostęp do różnych elementów kontenera</p>
+<ul>
+<li><p>za wyjątkiem obiektów <code class="docutils literal notranslate"><span class="pre">bitset</span></code> oraz <code class="docutils literal notranslate"><span class="pre">vector&lt;bool&gt;</span></code></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="strumienie">
+<h4>Strumienie<a class="headerlink" href="#strumienie" title="Permalink to this heading">#</a></h4>
+<p>Dla formatowanych operacji wejścia oraz wyjścia na obiektach strumieni standardowych (<code class="docutils literal notranslate"><span class="pre">cin</span></code>, <code class="docutils literal notranslate"><span class="pre">cout</span></code>, <code class="docutils literal notranslate"><span class="pre">cerr</span></code>, …)</p>
+<ul class="simple">
+<li><p>Dozwolony jest dostęp współbieżny</p></li>
+<li><p>Może wystąpić przemieszanie kolejności znaków (<em>interleaved characters</em>)</p></li>
+</ul>
+<section id="synchronizowane-strumienie-c-20">
+<h5>Synchronizowane strumienie - C++20<a class="headerlink" href="#synchronizowane-strumienie-c-20" title="Permalink to this heading">#</a></h5>
+<p>TODO</p>
+</section>
+</section>
+</section>
+</section>
+<section id="jawne-wykluczanie-explicit-locking">
+<h2>Jawne wykluczanie (<em>Explicit Locking</em>)<a class="headerlink" href="#jawne-wykluczanie-explicit-locking" title="Permalink to this heading">#</a></h2>
+<section id="sekcja-krytyczna">
+<h3>Sekcja krytyczna<a class="headerlink" href="#sekcja-krytyczna" title="Permalink to this heading">#</a></h3>
+<p>Fragment kodu programu, który w danej chwili może być wykonywany tylko przez jeden wątek. Sekcja krytyczna zapewnia
+właściwość wzajemnego wykluczenia.</p>
+<p>Standardową realizacją wzajemnego wykluczenia jest wykorzystanie obiekt blokady (muteksu) zawierającego operacje:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lock()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unlock()</span></code></p></li>
+</ul>
+<p>Wątek</p>
+<ul class="simple">
+<li><p>pozyskuje blokadę (blokuje), kiedy wywołuję metodę <code class="docutils literal notranslate"><span class="pre">lock()</span></code></p></li>
+<li><p>zwalnia blokadę (odblokowuje), gdy wywołuje metodę <code class="docutils literal notranslate"><span class="pre">unlock()</span></code></p></li>
+</ul>
+<p>Wątek jest prawidłowo skonstruowany, jeżeli spełnia poniższe warunki:</p>
+<ul class="simple">
+<li><p>Każda sekcja krytyczna jest skojarzona z niepowtarzalnym obiektem blokady</p></li>
+<li><p>Wątek, próbując wejść do sekcji krytycznej, wywołuje metodę <code class="docutils literal notranslate"><span class="pre">lock()</span></code> tego obiektu</p></li>
+<li><p>Wątek wychodząc z sekcji krytycznej, wywołuje metodę <code class="docutils literal notranslate"><span class="pre">unlock()</span></code></p></li>
+</ul>
+</section>
+<section id="podstawowe-obiekty-blokad">
+<h3>Podstawowe obiekty blokad<a class="headerlink" href="#podstawowe-obiekty-blokad" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Muteksy</strong> (<em>Mutual Exclusion</em>) - obiekty implementujące właściwość wzajemnego wykluczania</p></li>
+<li><p><strong>Semafory</strong> - binarne i zliczające</p></li>
+<li><p><strong>Blokady współdzielone</strong> (blokady <em>readers-writers</em>)</p></li>
+</ul>
+</section>
+<section id="zmienne-warunkowe-warunkowe-wzajemne-wykluczenie">
+<h3>Zmienne warunkowe - warunkowe wzajemne wykluczenie<a class="headerlink" href="#zmienne-warunkowe-warunkowe-wzajemne-wykluczenie" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Zmienne warunkowe używane są do powiadamiania wątków o zaistnieniu określonego warunku</p></li>
+<li><p>Są powiązane z muteksem, który jest ponownie pozyskiwany w momencie wybudzenia z blokady</p></li>
+<li><p>Warunek wybudzenia z blokady jest zdefiniowany przy pomocy predykatu, który jest parametrem blokady</p></li>
+</ul>
+</section>
+</section>
+<section id="muteksy-i-klasy-menadzerow-blokad">
+<h2>Muteksy i klasy menadżerów blokad<a class="headerlink" href="#muteksy-i-klasy-menadzerow-blokad" title="Permalink to this heading">#</a></h2>
+<p>Muteksy zaimplementowane w bibliotece standardowej C++ korzystają z następujących konceptów obiektów blokad (<em>lockable objects</em>):</p>
+<ul class="simple">
+<li><p>BasicLockable</p></li>
+<li><p>Lockable</p></li>
+<li><p>TimedLockable</p></li>
+<li><p>SharedLockable</p></li>
+</ul>
+<section id="koncepty-basiclockable-lockable-i-klasa-std-mutex">
+<h3>Koncepty BasicLockable, Lockable i klasa <code class="docutils literal notranslate"><span class="pre">std::mutex</span></code><a class="headerlink" href="#koncepty-basiclockable-lockable-i-klasa-std-mutex" title="Permalink to this heading">#</a></h3>
+<p>Koncept <code class="docutils literal notranslate"><span class="pre">BasicLockable</span></code> modeluje właściwość wzajemnego wykluczenia. Typ <code class="docutils literal notranslate"><span class="pre">L</span></code> jest zgodny z wymaganiami
+konceptu <code class="docutils literal notranslate"><span class="pre">BasicLockable</span></code> gdy w interfejsie posiada metody:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">lock()</span></code> - bieżący wątek jest wstrzymany, aż do momentu pozyskania blokady</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">unlock()</span></code> - jeżeli bieżący wątek jest posiadaczem blokady, to następuje jej zwolnienie</p></li>
+</ul>
+<p>Koncept <code class="docutils literal notranslate"><span class="pre">Lockable</span></code> rozszerza koncept <code class="docutils literal notranslate"><span class="pre">BasicLockable</span></code> o wymóg posiadania metody:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">try_lock()</span></code> - próba pozyskania blokady bez wstrzymywania bieżącego wątku. Zwraca <code class="docutils literal notranslate"><span class="pre">true</span></code> jeśli blokada została pozyskana, w przeciwnym wypadku zwraca<code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></li>
+</ul>
+<section id="std-mutex">
+<h4><code class="docutils literal notranslate"><span class="pre">std::mutex</span></code><a class="headerlink" href="#std-mutex" title="Permalink to this heading">#</a></h4>
+<p>Klasa <code class="docutils literal notranslate"><span class="pre">std::mutex</span></code> implementuje koncept <em>Lockable</em> zapewniając podstawowy mechanizm synchronizacji, który może być użyty do implementacji
+bezpiecznego dostępu do współdzielonego zasobu.</p>
+<ul class="simple">
+<li><p>Wywołujący wątek posiada muteks od momentu udanego wywołania metody <code class="docutils literal notranslate"><span class="pre">lock()</span></code> lub <code class="docutils literal notranslate"><span class="pre">try_lock()</span></code> do wywołanie metody <code class="docutils literal notranslate"><span class="pre">unlock()</span></code>.</p></li>
+<li><p>Jeśli wątek posiada muteks, wszystkie inne wątki wywołujące <code class="docutils literal notranslate"><span class="pre">lock()</span></code> będą blokowane lub zwrócą <code class="docutils literal notranslate"><span class="pre">false</span></code> po wywołaniu <code class="docutils literal notranslate"><span class="pre">try_lock()</span></code></p></li>
+<li><p>Wywołujący wątek nie może posiadać muteksu przed wywołaniem  <code class="docutils literal notranslate"><span class="pre">lock()</span></code> lub <code class="docutils literal notranslate"><span class="pre">try_lock()</span></code> - <code class="docutils literal notranslate"><span class="pre">std::mutex</span></code> implementuje nie-rekursywną wersję muteksu.</p></li>
+</ul>
+</section>
+<section id="std-recursive-mutex">
+<h4><code class="docutils literal notranslate"><span class="pre">std::recursive_mutex</span></code><a class="headerlink" href="#std-recursive-mutex" title="Permalink to this heading">#</a></h4>
+<p>Klasa <code class="docutils literal notranslate"><span class="pre">std::recursive_mutex</span></code> implementuje rekursywną wersję konceptu <code class="docutils literal notranslate"><span class="pre">Lockable</span></code>. Ten sam wątek może wielokrotnie pozyskać muteks poprzez wywołanie
+metody <code class="docutils literal notranslate"><span class="pre">lock()</span></code> lub <code class="docutils literal notranslate"><span class="pre">try_lock()</span></code>. Aby zwolnić muteks wątek musi odpowiednią ilość razy wywołać <code class="docutils literal notranslate"><span class="pre">unlock()</span></code>.</p>
+<p>Maksymalny poziom rekursji dla obiektu <code class="docutils literal notranslate"><span class="pre">std::recursive_mutex</span></code> nie jest zdefiniowany, ale po przekroczeniu tej wartości:</p>
+<ul class="simple">
+<li><p>z metody <code class="docutils literal notranslate"><span class="pre">lock()</span></code> rzucony zostanie wyjątek <code class="docutils literal notranslate"><span class="pre">std::system_error</span></code></p></li>
+<li><p>metoda <code class="docutils literal notranslate"><span class="pre">try_lock()</span></code> zwróci <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="timedlockable-i-klasa-std-timed-mutex">
+<h3>TimedLockable i klasa <code class="docutils literal notranslate"><span class="pre">std::timed_mutex</span></code><a class="headerlink" href="#timedlockable-i-klasa-std-timed-mutex" title="Permalink to this heading">#</a></h3>
+<p>Koncept TimedLockable wzbogaca koncept <code class="docutils literal notranslate"><span class="pre">Lockable</span></code> o metody umożliwiające zdefiniowanie maksymalnego czasu oczekiwania na pozyskanie blokady przez wątek</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">try_lock_until(abs_time)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">try_lock_for(rel_time)</span></code></p></li>
+</ul>
+<p>Implementacje w bibliotece standardowej - <code class="docutils literal notranslate"><span class="pre">std::timed_mutex</span></code> oraz <code class="docutils literal notranslate"><span class="pre">std::recursive_timed_mutex</span></code>.</p>
+</section>
+</section>
+<section id="blokady-wspoldzielone-c-14">
+<h2>Blokady współdzielone (C++14)<a class="headerlink" href="#blokady-wspoldzielone-c-14" title="Permalink to this heading">#</a></h2>
+<p>Blokady współdzielone wprowadzone są w standardzie C++14.</p>
+<p>Muteksy implementujące koncepty <code class="docutils literal notranslate"><span class="pre">Lockable</span></code> oraz <code class="docutils literal notranslate"><span class="pre">TimedLockable</span></code> szeregują odwołania do zasobów, lecz nie rozróżniają dostępów modyfikujących od niemodyfikujących.</p>
+<p>Odczyt danych współdzielonych:</p>
+<ul class="simple">
+<li><p>nie może zakłócić innego odczytu współbieżnego</p></li>
+<li><p>pozyskiwane są blokady współdzielone</p></li>
+</ul>
+<p>Przed podjęciem próby zapisu danych współdzielonych należy pozyskać blokadę na wyłączność.</p>
+<section id="koncept-sharedlockable">
+<h3>Koncept SharedLockable<a class="headerlink" href="#koncept-sharedlockable" title="Permalink to this heading">#</a></h3>
+<p>Koncept SharedLockable rozszerza koncept <code class="docutils literal notranslate"><span class="pre">Lockable</span></code> o możliwość pozyskiwania blokad współdzielonych (<em>shared ownership</em>) przy pomocy metod:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">lock_shared()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">try_lock_shared()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">try_lock_shared_for(rel_time)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">try_lock_shared_until(abs_time)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">unlock_shared()</span></code></p></li>
+</ul>
+<p>Implementacja - <code class="docutils literal notranslate"><span class="pre">std::shared_mutex</span></code></p>
+</section>
+<section id="klasa-std-shared-mutex-c-17">
+<h3>Klasa <code class="docutils literal notranslate"><span class="pre">std::shared_mutex</span></code> (C++17)<a class="headerlink" href="#klasa-std-shared-mutex-c-17" title="Permalink to this heading">#</a></h3>
+<p>Blokady współdzielone są implementowane przez klasę <code class="docutils literal notranslate"><span class="pre">std::shared_mutex</span></code></p>
+<p>Do pozyskania wyłącznej blokady przed rozpoczęciem operacji zapisu należy użyć:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">std::lock_guard&lt;std::shared_mutex&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std::unique_lock&lt;std::shared_mutex&gt;</span></code></p></li>
+</ul>
+<p>Do pozyskiwania współdzielonych blokad w trakcie czytania danych należy użyć:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">std::shared_lock&lt;std::shared_mutex&gt;</span></code></p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">slots</span><span class="p">[</span><span class="n">size</span><span class="p">];</span>
+<span class="n">std</span><span class="o">::</span><span class="n">shared_mutex</span><span class="w"> </span><span class="n">mtx_slots</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">reader</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_slot_index</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">shared_lock</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lock</span><span class="p">(</span><span class="n">mtx_slots</span><span class="p">);</span><span class="w"> </span><span class="c1">// non-exclusive lock</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">slots</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>
+<span class="w">    </span><span class="n">lock</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">process_value</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">writer</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_slot_index</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">lock_guard</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lock</span><span class="p">(</span><span class="n">mtx_slots</span><span class="p">);</span><span class="w"> </span><span class="c1">// exclusive lock</span>
+<span class="w">    </span><span class="n">slots</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new_value</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="menadzery-blokad">
+<h2>Menadżery blokad<a class="headerlink" href="#menadzery-blokad" title="Permalink to this heading">#</a></h2>
+<p>Zarządzanie blokadami (obiektami muteksów) odbywa się za pomocą następujących klas:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lock_guard&lt;Mutex&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unique_lock&lt;Mutex&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shared_lock&lt;Mutex&gt;</span></code> (C++14)</p></li>
+</ul>
+<p>Wszystkie klasy zarządzające blokadami implementują mechanizm <em>RAII</em> gwarantujący zwolnienie posiadanej przez wątek blokady w przypadku zgłoszenia sytuacji wyjątkowej.
+W destruktorze menadżerów blokad wywoływana jest metoda <code class="docutils literal notranslate"><span class="pre">unlock()</span></code>.</p>
+<section id="klasa-std-lock-guard-mutex">
+<h3>Klasa <code class="docutils literal notranslate"><span class="pre">std::lock_guard&lt;Mutex&gt;</span></code><a class="headerlink" href="#klasa-std-lock-guard-mutex" title="Permalink to this heading">#</a></h3>
+<p>Menadżer blokad implementuje technikę RAII w celu zarządzania zasobem w postaci muteksu.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">_Mutex</span><span class="o">&gt;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">lock_guard</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="k">typedef</span><span class="w"> </span><span class="n">_Mutex</span><span class="w"> </span><span class="n">mutex_type</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">lock_guard</span><span class="p">(</span><span class="n">mutex_type</span><span class="o">&amp;</span><span class="w"> </span><span class="n">__m</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">_M_device</span><span class="p">(</span><span class="n">__m</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="n">_M_device</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">lock_guard</span><span class="p">(</span><span class="n">mutex_type</span><span class="o">&amp;</span><span class="w"> </span><span class="n">__m</span><span class="p">,</span><span class="w"> </span><span class="n">adopt_lock_t</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">_M_device</span><span class="p">(</span><span class="n">__m</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// calling thread owns mutex</span>
+
+<span class="w">    </span><span class="o">~</span><span class="n">lock_guard</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="n">_M_device</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">lock_guard</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">lock_guard</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+<span class="w">    </span><span class="n">lock_guard</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">lock_guard</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="n">mutex_type</span><span class="o">&amp;</span><span class="w">  </span><span class="n">_M_device</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">std::lock_guard</span></code> jest najprostszym managerem blokad:</p>
+<ul class="simple">
+<li><p>konstruktor pozyskuje blokadę wywołując na rzecz muteksu przekazanego przez referencję jako argument metodę <code class="docutils literal notranslate"><span class="pre">lock()</span></code></p></li>
+<li><p>destruktor zwalnia blokadę wywołując <code class="docutils literal notranslate"><span class="pre">unlock()</span></code></p></li>
+<li><p>przeciążony konstruktor przyjmujący jako drugi parametr  obiekt typu <code class="docutils literal notranslate"><span class="pre">std::adopt_lock_t</span></code> umożliwia
+adaptowanie, tj. przejęcie prawa własności i tym samym odpowiedzialności za zwolnienie pozyskanej już wcześniej blokady</p></li>
+</ul>
+<p>Przykład:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">counter</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="w"> </span><span class="n">mtx_counter</span><span class="p">;</span>
+
+<span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">increment</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">lock_guard</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lk</span><span class="p">(</span><span class="n">mtx_counter</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">++</span><span class="n">counter</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">query</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">lock_guard</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lk</span><span class="p">(</span><span class="n">mtx_counter</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">counter</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="klasa-std-unique-lock-mutex">
+<h3>Klasa <code class="docutils literal notranslate"><span class="pre">std::unique_lock&lt;Mutex&gt;</span></code><a class="headerlink" href="#klasa-std-unique-lock-mutex" title="Permalink to this heading">#</a></h3>
+<p>Rozbudowana wersja managera blokad umożliwiająca:</p>
+<ul class="simple">
+<li><p>ochronę <em>RAII</em> przed wyciekami blokad</p></li>
+<li><p>opóźnione pozyskiwanie blokad</p></li>
+<li><p>adaptowanie pozyskanej przez wątek blokady</p></li>
+<li><p>transfer prawa własności - instancja <code class="docutils literal notranslate"><span class="pre">unique_lock</span></code> nie jest kopiowalna, ale jest przenaszalna (<em>moveable</em>)</p></li>
+<li><p>podejmowanie nieblokujących prób pozyskania blokady</p></li>
+<li><p>korzystanie z muteksów czasowych</p></li>
+</ul>
+<p>Jeśli instancja managera <code class="docutils literal notranslate"><span class="pre">std::unique_lock&lt;&gt;</span></code> posiada blokadę:</p>
+<ul class="simple">
+<li><p>metoda <code class="docutils literal notranslate"><span class="pre">mutex()</span></code> zwraca wskaźnik do muteksu realizującego blokadę</p></li>
+<li><p>metoda <code class="docutils literal notranslate"><span class="pre">owns_lock()</span></code> zwraca wartość <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
+<li><p>w momencie niszczenia obiektu destruktor wywoła metodę <code class="docutils literal notranslate"><span class="pre">unlock()</span></code> na obiekcie muteksu</p></li>
+</ul>
+<p>Opóźnione pozyskiwanie blokady jest możliwe przy pomocy konstruktora <code class="docutils literal notranslate"><span class="pre">std::shared_lock(Lockable&amp;</span> <span class="pre">m,</span> <span class="pre">std::defer_lock_t)</span></code>.
+Po jego wywołaniu:</p>
+<ul class="simple">
+<li><p>metoda <code class="docutils literal notranslate"><span class="pre">owns_lock()</span></code> zwraca <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+<li><p>metoda <code class="docutils literal notranslate"><span class="pre">mutex()</span></code> zwraca adres obiektu muteksu</p></li>
+</ul>
+<p>Adaptowanie pozyskanej przez wątek blokady - konstruktor <code class="docutils literal notranslate"><span class="pre">unique_lock(Lockable&amp;</span> <span class="pre">m,</span> <span class="pre">std::adopt_lock_t)</span></code></p>
+<p>Nieblokujące próby pozyskania blokady - <code class="docutils literal notranslate"><span class="pre">unique_lock(Lockable</span> <span class="pre">&amp;</span> <span class="pre">m,std::try_to_lock_t)</span></code></p>
+<ul class="simple">
+<li><p>w konstruktorze wywoływana jest dla muteksu nieblokująca metoda <code class="docutils literal notranslate"><span class="pre">try_lock()</span></code></p></li>
+<li><p>jeśli blokada zostanie pozyskana metoda <code class="docutils literal notranslate"><span class="pre">owns_lock()</span></code> zwraca <code class="docutils literal notranslate"><span class="pre">true</span></code>, w przeciwnym wypadku zwraca <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+</ul>
+<p>Jeśli jako parametr szablonu <code class="docutils literal notranslate"><span class="pre">unique_lock&lt;Mutex&gt;</span></code> zostanie przekazany typ muteksu implementujący koncept TimedLockable (np. <code class="docutils literal notranslate"><span class="pre">std::timed_mutex</span></code>) możliwe jest blokujące pozyskiwanie blokad:</p>
+<ul class="simple">
+<li><p>albo przez dany czas</p></li>
+<li><p>albo do określonego punktu w czasie</p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="o">::</span><span class="nn">literals</span><span class="p">;</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">timed_mutex</span><span class="w"> </span><span class="n">mutex</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">unique_lock</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">timed_mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lock</span><span class="p">(</span><span class="n">mutex</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">try_to_lock</span><span class="p">);</span>
+
+<span class="c1">//...</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">lock</span><span class="p">.</span><span class="n">owns_lock</span><span class="p">())</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">do</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Thread doesn&#39;t own a lock... Tries to acquire a mutex...&quot;</span>
+<span class="w">                    </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="n">lock</span><span class="p">.</span><span class="n">try_lock_for</span><span class="p">(</span><span class="mi">1</span><span class="n">s</span><span class="p">));</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<section id="transfer-wlasnosci-blokad-std-unique-lock-mutex">
+<h4>Transfer własności blokad <code class="docutils literal notranslate"><span class="pre">std::unique_lock&lt;Mutex&gt;</span></code><a class="headerlink" href="#transfer-wlasnosci-blokad-std-unique-lock-mutex" title="Permalink to this heading">#</a></h4>
+<p>Managery blokad typu <code class="docutils literal notranslate"><span class="pre">std::unique_lock&lt;&gt;</span></code> potrafią między sobą transferować własności blokady zgodnie z semantyką
+przenoszenia.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_lock</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">acquire_lock</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="w"> </span><span class="n">m</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unique_lock</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="zakleszczenie">
+<h2>Zakleszczenie<a class="headerlink" href="#zakleszczenie" title="Permalink to this heading">#</a></h2>
+<p>Zakleszczenie (<em>deadlock</em>)
+sytuacja, w której co najmniej dwa różne wątki czekają na siebie nawzajem, więc żadny nie może się zakończyć.</p>
+<p>Do zakleszczenia może dojść w sytuacji, gdy istnieją przynajmniej dwa zasoby i dwa wątki ubiegające się o dostęp do tych zasobów.</p>
+<p>Do zakleszczenia dochodzi, jeśli spełnione są cztery warunki:</p>
+<ol class="arabic simple">
+<li><p>Wzajemne wykluczenie - w danym czasie tylko jeden wątek może korzystać z zasobu</p></li>
+<li><p>Trzymanie zasobu i oczekiwanie - wątek utrzymuje jeden z zasobów, ale do ukończenia pracy potrzebne jest także zablokowanie innego zasobu</p></li>
+<li><p>Cykliczne oczekiwanie - wątki w taki sposób żądają dostępu do zasobów, że powstaje cykliczny graf skierowany</p></li>
+<li><p>Brak wywłaszczania zasobu - wątki dobrowolnie nie rezygnują z przydzielonych im zasobów, zwolnienie zasobów możliwe jest po zakończeniu zadania</p></li>
+</ol>
+<p>Przykład:</p>
+<p>Klasa ze stanem wewnętrznym, chroniona muteksem. Chcemy napisać operator porównania.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">X</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">mutable</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="w"> </span><span class="n">mtx_</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">some_data_</span><span class="p">;</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">&lt;</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">X</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">lock_guard</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lk</span><span class="p">(</span><span class="n">mtx_</span><span class="p">);</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">lock_guard</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lk</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">mtx_</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">some_data_</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">some_data_</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Mamy dwa obiekty <code class="docutils literal notranslate"><span class="pre">x1</span></code> i <code class="docutils literal notranslate"><span class="pre">x2</span></code> i dwa wątki próbujące je porównać, ale w odwrotną stronę:</p>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Wątek #1</div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x1</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">x2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/**/</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p class="sd-card-text">jest rozwinięte do:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">x1</span><span class="p">.</span><span class="n">mtx_</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span><span class="w"> </span><span class="c1">// 1</span>
+<span class="cm">/*******************************/</span>
+<span class="n">x1</span><span class="p">.</span><span class="n">mtx_</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span><span class="w"> </span><span class="c1">// 3 &lt;- DEADLOCK</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Wątek #2</div>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x2</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">x1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/**/</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p class="sd-card-text">jest rozwinięte do:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">x2</span><span class="p">.</span><span class="n">mtx_</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span><span class="w"> </span><span class="c1">// 2</span>
+<span class="cm">/*******************************/</span>
+<span class="n">x1</span><span class="p">.</span><span class="n">mtx_</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Dwa wątki pozyskają muteksy w odwrotnej kolejności, co może spowodować zakleszczenie.</p>
+<section id="zapobieganie-zakleszczeniom">
+<h3>Zapobieganie zakleszczeniom<a class="headerlink" href="#zapobieganie-zakleszczeniom" title="Permalink to this heading">#</a></h3>
+<section id="metoda-std-lock">
+<h4>Metoda <code class="docutils literal notranslate"><span class="pre">std::lock()</span></code><a class="headerlink" href="#metoda-std-lock" title="Permalink to this heading">#</a></h4>
+<ul class="simple">
+<li><p>gwarantuje zablokowanie wszystkich muteksów bez zakleszczenia niezależnie od kolejności ich pozyskiwania</p></li>
+<li><p>wymaga przekazania jako parametrów opóźnionych blokad typu <code class="docutils literal notranslate"><span class="pre">std::unique_lock</span></code></p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="n">X</span><span class="o">::</span><span class="k">operator</span><span class="o">&lt;</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">X</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">unique_lock</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">l1</span><span class="p">(</span><span class="n">mtx_</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">defer_lock</span><span class="p">);</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">unique_lock</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">l2</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">mtx_</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">defer_lock</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">lock</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span><span class="w"> </span><span class="n">l2</span><span class="p">);</span><span class="w"> </span><span class="c1">// avoiding deadlock</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">some_data</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="n">some_data</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Istnieje możliwość skonstruowania blokady typu <code class="docutils literal notranslate"><span class="pre">std::unique_lock&lt;&gt;</span></code> bez blokowania muteksu za pomocą parametru <code class="docutils literal notranslate"><span class="pre">std::defer_lock</span></code>.
+Pozwala to uniknąć zakleszczeń dla blokad uzyskiwanych jednocześnie. Działa na każdym obiekcie implementującym koncept <code class="docutils literal notranslate"><span class="pre">Lockable</span></code>.</p>
+<p>Wciąż może istnieć zagrożenie zakleszczeniem, jeśli blokady są pozyskiwane oddzielnie. Aby zminimalizować ryzyko należy pozyskiwać blokady zawsze w tej samej kolejności.</p>
+</section>
+<section id="klasa-std-scoped-lock-c-20">
+<h4>Klasa <code class="docutils literal notranslate"><span class="pre">std::scoped_lock</span></code> - C++20<a class="headerlink" href="#klasa-std-scoped-lock-c-20" title="Permalink to this heading">#</a></h4>
+<p>TODO</p>
+</section>
+</section>
+</section>
+<section id="synchronizacja-za-pomoca-zdarzen">
+<h2>Synchronizacja za pomocą zdarzeń<a class="headerlink" href="#synchronizacja-za-pomoca-zdarzen" title="Permalink to this heading">#</a></h2>
+<p>W programach wielowątkowych często zachodzi potrzeba zsynchronizowania pracy wielu wykonywanych współbieżnie zadań.
+Dzieje się tak w sytuacji, gdy jeden z pracujących wątków osiąga punkt, w którym nie może wykonać następnych operacji, dopóki inne wątki nie zakończą swojej częsci pracy, przygotowując dane potrzebne do zakończenia zadania. Fakt, że oczekiwane dane są dostępne jest określany jako <strong>zdarzenie</strong> (<em>event</em>).</p>
+<p>Oczekiwanie na zdarzenie może być zaimplementowane jako:</p>
+<ul class="simple">
+<li><p><em>idle wait</em> - wątek oczekujący na zdarzenie przechodzi do stanu <em>blocked</em>, w którym nie zużywa cyklów CPU</p></li>
+<li><p><em>busy wait</em> - oczekiwanie na zdarzenie implementowane jest za pomocą pętli <em>do-while</em></p></li>
+</ul>
+<section id="busy-waits-implementacje">
+<h3>Busy waits - implementacje<a class="headerlink" href="#busy-waits-implementacje" title="Permalink to this heading">#</a></h3>
+<section id="implementacja-z-wykorzystaniem-muteksu">
+<h4>Implementacja z wykorzystaniem muteksu<a class="headerlink" href="#implementacja-z-wykorzystaniem-muteksu" title="Permalink to this heading">#</a></h4>
+<p>Implementacja komunikacji przy pomocy flagi <code class="docutils literal notranslate"><span class="pre">data_ready</span></code> typu <code class="docutils literal notranslate"><span class="pre">bool</span></code> oraz muteksu:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">volatile</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">data_ready</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="w"> </span><span class="n">mtx</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">set_data_ready</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">prepare_data</span><span class="p">();</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">unique_lock</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lk</span><span class="p">(</span><span class="n">mtx</span><span class="p">);</span>
+<span class="w">    </span><span class="n">data_ready</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">task</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">ready_flag</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">do</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">lock_guard</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lk</span><span class="p">{</span><span class="n">mtx</span><span class="p">};</span>
+<span class="w">            </span><span class="n">ready_flag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data_ready</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span><span class="w">        </span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="n">ready_flag</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">process_data</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="implementacja-z-wykorzystaniem-zmiennej-atomowej">
+<h4>Implementacja z wykorzystaniem zmiennej atomowej<a class="headerlink" href="#implementacja-z-wykorzystaniem-zmiennej-atomowej" title="Permalink to this heading">#</a></h4>
+<p>Implementacja wykorzystująca atomową zmienną typu <code class="docutils literal notranslate"><span class="pre">std::atomic&lt;bool&gt;</span></code> nie wymaga do synchronizacji muteksu.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">data_ready</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">set_data_ready</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">prepare_data</span><span class="p">();</span>
+<span class="w">    </span><span class="n">data_ready</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">task</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="n">data_ready</span><span class="p">.</span><span class="n">load</span><span class="p">())</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">yield</span><span class="p">();</span><span class="w">         </span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">process_data</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Operacje na zmiennej atomowej dają gwarancję odpowiedniego uporządkowania kodu zgodnie z modelem pamięci C++11.
+Przygotowanie danych - operacja <code class="docutils literal notranslate"><span class="pre">prepare_data()</span></code>, w której ustawiany jest stan zmiennych współdzielonych, odbywa się przed (<em>sequenced before</em>) operacją zapisu do atomowej flagi <code class="docutils literal notranslate"><span class="pre">data_ready</span></code>.
+Kiedy w innym wątku wartość odczytana z zmiennej atomowej <code class="docutils literal notranslate"><span class="pre">data_ready</span></code> jest <code class="docutils literal notranslate"><span class="pre">true</span></code>, operacja zapisu do zmiennej atomowej
+synchronizuje się (<em>synchronizes with</em>) z tym odczytem tworząc relację <em>happens before</em>. Ponieważ relacja <em>happens before</em> jest przechodnia, przygotowanie danych odbywa się przed zmianą stanu flagi, ta odbywa się przed odczytem wartości <code class="docutils literal notranslate"><span class="pre">true</span></code>, który z kolei odbywa się przed przetworzeniem danych.</p>
+</section>
+</section>
+<section id="idle-waits">
+<h3>Idle waits<a class="headerlink" href="#idle-waits" title="Permalink to this heading">#</a></h3>
+<section id="zmienne-warunkowe">
+<h4>Zmienne warunkowe<a class="headerlink" href="#zmienne-warunkowe" title="Permalink to this heading">#</a></h4>
+<p>Aby uniknąć aktywnego odpytywania się o spełnienie określonego warunku, efektywniej jest zablokować oczekujący wątek do momentu zajścia zdarzenia (spełnienia oczekiwanego warunku).
+Mechanizm taki jest wykorzystany w implementacji <em>zmiennych warunkowych</em> (<strong>condition variables</strong>).</p>
+<p>Biblioteka standardowa C++11 dostarcza dwie implementacje zmiennych warunkowych:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">std::condition_variable</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std::condition_variable_any</span></code></p></li>
+</ul>
+<p>Obie klasy współpracują z muteksem, aby zapewnić prawidłową synchronizację wątków:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">conditional_variable</span></code> współpracuje tylko z typem <code class="docutils literal notranslate"><span class="pre">std::mutex</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">conditional_variable_any</span></code> współpracuje z dowolnym typem muteksu</p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CV</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">data_ready_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="w"> </span><span class="n">mtx_data_ready_</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">condition_variable</span><span class="w"> </span><span class="n">cv_is_data_ready_</span><span class="p">;</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">process_data</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">unique_lock</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lk</span><span class="p">(</span><span class="n">mtx_data_ready_</span><span class="p">);</span>
+<span class="w">        </span><span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="n">data_ready_</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">cv_is_data_ready_</span><span class="p">.</span><span class="n">wait</span><span class="p">(</span><span class="n">lk</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="c1">// implementation of data processing</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">load_data</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// implementation of data loading</span>
+<span class="w">        </span><span class="c1">// ...</span>
+
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">lock_guard</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lk</span><span class="p">(</span><span class="n">mtx_data_ready_</span><span class="p">);</span>
+<span class="w">            </span><span class="n">data_ready_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="c1">// release lock on mutex</span>
+
+<span class="w">        </span><span class="n">cv_is_data_ready_</span><span class="p">.</span><span class="n">notify_one</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Można uprościć kod oczekujący na spełnienie warunku korzystając z przeciążonej wersji metody <code class="docutils literal notranslate"><span class="pre">wait(lock_type&amp;</span> <span class="pre">lock,</span> <span class="pre">predicate_type</span> <span class="pre">pred)</span></code> przyjmującej jako argument predykat.</p>
+<p>Predykat może być zdefiniowany jako:</p>
+<ul class="simple">
+<li><p>funkcja <code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">pred()</span></code></p></li>
+<li><p>obiekt funkcyjny</p></li>
+<li><p>obiekt funkcyjny zdefiniowany w momencie wywołania przy pomocy funkcji lambda</p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">process_data</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">unique_lock</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lk</span><span class="p">(</span><span class="n">mtx_data_ready_</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cv_is_data_ready_</span><span class="p">.</span><span class="n">wait</span><span class="p">(</span><span class="n">lk</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="k">this</span><span class="p">]</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">data_ready_</span><span class="p">;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="n">process_data</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Powiadomienie o zdarzeniu może zostać zrealizowane przy pomocy dwóch metod:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">notify_one()</span></code> – odblokowuje jeden z wątków znajdujących się w stanie oczekiwania po uprzednim wywołaniu na obiekcie zmiennej warunkowej metody wait()</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">notify_all()</span></code> – odblokowuje wszystkie wątki znajdujące się w stanie oczekiwania</p></li>
+</ul>
+</section>
+<section id="zmienne-atomowe-c-20">
+<h4>Zmienne atomowe - C++20<a class="headerlink" href="#zmienne-atomowe-c-20" title="Permalink to this heading">#</a></h4>
+<p>TODO</p>
+</section>
+</section>
+</section>
+<section id="lokalna-pamiec-watku">
+<h2>Lokalna pamięć wątku<a class="headerlink" href="#lokalna-pamiec-watku" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Thread Local Storage</strong> - dane, które należą do konkretnego wątku</p></li>
+<li><p>Każdy wątek może posiadać własny zestaw zmiennych TLS</p></li>
+<li><p>Odpowiednik statycznych składowych klasy dla wątków</p></li>
+<li><p>Zastosowanie:</p>
+<ul>
+<li><p>errno</p></li>
+<li><p>lokalny generator liczb losowych</p></li>
+<li><p>strtok</p></li>
+</ul>
+</li>
+</ul>
+<section id="modyfikator-thread-local">
+<h3>Modyfikator <code class="docutils literal notranslate"><span class="pre">thread_local</span></code><a class="headerlink" href="#modyfikator-thread-local" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>C++11 zapewnia dostęp do danych TLS za pomocą modyfikatora <code class="docutils literal notranslate"><span class="pre">thread_local</span></code></p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span><span class="w"> </span><span class="nn">Unsafe</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="nf">rand</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">665</span><span class="p">;</span><span class="w"> </span><span class="c1">// shared state </span>
+
+<span class="w">        </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">seed</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">IMUL</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">IADD</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">MASK</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">seed</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">SCALE</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">ThreadSafe</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="nf">rand_double</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">auto</span><span class="w"> </span><span class="n">thread_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">get_id</span><span class="p">();</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">hash</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="o">::</span><span class="n">id</span><span class="o">&gt;</span><span class="w"> </span><span class="n">hasher</span><span class="p">;</span>
+<span class="w">        </span><span class="k">thread_local</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">thd_seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">665</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">hasher</span><span class="p">(</span><span class="n">thread_id</span><span class="p">);</span>
+
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">thd_seed</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">IMUL</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">IADD</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">MASK</span><span class="p">;</span>
+<span class="w">        </span><span class="n">thd_seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">SCALE</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">thd1</span><span class="p">([]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ThreadSafe</span><span class="o">::</span><span class="n">rand_double</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="p">});</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">thd2</span><span class="p">([]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">ThreadSafe</span><span class="o">::</span><span class="n">rand_double</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="p">});</span>
+
+<span class="w">    </span><span class="n">thd1</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<span class="w">    </span><span class="n">thd2</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="threads.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Wątki</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="async-futures.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Funkcje asynchroniczne</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#poprawnosc-programow-wspolbieznych">Poprawność programów współbieżnych</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#thread-safety">Thread-safety</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wspoldzielenie-danych">Współdzielenie danych</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wspoldzielenie-obiektow-biblioteki-standardowej">Współdzielenie obiektów biblioteki standardowej</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#kontenery-standardowe">Kontenery standardowe</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#strumienie">Strumienie</a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#synchronizowane-strumienie-c-20">Synchronizowane strumienie - C++20</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jawne-wykluczanie-explicit-locking">Jawne wykluczanie (<em>Explicit Locking</em>)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sekcja-krytyczna">Sekcja krytyczna</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#podstawowe-obiekty-blokad">Podstawowe obiekty blokad</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#zmienne-warunkowe-warunkowe-wzajemne-wykluczenie">Zmienne warunkowe - warunkowe wzajemne wykluczenie</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#muteksy-i-klasy-menadzerow-blokad">Muteksy i klasy menadżerów blokad</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#koncepty-basiclockable-lockable-i-klasa-std-mutex">Koncepty BasicLockable, Lockable i klasa <code class="docutils literal notranslate"><span class="pre">std::mutex</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#std-mutex"><code class="docutils literal notranslate"><span class="pre">std::mutex</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#std-recursive-mutex"><code class="docutils literal notranslate"><span class="pre">std::recursive_mutex</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#timedlockable-i-klasa-std-timed-mutex">TimedLockable i klasa <code class="docutils literal notranslate"><span class="pre">std::timed_mutex</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#blokady-wspoldzielone-c-14">Blokady współdzielone (C++14)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#koncept-sharedlockable">Koncept SharedLockable</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#klasa-std-shared-mutex-c-17">Klasa <code class="docutils literal notranslate"><span class="pre">std::shared_mutex</span></code> (C++17)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#menadzery-blokad">Menadżery blokad</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#klasa-std-lock-guard-mutex">Klasa <code class="docutils literal notranslate"><span class="pre">std::lock_guard&lt;Mutex&gt;</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#klasa-std-unique-lock-mutex">Klasa <code class="docutils literal notranslate"><span class="pre">std::unique_lock&lt;Mutex&gt;</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#transfer-wlasnosci-blokad-std-unique-lock-mutex">Transfer własności blokad <code class="docutils literal notranslate"><span class="pre">std::unique_lock&lt;Mutex&gt;</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zakleszczenie">Zakleszczenie</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#zapobieganie-zakleszczeniom">Zapobieganie zakleszczeniom</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#metoda-std-lock">Metoda <code class="docutils literal notranslate"><span class="pre">std::lock()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#klasa-std-scoped-lock-c-20">Klasa <code class="docutils literal notranslate"><span class="pre">std::scoped_lock</span></code> - C++20</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#synchronizacja-za-pomoca-zdarzen">Synchronizacja za pomocą zdarzeń</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#busy-waits-implementacje">Busy waits - implementacje</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#implementacja-z-wykorzystaniem-muteksu">Implementacja z wykorzystaniem muteksu</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#implementacja-z-wykorzystaniem-zmiennej-atomowej">Implementacja z wykorzystaniem zmiennej atomowej</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#idle-waits">Idle waits</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zmienne-warunkowe">Zmienne warunkowe</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zmienne-atomowe-c-20">Zmienne atomowe - C++20</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lokalna-pamiec-watku">Lokalna pamięć wątku</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modyfikator-thread-local">Modyfikator <code class="docutils literal notranslate"><span class="pre">thread_local</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krystian Piękoś - Infotraining
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

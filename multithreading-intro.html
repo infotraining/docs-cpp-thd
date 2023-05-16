@@ -1,0 +1,622 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Wprowadzenie do programowania wielowątkowego &#8212; Programowanie wielowątkowe w C++</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'multithreading-intro';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Wątki" href="threads.html" />
+    <link rel="prev" title="Programowanie wielowątkowe w C++" href="intro.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Programowanie wielowątkowe w C++
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Wprowadzenie do programowania wielowątkowego</a></li>
+<li class="toctree-l1"><a class="reference internal" href="threads.html">Wątki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="synchronization.html">Synchronizacja wątków</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async-futures.html">Funkcje asynchroniczne</a></li>
+<li class="toctree-l1"><a class="reference internal" href="atomics.html">Typy i zmienne atomowe</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/infotraining/docs-cpp-thd" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/multithreading-intro.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Wprowadzenie do programowania wielowątkowego</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#podstawowe-pojecia">Podstawowe pojęcia</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wspolbieznosc">Współbieżność</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rownoleglosc">Równoległość</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#proces">Proces</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sposoby-komunikacji-miedzy-procesami">Sposoby komunikacji między procesami</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#watek">Wątek</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proces-czy-watek">Proces czy wątek?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#po-co-uzywac-wspolbieznosci">Po co używać współbieżności</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kiedy-nie-uzywac-wspolbieznosci">Kiedy nie używać współbieżności?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testowanie-aplikacji-wielowatkowych">Testowanie aplikacji wielowątkowych</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="wprowadzenie-do-programowania-wielowatkowego">
+<h1>Wprowadzenie do programowania wielowątkowego<a class="headerlink" href="#wprowadzenie-do-programowania-wielowatkowego" title="Permalink to this heading">#</a></h1>
+<blockquote class="epigraph">
+<div><p><strong>Concurrency</strong> is about dealing with lots of things at once.</p>
+<p><strong>Parallelism</strong> is about doing lots of things at once.</p>
+<p>Not the same, but related.</p>
+<p>One is about structure, one is about execution.</p>
+<p>Concurrency provides a way to structure a solution to solve a problem that may (but not necessarily) be parallelizable.</p>
+<p class="attribution">—Rob Pike, co-inventor of the Go language</p>
+</div></blockquote>
+<section id="podstawowe-pojecia">
+<h2>Podstawowe pojęcia<a class="headerlink" href="#podstawowe-pojecia" title="Permalink to this heading">#</a></h2>
+<section id="wspolbieznosc">
+<h3>Współbieżność<a class="headerlink" href="#wspolbieznosc" title="Permalink to this heading">#</a></h3>
+<p>Możliwość obsługi wielu działających zadań, które są wykonywane jedno po drugim w przydzielonym czasie procesora (maszyna jednoprocesorowa + OS scheduler = <em>multitasking</em>) lub równolegle na wielu procesorach.</p>
+<p><img alt="concurrent-vs-parallel" src="_images/concurrency-vs-parallel.png" /></p>
+</section>
+<section id="rownoleglosc">
+<h3>Równoległość<a class="headerlink" href="#rownoleglosc" title="Permalink to this heading">#</a></h3>
+<p>Możliwość wykonywania wielu obliczeń w tym samym czasie. Wymaga CPU z wieloma rdzeniami, wielu CPU, GPU lub klastra komputerów.</p>
+</section>
+<section id="proces">
+<h3>Proces<a class="headerlink" href="#proces" title="Permalink to this heading">#</a></h3>
+<p>Egzemplarz wykonywanego programu. Współczesne systemy operacyjne zarządzają setkami procesów, które są jednocześnie uruchomione.</p>
+<p>Za zarządzanie procesami odpowiada jądro systemu operacyjnego (<em>process scheduler</em>). Scheduler decyduje, który proces wykonuje swoje zadania w przydzielonym przedziale czasu. System operacyjny zarządza także priorytetami procesów.</p>
+<p>Proces może tworzyć procesy potomne (<em>child processes</em>).</p>
+<section id="sposoby-komunikacji-miedzy-procesami">
+<h4>Sposoby komunikacji między procesami<a class="headerlink" href="#sposoby-komunikacji-miedzy-procesami" title="Permalink to this heading">#</a></h4>
+<p>Procesy są izolowane. Dotyczy to także procesów potomnych. W rezultacie procesy mogą komunikować się między sobą przy pomocy:</p>
+<ul class="simple">
+<li><p>pamięci współdzielonej</p></li>
+<li><p>gniazd (<em>socketów</em>)</p></li>
+<li><p>potoków</p></li>
+<li><p>plików</p></li>
+<li><p>sygnałów</p></li>
+</ul>
+</section>
+</section>
+<section id="watek">
+<h3>Wątek<a class="headerlink" href="#watek" title="Permalink to this heading">#</a></h3>
+<p>Niezależny ciąg instrukcji wykonywany współbieżnie w ramach jednego procesu.</p>
+<p>Wszystkie wątki działające w danym procesie współdzielą przestrzeń adresową oraz zasoby systemowe przydzielone procesowi. Dzięki temu wątki w obrębie procesu mają łatwy dostęp do:</p>
+<ul class="simple">
+<li><p>pamięci (<em>heap</em>, <em>static storage</em>)</p></li>
+<li><p>plików otwartych przez aplikację</p></li>
+<li><p>gniazd (<em>sockets</em>)</p></li>
+<li><p>itp.</p></li>
+</ul>
+<p>Zasobem, który wątki <strong>nie współdzielą</strong> jest stos (<em>stack</em>). Każdy utworzony wątek posiada własny stos, na którym alokowane są lokalne zmienne funkcji wywołanej w tym wątku.</p>
+<p>Wątki są udostępniane i kontrolowane przez system operacyjny. Natywne biblioteki umożliwiające zarządzanie wątkami to:</p>
+<ul class="simple">
+<li><p>MS Windows – Win32 API</p></li>
+<li><p>Linux, BSD - pthread</p></li>
+</ul>
+</section>
+</section>
+<section id="proces-czy-watek">
+<h2>Proces czy wątek?<a class="headerlink" href="#proces-czy-watek" title="Permalink to this heading">#</a></h2>
+<p>Procesy:</p>
+<ul class="simple">
+<li><p>są niezależne (izolowane)</p></li>
+<li><p>mają oddzielne przestrzenie adresowe</p></li>
+<li><p>komunikują się ze sobą za pośrednictwem IPC</p></li>
+<li><p>proces może zostać uruchomiony na innym komputerze (lepsza skalowalność)</p></li>
+<li><p>jeśli stabilność jest istotna, należy użyć procesów</p></li>
+<li><p>jeśli wykorzystywane są zasoby, które są dostępne tylko na zasadzie „jeden dla procesu”, należy wybrać proces</p></li>
+</ul>
+<p>Wątki:</p>
+<ul class="simple">
+<li><p>należą do procesu</p></li>
+<li><p>dzielą przestrzenie adresowe - z wyjątkiem stosu</p></li>
+<li><p>koszt przełączania kontekstu jest mniejszy dla wątków</p></li>
+<li><p>komunikacja wewnątrz wątków jest mniej kosztowna niż komunikacja międzyprocesowa</p></li>
+<li><p>jeśli wątki wymagają zasobów, które nie mogą być użyte przez wiele procesów jednocześnie, należy korzystać z wątków</p></li>
+</ul>
+</section>
+<section id="po-co-uzywac-wspolbieznosci">
+<h2>Po co używać współbieżności<a class="headerlink" href="#po-co-uzywac-wspolbieznosci" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Rozdzielenie odpowiedzialności</p>
+<ul>
+<li><p>Grupowanie (wydzielanie) logicznie spójnego kodu</p></li>
+<li><p>Rozdzielanie odrębnych operacji, gdy mają się odbywać w tym samym czasie</p></li>
+</ul>
+</li>
+<li><p>Wydajność</p>
+<ul>
+<li><p><em>“The free lunch is over”</em> – Herb Sutter</p></li>
+<li><p>Chcemy wykorzystać całą moc maszyny wieloprocesorowej (wielordzeniowej)</p></li>
+<li><p>Chcemy podnieść skalowalność aplikacji</p></li>
+<li><p>Podział zadań na części i wykonywanie równolegle (dekompozycja problemu może być trudna)</p></li>
+</ul>
+</li>
+<li><p>Lepsza responsywność aplikacji</p>
+<ul>
+<li><p>Unikanie blokujących operacji I/O</p></li>
+<li><p>Blokowanie interfejsu użytkownika</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="kiedy-nie-uzywac-wspolbieznosci">
+<h2>Kiedy nie używać współbieżności?<a class="headerlink" href="#kiedy-nie-uzywac-wspolbieznosci" title="Permalink to this heading">#</a></h2>
+<p>Należy unikać wielowątkowości, gdy korzyści nie są warte kosztów:</p>
+<ul class="simple">
+<li><p>Kod wielowątkowy jest dużo bardziej skomplikowany - trudniejszy do pisania, czytania i testowania niż kod jednowątkowy</p></li>
+<li><p>Większa złożoność kodu, przekłada się na większą ilość błędów (<em>bugów</em>), które są trudne do wykrycia (często trudne do odtworzenia)</p></li>
+<li><p>Narzuty związane z zarządzaniem wątkami mogą drastycznie obniżyć wydajność (<em>context switching</em>, <em>cache ping-pong</em>, <em>false sharing</em>)</p></li>
+<li><p>Gdy zbyt wiele wątków jest uruchomionych jednocześnie</p>
+<ul>
+<li><p>zużycie zasobów systemu operacyjnego</p></li>
+<li><p>system jako całość będzie działał wolniej</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="testowanie-aplikacji-wielowatkowych">
+<h2>Testowanie aplikacji wielowątkowych<a class="headerlink" href="#testowanie-aplikacji-wielowatkowych" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Kod jednowątkowy może być testowany jednostkowo (unit tests)</p>
+<ul>
+<li><p>Powtarzalne wyniki dla testów wykonywanych w izolacji</p></li>
+</ul>
+</li>
+<li><p>Kod wielowątkowy jest trudno testowalny jednostkowo</p>
+<ul>
+<li><p>Błędy (np. <em>race conditions</em>) nie są deterministyczne i są ciężko reprodukowalne</p></li>
+<li><p>Problemy pojawiają często przy dużym obciążeniu lub zwielokrotnieniu wątków</p></li>
+</ul>
+</li>
+<li><p>Dobrze jest zapewnić możliwość skalowania ilości wątków do jednego (single threaded
+code) aby wykluczyć inne przyczyny błędów</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Programowanie wielowątkowe w C++</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="threads.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Wątki</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#podstawowe-pojecia">Podstawowe pojęcia</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wspolbieznosc">Współbieżność</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rownoleglosc">Równoległość</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#proces">Proces</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sposoby-komunikacji-miedzy-procesami">Sposoby komunikacji między procesami</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#watek">Wątek</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proces-czy-watek">Proces czy wątek?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#po-co-uzywac-wspolbieznosci">Po co używać współbieżności</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kiedy-nie-uzywac-wspolbieznosci">Kiedy nie używać współbieżności?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testowanie-aplikacji-wielowatkowych">Testowanie aplikacji wielowątkowych</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krystian Piękoś - Infotraining
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,938 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Wątki &#8212; Programowanie wielowątkowe w C++</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'threads';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Synchronizacja wątków" href="synchronization.html" />
+    <link rel="prev" title="Wprowadzenie do programowania wielowątkowego" href="multithreading-intro.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Programowanie wielowątkowe w C++
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="multithreading-intro.html">Wprowadzenie do programowania wielowątkowego</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Wątki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="synchronization.html">Synchronizacja wątków</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async-futures.html">Funkcje asynchroniczne</a></li>
+<li class="toctree-l1"><a class="reference internal" href="atomics.html">Typy i zmienne atomowe</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/infotraining/docs-cpp-thd" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/threads.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Wątki</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zarzadzanie-watkami">Zarządzanie wątkami</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tworzenie-i-uruchamianie-watkow">Tworzenie i uruchamianie wątków</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wskaznika-do-funkcji">Wskaźnika do funkcji</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#obiektu-funkcyjnego">Obiektu funkcyjnego</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#funkcji-lambda">Funkcji lambda</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dolaczenie-do-watku">Dołączenie do wątku</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#odlaczanie-watkow-od-obiektow">Odłączanie wątków od obiektów</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#przekazywanie-parametrow-do-watkow">Przekazywanie parametrów do wątków</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-wiszacych-referencji">Problem wiszących referencji</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transferowanie-watkow">Transferowanie wątków</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#destruktor-watku">Destruktor wątku</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#klasa-std-jthread">Klasa std::jthread</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kooperatywne-przerywanie-anulowanie-watkow">Kooperatywne przerywanie (anulowanie) wątków</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#obsluga-wyjatkow-w-watkach">Obsługa wyjątków w wątkach</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#funkcje-i-klasy-pomocnicze-w-bibliotece-standardowej">Funkcje i klasy pomocnicze w bibliotece standardowej</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#std-thread-hardware-concurrency"><code class="docutils literal notranslate"><span class="pre">std::thread::hardware_concurrency()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#przestrzen-nazw-std-this-thread">Przestrzeń nazw <code class="docutils literal notranslate"><span class="pre">std::this_thread</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#identyfikator-watku-std-thread-id">Identyfikator wątku - <code class="docutils literal notranslate"><span class="pre">std::thread::id</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="watki">
+<h1>Wątki<a class="headerlink" href="#watki" title="Permalink to this heading">#</a></h1>
+<section id="zarzadzanie-watkami">
+<h2>Zarządzanie wątkami<a class="headerlink" href="#zarzadzanie-watkami" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Klasa <code class="docutils literal notranslate"><span class="pre">std::thread</span></code> jest odpowiedzialna za tworzenie obiektów, które uruchamiają wątki i zarządzają nimi</p></li>
+<li><p>Każdy obiekt <code class="docutils literal notranslate"><span class="pre">std::thread</span></code> reprezentuje</p>
+<ul>
+<li><p>pojedynczy wątek, utworzony przez system operacyjny</p></li>
+<li><p>lub tzw. wątek pusty (<em>Not-A-Thread</em>)</p>
+<ul>
+<li><p>jest to instancja <code class="docutils literal notranslate"><span class="pre">std::thread</span></code> utworzona konstruktorem domyślnym</p></li>
+<li><p>lub obiekt wątku po wykonaniu na nim operacji <code class="docutils literal notranslate"><span class="pre">std::move()</span></code></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Obiekty wątków nie są kopiowalne (<em>non-copyable</em>)</p></li>
+<li><p>Wątki mogą być jednak przenoszone między obiektami - semantyka przenoszenia (<em>move semantics</em>)</p>
+<ul>
+<li><p>do przenoszenia wątków, które są obiektami <em>l-value</em> należy użyć
+funkcji <code class="docutils literal notranslate"><span class="pre">std::move()</span></code></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="tworzenie-i-uruchamianie-watkow">
+<h2>Tworzenie i uruchamianie wątków<a class="headerlink" href="#tworzenie-i-uruchamianie-watkow" title="Permalink to this heading">#</a></h2>
+<p>Wątek jest uruchamiany przez przekazanie do konstruktora obiektu <code class="docutils literal notranslate"><span class="pre">std::thread</span></code> argumentu w postaci:</p>
+<section id="wskaznika-do-funkcji">
+<h3>Wskaźnika do funkcji<a class="headerlink" href="#wskaznika-do-funkcji" title="Permalink to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">my_task</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;My first thread...&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">thd</span><span class="p">{</span><span class="o">&amp;</span><span class="n">my_task</span><span class="p">};</span>
+<span class="w">    </span><span class="n">thd</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="obiektu-funkcyjnego">
+<h3>Obiektu funkcyjnego<a class="headerlink" href="#obiektu-funkcyjnego" title="Permalink to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BackgroundTask</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="k">operator</span><span class="p">()()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Hello from a thread...&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">BackgroundTask</span><span class="w"> </span><span class="n">task</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">thd_1</span><span class="p">{</span><span class="n">task</span><span class="p">};</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">thd_2</span><span class="p">{</span><span class="n">BackgroundTask</span><span class="p">()};</span>
+<span class="w">    </span><span class="n">thd_1</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<span class="w">    </span><span class="n">thd_2</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="funkcji-lambda">
+<h3>Funkcji lambda<a class="headerlink" href="#funkcji-lambda" title="Permalink to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">thd</span><span class="p">([]</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;My first thread...&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="n">thd</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="dolaczenie-do-watku">
+<h2>Dołączenie do wątku<a class="headerlink" href="#dolaczenie-do-watku" title="Permalink to this heading">#</a></h2>
+<p>Aby poczekać na zakończenie wykonywania zadania przez dany wątek należy wywołać na jego rzecz metodę <code class="docutils literal notranslate"><span class="pre">join()</span></code>.
+Metoda <code class="docutils literal notranslate"><span class="pre">join()</span></code> wstrzymuje wykonanie bieżącego wątku, aż do czasu zakończenia pracy przez wskazany wywołaniem wątek.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">BackgroundTask</span><span class="w"> </span><span class="n">task</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">thd</span><span class="p">(</span><span class="n">task</span><span class="p">);</span>
+<span class="w">    </span><span class="n">thd</span><span class="p">.</span><span class="n">join</span><span class="p">();</span><span class="w"> </span><span class="c1">// wstrzymanie wykonania funkcji main,</span>
+<span class="w">                </span><span class="c1">// aż do czasu zakończenia wątku thd</span>
+
+<span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="o">!</span><span class="n">thd</span><span class="p">.</span><span class="n">joinable</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="odlaczanie-watkow-od-obiektow">
+<h2>Odłączanie wątków od obiektów<a class="headerlink" href="#odlaczanie-watkow-od-obiektow" title="Permalink to this heading">#</a></h2>
+<p>Wątki odłączone od obiektu typu <code class="docutils literal notranslate"><span class="pre">std::thread</span></code> to tzw. <strong>wątki tła</strong> (<em>deamons</em>)</p>
+<p>Aby utworzyć wątek tła należy na rzecz obiektu reprezentującego dany wątek wywołać metodę <code class="docutils literal notranslate"><span class="pre">detach()</span></code></p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="nf">thd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">do_background_work</span><span class="p">);</span>
+
+<span class="n">thd</span><span class="p">.</span><span class="n">detach</span><span class="p">();</span>
+
+<span class="n">assert</span><span class="p">(</span><span class="o">!</span><span class="n">thd</span><span class="p">.</span><span class="n">joinable</span><span class="p">());</span>
+</pre></div>
+</div>
+<p>Zgodnie z wytycznymi <a class="reference external" href="https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#cp26-dont-detach-a-thread">C++ Core Guidelines [CP.26]</a> nie jest zalecane odłączanie wątków za pomocą <code class="docutils literal notranslate"><span class="pre">detach()</span></code>.</p>
+</section>
+<section id="przekazywanie-parametrow-do-watkow">
+<h2>Przekazywanie parametrów do wątków<a class="headerlink" href="#przekazywanie-parametrow-do-watkow" title="Permalink to this heading">#</a></h2>
+<p>Przekazanie parametrów do uruchamianych wątków może odbywać się na trzy sposoby:</p>
+<ul class="simple">
+<li><p>Korzystając z parametrów konstruktora obiektu funkcyjnego przekazywanego do konstruktora obiektu <code class="docutils literal notranslate"><span class="pre">std::thread</span></code></p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">BackgroundTask</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x_</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">y_</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">BackgroundTask</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">x_</span><span class="p">{</span><span class="n">x</span><span class="p">},</span><span class="w"> </span><span class="n">y_</span><span class="p">{</span><span class="n">y</span><span class="p">}</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="k">operator</span><span class="p">()()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">//... implementacja wykorzystuje składowe x_ i y_</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">//...</span>
+<span class="n">BackgroundTask</span><span class="w"> </span><span class="nf">bt</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mf">3.14</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="nf">thd</span><span class="p">(</span><span class="n">bt</span><span class="p">);</span>
+<span class="n">thd</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+</pre></div>
+</div>
+<ul>
+<li><p>Przekazując argumenty jako kolejne (po funkcji lub obiekcie funkcyjnym) parametry konstruktora <code class="docutils literal notranslate"><span class="pre">std::thread</span></code>. Podane argumenty są kopiowane (l-value) lub przenoszone (r-value) do uruchamianego wątku.</p>
+<p>Jeśli wymagane jest przekazanie referencji do funkcji uruchamianej w nowym wątku należy użyć standardowych wraperów referencji <code class="docutils literal notranslate"><span class="pre">std::ref()</span></code> lub <code class="docutils literal notranslate"><span class="pre">std::cref()</span></code>.</p>
+</li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">f1</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">       </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Thread 1 executing&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">       </span><span class="o">++</span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="c1">// increment of local copy</span>
+<span class="w">       </span><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="mi">10</span><span class="p">));</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="w">   </span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">f2</span><span class="p">(</span><span class="kt">int</span><span class="o">&amp;</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span>
+<span class="w">   </span><span class="p">{</span>
+<span class="w">       </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Thread 2 executing</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">       </span><span class="o">++</span><span class="n">n</span><span class="p">;</span>
+<span class="w">       </span><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="mi">10</span><span class="p">));</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="w">   </span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">   </span>
+<span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">thd_1</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// pass by value</span>
+<span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">thd_2</span><span class="p">(</span><span class="n">f2</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">ref</span><span class="p">(</span><span class="n">n</span><span class="p">));</span><span class="w"> </span><span class="c1">// pass by reference</span>
+<span class="w">   </span>
+<span class="w">   </span><span class="n">thd_1</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<span class="w">   </span><span class="n">thd_2</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<span class="w">   </span>
+<span class="w">   </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Final value of n is &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Wykorzystując obiekt domknięcia, który przechwytuje zmienne będące argumentami wywoływanej funkcji</p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">//... processing data</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="n">data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calculated_value</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">//...</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vec</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+
+<span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">thd_1</span><span class="p">{</span><span class="n">proces</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">ref</span><span class="p">(</span><span class="n">vec</span><span class="p">)};</span>
+<span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">thd_2</span><span class="p">{[</span><span class="o">&amp;</span><span class="n">vec</span><span class="p">]</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">process</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">vec</span><span class="p">);</span><span class="w"> </span><span class="p">}};</span>
+
+<span class="n">thd_1</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<span class="n">thd_2</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+</pre></div>
+</div>
+<section id="problem-wiszacych-referencji">
+<h3>Problem wiszących referencji<a class="headerlink" href="#problem-wiszacych-referencji" title="Permalink to this heading">#</a></h3>
+<p>Przy przekazywaniu parametrów do wątków należy unikać wiszących referencji (<em>dangling references</em>) - <a class="reference external" href="https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#cp31-pass-small-amounts-of-data-between-threads-by-value-rather-than-by-reference-or-pointer">C++ Core Guidelines [CP.31]</a>.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Worker</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ref</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">Worker</span><span class="p">(</span><span class="kt">int</span><span class="o">&amp;</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ref</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="k">operator</span><span class="p">()()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">do_something</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="nf">create_thread</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">local_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Worker</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="n">local_value</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">thd</span><span class="p">(</span><span class="n">w</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">thd</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// local_value jest niszczone – referencja do tej zmiennej traci ważność</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="transferowanie-watkow">
+<h2>Transferowanie wątków<a class="headerlink" href="#transferowanie-watkow" title="Permalink to this heading">#</a></h2>
+<p>Obiekty wątków mogą przenoszone zgodnie z zasadami <strong>move semantics</strong>. Aby przenosić wątki między obiektami należy skorzystać z funkcji <code class="docutils literal notranslate"><span class="pre">std::move()</span></code></p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">task</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="cm">/* implementation */</span>
+<span class="p">}</span>
+
+<span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="nf">create_thread</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">thd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">task</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">thd</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Wątki mogą być grupowane i przechowywane w kontenerach standardowych:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="nf">thd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">task</span><span class="p">);</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="o">&gt;</span><span class="w"> </span><span class="n">threads</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="n">threads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">thd</span><span class="p">)</span>
+<span class="n">threads</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_thread</span><span class="p">();</span>
+<span class="n">threads</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">create_thread</span><span class="p">());</span>
+
+<span class="c1">// do not forget to join</span>
+<span class="k">for</span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">thd</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">threads</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">thd</span><span class="p">.</span><span class="n">joinable</span><span class="p">())</span>
+<span class="w">        </span><span class="n">thd</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="destruktor-watku">
+<h2>Destruktor wątku<a class="headerlink" href="#destruktor-watku" title="Permalink to this heading">#</a></h2>
+<p>Destrukcja obiektu wątku jest bezpieczna, jeśli obiekt wątku nie jest skojarzony z wątkiem systemowym.
+W przeciwnym wypadku wywołana jest funkcja <code class="docutils literal notranslate"><span class="pre">std::terminate()</span></code>!!!</p>
+<p>Obiekt wątku nie jest skojarzony z wątkiem systemowym:</p>
+<ul class="simple">
+<li><p>jeśli został utworzony za pomocą konstruktora domyślnego</p></li>
+<li><p>został przeniesiony do innego obiektu - np. jest po wywołaniu <code class="docutils literal notranslate"><span class="pre">std::move()</span></code></p></li>
+<li><p>została wcześniej wywołana operacja <code class="docutils literal notranslate"><span class="pre">join()</span></code></p></li>
+<li><p>została wcześniej wywołana operacja <code class="docutils literal notranslate"><span class="pre">detach()</span></code></p></li>
+</ul>
+<p>Jeśli obiekt wątku jest skojarzony z wątkiem systemowym wywołanie metody <code class="docutils literal notranslate"><span class="pre">joinable()</span></code> zwraca <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Standard C++ zmusza użytkownika wątku do jawnego określenia czy staje się on wątkiem tła, czy też oczekiwane jest zakończenie wykonywania uruchomionego wątku.</p>
+<p>Jawne wykonanie operacji na wątku, które jest wymagane przed wywołaniem destruktora obiektu może w obecności wyjątków doprowadzić do niespodziewanego zakończenia wykonywania programu (poprzez wywołanie <code class="docutils literal notranslate"><span class="pre">std::terminate()</span></code>).</p>
+<p>Sytuacja ta powinna zostać rozwiązana przy pomocy obiektu implementującego technikę RAII. Niestety dopiero C++20 dostarcza odpowiedniej implementacji w postaci klasy <code class="docutils literal notranslate"><span class="pre">std::jthread</span></code>.</p>
+</div>
+</section>
+<section id="klasa-std-jthread">
+<h2>Klasa std::jthread<a class="headerlink" href="#klasa-std-jthread" title="Permalink to this heading">#</a></h2>
+<p>TODO</p>
+</section>
+<section id="kooperatywne-przerywanie-anulowanie-watkow">
+<h2>Kooperatywne przerywanie (anulowanie) wątków<a class="headerlink" href="#kooperatywne-przerywanie-anulowanie-watkow" title="Permalink to this heading">#</a></h2>
+<p>TODO</p>
+</section>
+<section id="obsluga-wyjatkow-w-watkach">
+<h2>Obsługa wyjątków w wątkach<a class="headerlink" href="#obsluga-wyjatkow-w-watkach" title="Permalink to this heading">#</a></h2>
+<p>Jeżeli z funkcji uruchomionej w osobnym wątku wydostanie się wyjątek, zostanie wywołana funkcja <code class="docutils literal notranslate"><span class="pre">std::terminate()</span></code>.</p>
+<p>W celu prawidłowej obsługi wyjątków, należy przechwycić rzucony wyjątek i jeżeli istnieje taka potrzeba przekazać go
+do wątku rodzica wykorzystując klasę <code class="docutils literal notranslate"><span class="pre">std::exception_ptr</span></code>.</p>
+<p>Umożliwia ona przechowanie wskaźnika do wyjątku, który został zgłoszony instrukcją <code class="docutils literal notranslate"><span class="pre">throw</span></code> i przechwycony funkcją <code class="docutils literal notranslate"><span class="pre">std::current_exception()</span></code>. Instancja <code class="docutils literal notranslate"><span class="pre">std::exception_ptr</span></code> może być przekazana do innej funkcji, również takiej, która uruchomiona jest w osobnym wątku. Obsługa przekazanego przez wskaźnik wyjątku jest możliwa przy pomocy funkcji <code class="docutils literal notranslate"><span class="pre">std::rethrow_exception()</span></code>, która powoduje ponowne rzucenie wyjątku.</p>
+<p>Instancje <code class="docutils literal notranslate"><span class="pre">std::exception_ptr</span></code> posiadają następujące cechy:</p>
+<ul class="simple">
+<li><p>domyślnie skonstruowany obiekt <code class="docutils literal notranslate"><span class="pre">std::exception_ptr</span></code> ma wartość <code class="docutils literal notranslate"><span class="pre">nullptr</span></code>.</p></li>
+<li><p>dwa obiekty są uznawane za równe, jeśli są puste lub wskazują na ten sam obiekt wyjątku.</p></li>
+<li><p>instancja <code class="docutils literal notranslate"><span class="pre">std::exception_ptr</span></code> jest konwertowalna do wartości logicznej</p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">my_task</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">exception_ptr</span><span class="o">&amp;</span><span class="w"> </span><span class="n">excpt</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">try</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">may_throw</span><span class="p">();</span>
+
+<span class="w">        </span><span class="c1">// ... </span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">catch</span><span class="p">(...)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">excpt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">current_exception</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span><span class="w">   </span>
+
+<span class="c1">// ...</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">exception_ptr</span><span class="w"> </span><span class="n">thd_exception</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="n">thd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_task</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">ref</span><span class="p">(</span><span class="n">thd_exception</span><span class="p">));</span>
+
+<span class="w">    </span><span class="c1">//...</span>
+
+<span class="w">    </span><span class="n">thd</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">try</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">thd_exception</span><span class="p">)</span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">rethrow_exception</span><span class="p">(</span><span class="n">thd_exception</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">catch</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="o">&amp;</span><span class="w"> </span><span class="n">e</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// ... handling an error</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="funkcje-i-klasy-pomocnicze-w-bibliotece-standardowej">
+<h2>Funkcje i klasy pomocnicze w bibliotece standardowej<a class="headerlink" href="#funkcje-i-klasy-pomocnicze-w-bibliotece-standardowej" title="Permalink to this heading">#</a></h2>
+<section id="std-thread-hardware-concurrency">
+<h3><code class="docutils literal notranslate"><span class="pre">std::thread::hardware_concurrency()</span></code><a class="headerlink" href="#std-thread-hardware-concurrency" title="Permalink to this heading">#</a></h3>
+<p>Statyczna metoda zwracająca ilość dostępnych wątków sprzętowych. Zwykle podawana jest ilość procesorów, rdzeni, itp. Jeżeli informacja nie jest dostępna, to zwracana jest wartość <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;number of cores = &quot;</span>
+<span class="w">              </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="kr">thread</span><span class="o">::</span><span class="n">hardware_concurrency</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>W praktyce często używa się kontenerów wątków o rozmiarze równym ilości wątków sprzętowych:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">hardware_threads_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">(</span><span class="mi">1u</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="o">::</span><span class="n">hardware_concurrency</span><span class="p">());</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="o">&gt;</span><span class="w"> </span><span class="n">threads</span><span class="p">(</span><span class="n">hardware_threads_count</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="przestrzen-nazw-std-this-thread">
+<h3>Przestrzeń nazw <code class="docutils literal notranslate"><span class="pre">std::this_thread</span></code><a class="headerlink" href="#przestrzen-nazw-std-this-thread" title="Permalink to this heading">#</a></h3>
+<p>Przestrzeń nazw <code class="docutils literal notranslate"><span class="pre">std::this_thread</span></code> zawiera zestaw pomocniczych funkcji lub klas:</p>
+<dl class="simple myst">
+<dt><code class="docutils literal notranslate"><span class="pre">sleep_for(const</span> <span class="pre">chrono::duration&lt;Rep,</span> <span class="pre">Period&gt;&amp;</span> <span class="pre">sleep_duration)</span></code></dt><dd><p>wstrzymuje wykonanie bieżącego wątku na (przynajmniej) określony interwał czasu</p>
+</dd>
+</dl>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">std</span><span class="o">::</span><span class="nn">chrono_literals</span><span class="p">;</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Hello waiter&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">high_resolution_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="mi">2</span><span class="n">s</span><span class="p">);</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">high_resolution_clock</span><span class="o">::</span><span class="n">now</span><span class="p">();</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">duration</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">milli</span><span class="o">&gt;</span><span class="w"> </span><span class="n">elapsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">end</span><span class="o">-</span><span class="n">start</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Waited &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">elapsed</span><span class="p">.</span><span class="n">count</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; ms</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sleep_until(const</span> <span class="pre">chrono::time_point&lt;Clock,</span> <span class="pre">Duration&gt;&amp;</span> <span class="pre">sleep_time)</span></code> - blokuje
+wykonanie wątku przynajmniej do podanego jako parametr punktu czasu</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yield()</span></code> - funkcja umożliwiające podjęcie próby wywłaszczenia bieżącego wątku
+i przydzielenia czasu procesora innemu wątkowi</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_id()</span></code> - zwraca obiekt typu <code class="docutils literal notranslate"><span class="pre">std::thread::id</span></code> reprezentujący identyfikator
+bieżącego wątku</p></li>
+</ul>
+</section>
+<section id="identyfikator-watku-std-thread-id">
+<h3>Identyfikator wątku - <code class="docutils literal notranslate"><span class="pre">std::thread::id</span></code><a class="headerlink" href="#identyfikator-watku-std-thread-id" title="Permalink to this heading">#</a></h3>
+<p>Klasa <code class="docutils literal notranslate"><span class="pre">std::thread::id</span></code> jest lekką, trywialnie kopiowalną klasą, która opakowuje unikalny identyfikator wątku. Celem klasy jest umożliwienie wykorzystania identyfikatora
+wątku jako klucza w kontenerach asocjacyjnych (np. <code class="docutils literal notranslate"><span class="pre">std::map</span></code>, <code class="docutils literal notranslate"><span class="pre">std::unordered_map</span></code>).</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">thread</span><span class="o">::</span><span class="n">id</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="n">id</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">id</span><span class="o">&amp;</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">!=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">id</span><span class="o">&amp;</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">&lt;</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">id</span><span class="o">&amp;</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">&gt;</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">id</span><span class="o">&amp;</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">&lt;=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">id</span><span class="o">&amp;</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="k">operator</span><span class="o">&gt;=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">id</span><span class="o">&amp;</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="k">template</span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">charT</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">traits</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="k">friend</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">basic_ostream</span><span class="o">&lt;</span><span class="n">charT</span><span class="p">,</span><span class="w"> </span><span class="n">traits</span><span class="o">&gt;&amp;</span>
+<span class="w">        </span><span class="k">operator</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">basic_ostream</span><span class="o">&lt;</span><span class="n">charT</span><span class="p">,</span><span class="w"> </span><span class="n">traits</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">os</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">id</span><span class="o">&amp;</span><span class="w"> </span><span class="n">x</span><span class="p">);</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Domyślny konstruktor tworzy obiekt identyfikujący tzw. pusty wątek (<em>Not-A-Thread</em>).</p></li>
+<li><p>Obiekty typu <code class="docutils literal notranslate"><span class="pre">thread::id</span></code> są kopiowalne, porównywalne oraz hashowalne.</p>
+<ul>
+<li><p>W klasie zdefiniowany jest pełen zestaw operatorów porównania</p></li>
+<li><p>Biblioteka standardowa definiuje pomocniczą klasę <code class="docutils literal notranslate"><span class="pre">std::hash&lt;std::thread::id&gt;</span></code>, która umożliwia
+przechowanie wątku w kontenerach hashujących (np. <code class="docutils literal notranslate"><span class="pre">unordered_map</span></code>)</p></li>
+</ul>
+</li>
+<li><p>Klasa posiada operator wyjścia do strumienia <code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code> zależny od implementacji.</p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="o">::</span><span class="n">id</span><span class="w"> </span><span class="n">master_thread</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">some_core_part_of_algorithm</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">get_id</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">master_thread</span><span class="p">)</span>
+<span class="w">        </span><span class="n">do_master_thread_work</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">do_common_work</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="multithreading-intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Wprowadzenie do programowania wielowątkowego</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="synchronization.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Synchronizacja wątków</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#zarzadzanie-watkami">Zarządzanie wątkami</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tworzenie-i-uruchamianie-watkow">Tworzenie i uruchamianie wątków</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wskaznika-do-funkcji">Wskaźnika do funkcji</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#obiektu-funkcyjnego">Obiektu funkcyjnego</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#funkcji-lambda">Funkcji lambda</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dolaczenie-do-watku">Dołączenie do wątku</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#odlaczanie-watkow-od-obiektow">Odłączanie wątków od obiektów</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#przekazywanie-parametrow-do-watkow">Przekazywanie parametrów do wątków</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-wiszacych-referencji">Problem wiszących referencji</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transferowanie-watkow">Transferowanie wątków</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#destruktor-watku">Destruktor wątku</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#klasa-std-jthread">Klasa std::jthread</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kooperatywne-przerywanie-anulowanie-watkow">Kooperatywne przerywanie (anulowanie) wątków</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#obsluga-wyjatkow-w-watkach">Obsługa wyjątków w wątkach</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#funkcje-i-klasy-pomocnicze-w-bibliotece-standardowej">Funkcje i klasy pomocnicze w bibliotece standardowej</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#std-thread-hardware-concurrency"><code class="docutils literal notranslate"><span class="pre">std::thread::hardware_concurrency()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#przestrzen-nazw-std-this-thread">Przestrzeń nazw <code class="docutils literal notranslate"><span class="pre">std::this_thread</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#identyfikator-watku-std-thread-id">Identyfikator wątku - <code class="docutils literal notranslate"><span class="pre">std::thread::id</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krystian Piękoś - Infotraining
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
