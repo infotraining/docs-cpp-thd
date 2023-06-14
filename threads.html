@@ -339,8 +339,18 @@ document.write(`
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transferowanie-watkow">Transferowanie wątków</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#destruktor-watku">Destruktor wątku</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#klasa-std-jthread">Klasa std::jthread</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kooperatywne-przerywanie-anulowanie-watkow">Kooperatywne przerywanie (anulowanie) wątków</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#klasa-std-jthread-c-20">Klasa std::jthread (C++20)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#destruktor-jthread">Destruktor jthread</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kooperatywne-przerywanie-anulowanie-watkow">Kooperatywne przerywanie (anulowanie) wątków</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementacja-zadania">Implementacja zadania</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#uruchomienia-zadania-i-jego-anulowanie">Uruchomienia zadania i jego anulowanie</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#std-jthread-internal-stop-state">std::jthread - internal stop-state</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#obsluga-wyjatkow-w-watkach">Obsługa wyjątków w wątkach</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#funkcje-i-klasy-pomocnicze-w-bibliotece-standardowej">Funkcje i klasy pomocnicze w bibliotece standardowej</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#std-thread-hardware-concurrency"><code class="docutils literal notranslate"><span class="pre">std::thread::hardware_concurrency()</span></code></a></li>
@@ -640,13 +650,117 @@ W przeciwnym wypadku wywołana jest funkcja <code class="docutils literal notran
 <p>Sytuacja ta powinna zostać rozwiązana przy pomocy obiektu implementującego technikę RAII. Niestety dopiero C++20 dostarcza odpowiedniej implementacji w postaci klasy <code class="docutils literal notranslate"><span class="pre">std::jthread</span></code>.</p>
 </div>
 </section>
-<section id="klasa-std-jthread">
-<h2>Klasa std::jthread<a class="headerlink" href="#klasa-std-jthread" title="Permalink to this heading">#</a></h2>
-<p>TODO</p>
+<section id="klasa-std-jthread-c-20">
+<h2>Klasa std::jthread (C++20)<a class="headerlink" href="#klasa-std-jthread-c-20" title="Permalink to this heading">#</a></h2>
+<p>Klasa <code class="docutils literal notranslate"><span class="pre">std::jthread</span></code> to ulepszona wersja <code class="docutils literal notranslate"><span class="pre">std::thread</span></code>, która:</p>
+<ul class="simple">
+<li><p>wywołuje operację <code class="docutils literal notranslate"><span class="pre">join()</span></code> w destruktorze</p></li>
+<li><p>obsługuje możliwość kooperatywnego anulowania wątku przez <code class="docutils literal notranslate"><span class="pre">std::stop_token</span></code></p></li>
+</ul>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">safe_join_in_cpp20</span><span class="p">()</span><span class="w"> </span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">jthread</span><span class="w"> </span><span class="n">thd1</span><span class="p">{</span><span class="o">&amp;</span><span class="n">background_work</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hello&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="n">ms</span><span class="p">};</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">jthread</span><span class="w"> </span><span class="n">thd2</span><span class="p">{</span><span class="o">&amp;</span><span class="n">background_work</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Multithreading&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">250</span><span class="n">ms</span><span class="p">};</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="n">may_throw</span><span class="p">();</span><span class="w"> </span>
+<span class="w">    </span>
+<span class="w">    </span><span class="n">thd1</span><span class="p">.</span><span class="n">join</span><span class="p">();</span><span class="w"> </span><span class="c1">// explicit join</span>
+<span class="w">    </span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// implicit join in the destructor for thd2 &amp; thd1 joins in case of exception</span>
+</pre></div>
+</div>
+<section id="destruktor-jthread">
+<h3>Destruktor jthread<a class="headerlink" href="#destruktor-jthread" title="Permalink to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">jthread</span><span class="o">::~</span><span class="n">jthread</span><span class="p">()</span><span class="w"> </span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">joinable</span><span class="p">())</span><span class="w"> </span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">      </span><span class="n">request_stop</span><span class="p">();</span><span class="w"> </span><span class="c1">// cooperative cancelling of the task</span>
+<span class="w">      </span><span class="n">join</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="kooperatywne-przerywanie-anulowanie-watkow">
 <h2>Kooperatywne przerywanie (anulowanie) wątków<a class="headerlink" href="#kooperatywne-przerywanie-anulowanie-watkow" title="Permalink to this heading">#</a></h2>
-<p>TODO</p>
+<ul class="simple">
+<li><p>Model kooperatywnego anulowania zadań może być uniwersalnie stososowany</p>
+<ul>
+<li><p>wątki, korutyny, operacje sieciowe, I/O, itp.</p></li>
+</ul>
+</li>
+<li><p>Nagłówek <code class="docutils literal notranslate"><span class="pre">&lt;stop_token&gt;</span></code></p></li>
+<li><p>Podstawowe typy:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">std::stop_source</span></code> - obiekt <em>źródła</em> - umożliwia zażądania anulowania zadania</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std::stop_token</span></code> - obiekt umożliwiający sprawdzenie, czy zażądano anulowania zadania</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std::stop_callback</span></code> - callback w przypadku anulowania zadania</p></li>
+</ul>
+</li>
+</ul>
+<section id="implementacja-zadania">
+<h3>Implementacja zadania<a class="headerlink" href="#implementacja-zadania" title="Permalink to this heading">#</a></h3>
+<p>Implementując funkcję należy wykorzystać parameter typu <code class="docutils literal notranslate"><span class="pre">std::stop_token</span></code>, przekazany przez wartość:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">background_work</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">stop_token</span><span class="w"> </span><span class="n">token</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">text</span><span class="p">)</span><span class="w"> </span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Thread#&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; started...&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">letter</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">text</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">token</span><span class="p">.</span><span class="n">stop_requested</span><span class="p">())</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Stop has been requested...&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">            </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Thread#&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; cancelled&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">            </span><span class="k">return</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Thread#&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; - &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">letter</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="mi">250</span><span class="n">ms</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Dzięki tokenowi możemy bezpiecznie sprawdzić, czy zażądano przerwania zadania i jeśli tak, to wyjść z funkcji.</p>
+</section>
+<section id="uruchomienia-zadania-i-jego-anulowanie">
+<h3>Uruchomienia zadania i jego anulowanie<a class="headerlink" href="#uruchomienia-zadania-i-jego-anulowanie" title="Permalink to this heading">#</a></h3>
+<p>Do tworzenia tokenów i zgłaszania żądania stopu służy obiekt typu <code class="docutils literal notranslate"><span class="pre">std::stop_source</span></code>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">run_task_and_cancel</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">stop_source</span><span class="w"> </span><span class="n">stop_src</span><span class="p">;</span><span class="w"> </span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">stop_token</span><span class="w"> </span><span class="n">st</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stop_src</span><span class="p">.</span><span class="n">get_token</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">jthread</span><span class="w"> </span><span class="n">thd1</span><span class="p">{</span><span class="o">&amp;</span><span class="n">background_work</span><span class="p">,</span><span class="w"> </span><span class="n">st</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;FIRST_TASK&quot;</span><span class="p">};</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">jthread</span><span class="w"> </span><span class="n">thd2</span><span class="p">{</span><span class="o">&amp;</span><span class="n">background_work</span><span class="p">,</span><span class="w"> </span><span class="n">stop_src</span><span class="p">.</span><span class="n">get_token</span><span class="p">(),</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;SECOND_TASK&quot;</span><span class="p">};</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">this_thread</span><span class="o">::</span><span class="n">sleep_for</span><span class="p">(</span><span class="mi">2</span><span class="n">s</span><span class="p">);</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="n">stop_src</span><span class="p">.</span><span class="n">request_stop</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">//...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<section id="std-jthread-internal-stop-state">
+<h4>std::jthread - internal stop-state<a class="headerlink" href="#std-jthread-internal-stop-state" title="Permalink to this heading">#</a></h4>
+<p>Jeśli nie przekażemy w wywołaniu konstruktora <code class="docutils literal notranslate"><span class="pre">std::jthread</span></code>jawnie tokena (a funkcja go oczekuje), to wykorzystany zostanie wewnętrzny stan obiektu wątku (<em>internal stop-state</em>)</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">background_work</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">stop_token</span><span class="w"> </span><span class="n">st</span><span class="p">,</span><span class="w"> </span>
+<span class="w">                     </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">text</span><span class="p">);</span>
+
+<span class="c1">//...                     </span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">jthread</span><span class="w"> </span><span class="n">thd1</span><span class="p">{</span><span class="o">&amp;</span><span class="n">background_work</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;TASK&quot;</span><span class="p">};</span><span class="w">     </span><span class="c1">// missing stop-token</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">stop_source</span><span class="w"> </span><span class="n">stop_src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">thd1</span><span class="p">.</span><span class="n">get_stop_source</span><span class="p">();</span><span class="w"> </span><span class="c1">// get stop_source from jthread</span>
+<span class="n">std</span><span class="o">::</span><span class="n">stop_token</span><span class="w"> </span><span class="n">st</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">thd1</span><span class="p">.</span><span class="n">get_stop_token</span><span class="p">();</span>
+
+<span class="n">stop_src</span><span class="p">.</span><span class="n">request_stop</span><span class="p">();</span><span class="w"> </span><span class="c1">// or thd1.request_stop();</span>
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 <section id="obsluga-wyjatkow-w-watkach">
 <h2>Obsługa wyjątków w wątkach<a class="headerlink" href="#obsluga-wyjatkow-w-watkach" title="Permalink to this heading">#</a></h2>
@@ -873,8 +987,18 @@ przechowanie wątku w kontenerach hashujących (np. <code class="docutils litera
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transferowanie-watkow">Transferowanie wątków</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#destruktor-watku">Destruktor wątku</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#klasa-std-jthread">Klasa std::jthread</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kooperatywne-przerywanie-anulowanie-watkow">Kooperatywne przerywanie (anulowanie) wątków</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#klasa-std-jthread-c-20">Klasa std::jthread (C++20)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#destruktor-jthread">Destruktor jthread</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kooperatywne-przerywanie-anulowanie-watkow">Kooperatywne przerywanie (anulowanie) wątków</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementacja-zadania">Implementacja zadania</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#uruchomienia-zadania-i-jego-anulowanie">Uruchomienia zadania i jego anulowanie</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#std-jthread-internal-stop-state">std::jthread - internal stop-state</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#obsluga-wyjatkow-w-watkach">Obsługa wyjątków w wątkach</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#funkcje-i-klasy-pomocnicze-w-bibliotece-standardowej">Funkcje i klasy pomocnicze w bibliotece standardowej</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#std-thread-hardware-concurrency"><code class="docutils literal notranslate"><span class="pre">std::thread::hardware_concurrency()</span></code></a></li>
