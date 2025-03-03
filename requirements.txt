@@ -1,0 +1,4 @@
+jupyter-book==1.0.3
+pytest
+black
+pydata-sphinx-theme==0.15.3
