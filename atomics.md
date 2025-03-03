@@ -52,9 +52,10 @@ Mechanizm gwarantujący spójność danych w cache'ach może czasami znacznie sp
 
     * Przykład: A zwalnia muteks m, B następnie pozyskuje muteks m
 
-      ```{image} ./_images/happens-before-mutex.svg
+      ```{image} ./_images/happens-before-mutex.pdf
       :alt: happens-before
       :width: 400px
+      :height: 450px
       :align: center
       ```
 
