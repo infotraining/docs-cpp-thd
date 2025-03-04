@@ -1,20 +1,40 @@
 # Synchronizacja wątków
 
+```{epigraph}
+The problem with shared mutable state is that when you share, you mutate, and when you mutate, you need locks, and when you have locks, you get problems.
+
+-- Joe Armstrong (creator of Erlang)
+```
+
 ## Poprawność programów współbieżnych
+
+**Poprawność współbieżna** (*Concurrent Correctness*) odnosi się do właściwości i atrybutów, które zapewniają, że system współbieżny (system, w którym wiele procesów lub wątków jest wykonywanych jednocześnie) działa zgodnie z oczekiwaniami i produkuje poprawne wyniki.
 
 Właściwości związane z poprawnością programu współbieżnego:
 
-* **Właściwość żywotności** - program współbieżny jest żywotny, jeśli zapewnia, że każde pożądane zdarzenie w końcu zajdzie.
+1. **Bezpieczeństwo** (*Safety*) - program współbieżny jest bezpieczny, jeśli nigdy nie doprowadza do niepożądanego stanu.
+  
+   * **Wzajemne wykluczanie** (*Mutual Exclusion*) - zapewnia, że sekcje krytyczne kodu nie są wykonywane jednocześnie przez więcej niż jeden wątek lub proces.
+  
+   * **Race Condition** - sytuacja, w której wynik programu zależy od kolejności wykonania instrukcji przez wątki.
 
-  * Żywotność może być naruszona poprzez:
-    * deadlock
-    * zagłodzenie wątków
-    * livelock
+2. **Żywotność** (*Liveness*) - program współbieżny jest żywotny, jeśli zapewnia, że każde pożądane zdarzenie w końcu zajdzie.
 
-* **Właściwość bezpieczeństwa** - program współbieżny jest bezpieczny, jeśli nigdy nie doprowadza do niepożądanego stanu.  
+   * **Deadlock-Free** - zapewnia, że nie ma sytuacji, w której dwa lub więcej wątków czeka na siebie nawzajem na zwolnienie zasobów, powodując zablokowanie systemu.
+  
+   * **Livelock-Free** - zapewnia, że wątki nie zmieniają stale stanów bez robienia żadnych postępów.
 
-  .. - problem wzajemnego wykluczania - dwa współbieżne procesy nie mogą znaleźć się w tym samym czasie w tej samej sekcji krytycznej
-  .. - problem producentów i konsumentów - każda porcja danych zostanie skonsumowana w kolejności ich produkowania.
+   * **Starvation-Free** - zapewnia, że wszystkie wątki lub procesy mają szansę na wykonanie i nie są nieskończenie długo pozbawione zasobów.
+
+3. **Sprawiedliwość** (*Fairness*) - zapewnia, że wszystkie procesy lub wątki są traktowane jednakowo i mają równy dostęp do zasobów, zapobiegając scenariuszom, w których niektóre procesy otrzymują więcej zasobów niż inne.
+
+4. **Deterministyczność** (*Determinism*) - program współbieżny jest deterministyczny, jeśli zawsze zwraca ten sam wynik dla tych samych danych wejściowych, niezależnie od tego, w jakiej kolejności wątki są wykonane.
+
+5. **Spójność** (*Consistency*) - zapewnia, że wyniki operacji wykonywanych przez wątki są zgodne z oczekiwaniami, nawet w obliczu współbieżności.
+
+6. **Atomowość** (*Atomicity*) - zapewnia, że operacje lub transakcje są zakończone jako pojedyncza, niepodzielna jednostka, zapobiegając częściowym aktualizacjom lub niespójnym stanom.
+
+7. **Izolacja** (*Isolation*) - zapewnia, że operacje współbieżne są izolowane od siebie, zapobiegając interferencji i zapewniając, że każda operacja wydaje się być wykonana w izolacji.
 
 Niepoprawnie zaprojektowane zależności między wątkami często naruszają integralność i żywotność danych.
 
@@ -25,21 +45,34 @@ Bezpieczeństwo wątków w programowaniu współbieżnym (*thread-safety*) jest 
 Segment kodu jest **"thread-safe"** jeśli manipuluje współdzielonym stanem w taki sposób, że gwarantowane jest bezpieczne (prawidłowe) wykonanie go przez wiele wątków pracujących w tym samym czasie.
 Oznacza to, że kod "thread-safe" musi w odpowiedni sposób chronić współdzielony między wątkami stan programu.
 
+#### Kod unsafe
+
 Kod "unsafe" to kod, który:
 
 * nieprawidłowo chroni współdzielone dane oraz zasoby (*shared state*)
 * zależy od przechowywanego między wywołaniami stanu (np. funkcja ``strtok()``, ``rand()``)
 * wywołuje kod, który jest "unsafe"
 
-Sposoby osiągnięcia bezpieczeństwa wielowątkowego:
+#### Kod thread-safe
 
-* Stosowanie jawnego blokowanie (*Explicit Locking*) - muteksów, do ochrony danych współdzielonych. Operacje synchronizacji mogą znacznie spowolnić działanie programu.
-* Niezmienność danych (*Immutability*) - stan obiektu nie może być zmieniony po jego utworzeniu. Obiekty mogą być bezpiecznie współdzielone, jeśli wątki mogą jedynie odczytywać ich stan.
-* Atomowość (*Atomicity*) - stosowanie zmiennych i flag atomowych
+Kod "thread-safe" to kod, który zapewnia poprawność współbieżną. 
+
+Bezpieczeństwo wątków można osiągnąć za pomocą różnych technik, takich jak:
+
+* **Niezmienność danych** (*Immutability*) - stan obiektu nie może być zmieniony po jego utworzeniu. Obiekty mogą być bezpiecznie współdzielone, jeśli wątki mogą jedynie odczytywać ich stan.
+* **Jawne blokowanie** (*Explicit Locking*) - stosowanie muteksów lub semaforów do ochrony danych współdzielonych. Operacje synchronizacji mogą znacznie spowolnić działanie programu.
+* **Atomowość** (*Atomicity*) - stosowanie zmiennych i flag atomowych
 
 ## Współdzielenie danych
 
-* **Shared mutable state is an evil of all multithreading**
+```{epigraph}
+Shared mutable state is the root of all evil.
+
+-- Edgar Dijkstra
+```
+
+### const - immutable state
+
 * Zmienne, które są niezmienne (*immutable*) mogą być bezpiecznie współdzielone bez blokad
 * Modyfikator `const` oznacza od C++11 *thread-safe*
 
@@ -67,12 +100,33 @@ Dla kontenerów STL oraz adapterów kontenerów:
 
 Dla formatowanych operacji wejścia oraz wyjścia na obiektach strumieni standardowych (``cin``, ``cout``, ``cerr``, ...)
 
-* Dozwolony jest dostęp współbieżny
-* Może wystąpić przemieszanie kolejności znaków (*interleaved characters*)
+* Dozwolony jest dostęp współbieżny (z wielu wątków)
+* Może wystąpić przemieszanie kolejności znaków (*interleaved characters*) - jeśli wiele wątków zapisuje do jednego strumienia `std::cout` jednocześnie, wynik może być nieprzewidywalny
+* Standardowe strumienie są buforowane - użycie `std::flush` oraz `std::endl` wymusza opóżnienie buforów i zapis do strumienia
 
 ##### Synchronizowane strumienie - C++20
 
-TODO
+Od C++20 można użyć strumieni synchronizowanych, które zapewniają bezpieczny dostęp do strumieni standardowych z wielu wątków. 
+
+Klasa `std::osyncstream` zapewnia synchronizację dostępu do strumienia.
+
+Może być używana jako nazwana zmienna - zapisy są buforowane i opróżniane w momencie wywołania destruktora lub metody `emit()`.
+
+```c++
+{
+    std::osyncstream safe_out(std::cout); // synchronized wrapper for std::cout
+    safe_out << "Hello, ";
+    safe_out << "World!";
+    safe_out << std::endl; // flush is noted, but not yet performed
+    safe_out << "and more!\n";
+} // characters are transferred and std::cout is flushed
+```
+
+lub jako tymczasowy obiekt opakowujący i synchronizujący strumień:
+
+```c++
+std::osyncstream(std::cout) << "Hello, " << "World!" << '\n';
+```
 
 ## Jawne wykluczanie (*Explicit Locking*)
 

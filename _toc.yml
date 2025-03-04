@@ -1,5 +1,5 @@
 format: jb-article
-root: intro
+root: title
 sections:
   - file: multithreading-intro
   - file: threads
