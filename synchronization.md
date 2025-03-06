@@ -137,19 +137,19 @@ właściwość wzajemnego wykluczenia.
 
 Standardową realizacją wzajemnego wykluczenia jest wykorzystanie obiekt blokady (muteksu) zawierającego operacje:
 
-* ``lock()``
-* ``unlock()``
+* `lock()`
+* `unlock()`
 
 Wątek
 
-* pozyskuje blokadę (blokuje), kiedy wywołuję metodę ``lock()``
-* zwalnia blokadę (odblokowuje), gdy wywołuje metodę ``unlock()``
+* pozyskuje blokadę (blokuje), kiedy wywołuję metodę `lock()`
+* zwalnia blokadę (odblokowuje), gdy wywołuje metodę `unlock()`
 
 Wątek jest prawidłowo skonstruowany, jeżeli spełnia poniższe warunki:
 
 * Każda sekcja krytyczna jest skojarzona z niepowtarzalnym obiektem blokady
-* Wątek, próbując wejść do sekcji krytycznej, wywołuje metodę ``lock()`` tego obiektu
-* Wątek wychodząc z sekcji krytycznej, wywołuje metodę ``unlock()``
+* Wątek, próbując wejść do sekcji krytycznej, wywołuje metodę `lock()` tego obiektu
+* Wątek wychodząc z sekcji krytycznej, wywołuje metodę `unlock()`
 
 ### Podstawowe obiekty blokad
 
@@ -172,51 +172,51 @@ Muteksy zaimplementowane w bibliotece standardowej C++ korzystają z następują
 * TimedLockable
 * SharedLockable
 
-### Koncepty BasicLockable, Lockable i klasa ``std::mutex``
+### Koncepty BasicLockable, Lockable i klasa `std::mutex`
 
-Koncept ``BasicLockable`` modeluje właściwość wzajemnego wykluczenia. Typ ``L`` jest zgodny z wymaganiami
-konceptu ``BasicLockable`` gdy w interfejsie posiada metody:
+Koncept `BasicLockable` modeluje właściwość wzajemnego wykluczenia. Typ ``L`` jest zgodny z wymaganiami
+konceptu `BasicLockable` gdy w interfejsie posiada metody:
 
 * ``void lock()`` - bieżący wątek jest wstrzymany, aż do momentu pozyskania blokady
 * ``void unlock()`` - jeżeli bieżący wątek jest posiadaczem blokady, to następuje jej zwolnienie
 
-Koncept ``Lockable`` rozszerza koncept ``BasicLockable`` o wymóg posiadania metody:
+Koncept `Lockable` rozszerza koncept `BasicLockable` o wymóg posiadania metody:
 
 * ``bool try_lock()`` - próba pozyskania blokady bez wstrzymywania bieżącego wątku. Zwraca ``true`` jeśli blokada została pozyskana, w przeciwnym wypadku zwraca``false``.
 
 #### `std::mutex`
 
-Klasa ``std::mutex`` implementuje koncept *Lockable* zapewniając podstawowy mechanizm synchronizacji, który może być użyty do implementacji
+Klasa `std::mutex` implementuje koncept *Lockable* zapewniając podstawowy mechanizm synchronizacji, który może być użyty do implementacji
 bezpiecznego dostępu do współdzielonego zasobu.
 
-* Wywołujący wątek posiada muteks od momentu udanego wywołania metody ``lock()`` lub ``try_lock()`` do wywołanie metody ``unlock()``.
-* Jeśli wątek posiada muteks, wszystkie inne wątki wywołujące ``lock()`` będą blokowane lub zwrócą ``false`` po wywołaniu ``try_lock()``
-* Wywołujący wątek nie może posiadać muteksu przed wywołaniem  ``lock()`` lub ``try_lock()`` - ``std::mutex`` implementuje nie-rekursywną wersję muteksu.
+* Wywołujący wątek posiada muteks od momentu udanego wywołania metody `lock()` lub `try_lock()` do wywołanie metody `unlock()`.
+* Jeśli wątek posiada muteks, wszystkie inne wątki wywołujące `lock()` będą blokowane lub zwrócą ``false`` po wywołaniu `try_lock()`
+* Wywołujący wątek nie może posiadać muteksu przed wywołaniem  `lock()` lub `try_lock()` - `std::mutex` implementuje nie-rekursywną wersję muteksu.
 
-#### ``std::recursive_mutex``
+#### `std::recursive_mutex`
 
-Klasa ``std::recursive_mutex`` implementuje rekursywną wersję konceptu ``Lockable``. Ten sam wątek może wielokrotnie pozyskać muteks poprzez wywołanie
-metody ``lock()`` lub ``try_lock()``. Aby zwolnić muteks wątek musi odpowiednią ilość razy wywołać ``unlock()``.
+Klasa `std::recursive_mutex` implementuje rekursywną wersję konceptu `Lockable`. Ten sam wątek może wielokrotnie pozyskać muteks poprzez wywołanie
+metody `lock()` lub `try_lock()`. Aby zwolnić muteks wątek musi odpowiednią ilość razy wywołać `unlock()`.
 
-Maksymalny poziom rekursji dla obiektu ``std::recursive_mutex`` nie jest zdefiniowany, ale po przekroczeniu tej wartości:
+Maksymalny poziom rekursji dla obiektu `std::recursive_mutex` nie jest zdefiniowany, ale po przekroczeniu tej wartości:
 
-* z metody ``lock()`` rzucony zostanie wyjątek ``std::system_error``
-* metoda ``try_lock()`` zwróci ``false``
+* z metody `lock()` rzucony zostanie wyjątek ``std::system_error``
+* metoda `try_lock()` zwróci ``false``
 
-### TimedLockable i klasa ``std::timed_mutex``
+### TimedLockable i klasa `std::timed_mutex`
 
-Koncept TimedLockable wzbogaca koncept ``Lockable`` o metody umożliwiające zdefiniowanie maksymalnego czasu oczekiwania na pozyskanie blokady przez wątek
+Koncept TimedLockable wzbogaca koncept `Lockable` o metody umożliwiające zdefiniowanie maksymalnego czasu oczekiwania na pozyskanie blokady przez wątek
 
 * ``bool try_lock_until(abs_time)``
 * ``bool try_lock_for(rel_time)``
 
-Implementacje w bibliotece standardowej - ``std::timed_mutex`` oraz ``std::recursive_timed_mutex``.
+Implementacje w bibliotece standardowej - `std::timed_mutex` oraz `std::recursive_timed_mutex`.
 
 ## Blokady współdzielone (C++14)
 
 Blokady współdzielone wprowadzone są w standardzie C++14.
 
-Muteksy implementujące koncepty ``Lockable`` oraz ``TimedLockable`` szeregują odwołania do zasobów, lecz nie rozróżniają dostępów modyfikujących od niemodyfikujących.
+Muteksy implementujące koncepty `Lockable` oraz ``TimedLockable`` szeregują odwołania do zasobów, lecz nie rozróżniają dostępów modyfikujących od niemodyfikujących.
 
 Odczyt danych współdzielonych:
 
@@ -227,28 +227,28 @@ Przed podjęciem próby zapisu danych współdzielonych należy pozyskać blokad
 
 ### Koncept SharedLockable
 
-Koncept SharedLockable rozszerza koncept ``Lockable`` o możliwość pozyskiwania blokad współdzielonych (*shared ownership*) przy pomocy metod:
+Koncept SharedLockable rozszerza koncept `Lockable` o możliwość pozyskiwania blokad współdzielonych (*shared ownership*) przy pomocy metod:
 
-* ``void lock_shared()``
-* ``bool try_lock_shared()``
-* ``bool try_lock_shared_for(rel_time)``
-* ``bool try_lock_shared_until(abs_time)``
-* ``void unlock_shared()``
+* `void lock_shared()`
+* `bool try_lock_shared()`
+* `bool try_lock_shared_for(rel_time)`
+* `bool try_lock_shared_until(abs_time)`
+* `void unlock_shared()`
 
-Implementacja - ``std::shared_mutex``
+Implementacja - `std::shared_mutex`
 
-### Klasa ``std::shared_mutex`` (C++17)
+### Klasa `std::shared_mutex` (C++17)
 
-Blokady współdzielone są implementowane przez klasę ``std::shared_mutex``
+Blokady współdzielone są implementowane przez klasę `std::shared_mutex`
 
 Do pozyskania wyłącznej blokady przed rozpoczęciem operacji zapisu należy użyć:
 
-* ``std::lock_guard<std::shared_mutex>``
-* ``std::unique_lock<std::shared_mutex>``
+* `std::lock_guard<std::shared_mutex>`
+* `std::unique_lock<std::shared_mutex>`
 
 Do pozyskiwania współdzielonych blokad w trakcie czytania danych należy użyć:
 
-* ``std::shared_lock<std::shared_mutex>``
+* `std::shared_lock<std::shared_mutex>`
 
 ```c++
 int slots[size];
@@ -278,12 +278,12 @@ void writer()
 
 Zarządzanie blokadami (obiektami muteksów) odbywa się za pomocą następujących klas:
 
-* ``lock_guard<Mutex>``
-* ``unique_lock<Mutex>``
-* ``shared_lock<Mutex>`` (C++14)
+* ``std::lock_guard<Mutex>``
+* ``std::unique_lock<Mutex>``
+* ``std::shared_lock<Mutex>`` (C++14)
 
 Wszystkie klasy zarządzające blokadami implementują mechanizm *RAII* gwarantujący zwolnienie posiadanej przez wątek blokady w przypadku zgłoszenia sytuacji wyjątkowej.
-W destruktorze menadżerów blokad wywoływana jest metoda ``unlock()``.
+W destruktorze menadżerów blokad wywoływana jest metoda `unlock()`.
 
 ### Klasa ``std::lock_guard<Mutex>``
 
@@ -315,8 +315,8 @@ private:
 
 ``std::lock_guard`` jest najprostszym managerem blokad:
 
-* konstruktor pozyskuje blokadę wywołując na rzecz muteksu przekazanego przez referencję jako argument metodę ``lock()``
-* destruktor zwalnia blokadę wywołując ``unlock()``
+* konstruktor pozyskuje blokadę wywołując na rzecz muteksu przekazanego przez referencję jako argument metodę `lock()`
+* destruktor zwalnia blokadę wywołując `unlock()`
 * przeciążony konstruktor przyjmujący jako drugi parametr  obiekt typu ``std::adopt_lock_t`` umożliwia
   adaptowanie, tj. przejęcie prawa własności i tym samym odpowiedzialności za zwolnienie pozyskanej już wcześniej blokady
 
@@ -354,7 +354,7 @@ Jeśli instancja managera ``std::unique_lock<>`` posiada blokadę:
 
 * metoda ``mutex()`` zwraca wskaźnik do muteksu realizującego blokadę
 * metoda ``owns_lock()`` zwraca wartość ``true``
-* w momencie niszczenia obiektu destruktor wywoła metodę ``unlock()`` na obiekcie muteksu
+* w momencie niszczenia obiektu destruktor wywoła metodę `unlock()` na obiekcie muteksu
 
 Opóźnione pozyskiwanie blokady jest możliwe przy pomocy konstruktora ``std::shared_lock(Lockable& m, std::defer_lock_t)``.
 Po jego wywołaniu:
@@ -366,10 +366,10 @@ Adaptowanie pozyskanej przez wątek blokady - konstruktor ``unique_lock(Lockable
 
 Nieblokujące próby pozyskania blokady - ``unique_lock(Lockable & m,std::try_to_lock_t)``
 
-* w konstruktorze wywoływana jest dla muteksu nieblokująca metoda ``try_lock()``
+* w konstruktorze wywoływana jest dla muteksu nieblokująca metoda `try_lock()`
 * jeśli blokada zostanie pozyskana metoda ``owns_lock()`` zwraca ``true``, w przeciwnym wypadku zwraca ``false``
 
-Jeśli jako parametr szablonu ``unique_lock<Mutex>`` zostanie przekazany typ muteksu implementujący koncept TimedLockable (np. ``std::timed_mutex``) możliwe jest blokujące pozyskiwanie blokad:
+Jeśli jako parametr szablonu ``unique_lock<Mutex>`` zostanie przekazany typ muteksu implementujący koncept TimedLockable (np. `std::timed_mutex`) możliwe jest blokujące pozyskiwanie blokad:
 
 * albo przez dany czas
 * albo do określonego punktu w czasie
@@ -488,18 +488,26 @@ bool X::operator< (const X& other)
 
     std::lock(l1, l2); // avoiding deadlock
     
-    return some_data < other.some_data;
+    return some_data_ < other.some_data_;
 }
 ```
 
 Istnieje możliwość skonstruowania blokady typu ``std::unique_lock<>`` bez blokowania muteksu za pomocą parametru ``std::defer_lock``.
-Pozwala to uniknąć zakleszczeń dla blokad uzyskiwanych jednocześnie. Działa na każdym obiekcie implementującym koncept ``Lockable``.
+Pozwala to uniknąć zakleszczeń dla blokad uzyskiwanych jednocześnie. Działa na każdym obiekcie implementującym koncept `Lockable`.
 
 Wciąż może istnieć zagrożenie zakleszczeniem, jeśli blokady są pozyskiwane oddzielnie. Aby zminimalizować ryzyko należy pozyskiwać blokady zawsze w tej samej kolejności.
 
-#### Klasa `std::scoped_lock` - C++20
+#### Klasa `std::scoped_lock` - C++17
 
-TODO
+`std::scoped_lock` to klasa wprowadzona w C++17, która umożliwia wygodne zarządzanie wieloma mutexami w bezpieczny i efektywny sposób. Jest zaprojektowana tak, aby obsługiwać wiele mutexów i zapewnić, że wszystkie zostaną poprawnie zablokowane i odblokowane, unikając zakleszczeń.
+
+```c++
+bool X::operator< (const X& other)
+{
+    std::scoped_lock l(mtx_, other.mtx_);
+    return some_data_ < other.some_data_;
+}
+```
 
 ## Synchronizacja za pomocą zdarzeń
 
@@ -582,12 +590,12 @@ Mechanizm taki jest wykorzystany w implementacji *zmiennych warunkowych* (**cond
 
 Biblioteka standardowa C++11 dostarcza dwie implementacje zmiennych warunkowych:
 
-* ``std::condition_variable``
-* ``std::condition_variable_any``
+* `std::condition_variable`
+* `std::condition_variable_any`
 
 Obie klasy współpracują z muteksem, aby zapewnić prawidłową synchronizację wątków:
 
-* ``conditional_variable`` współpracuje tylko z typem ``std::mutex``
+* ``conditional_variable`` współpracuje tylko z typem `std::mutex`
 * ``conditional_variable_any`` współpracuje z dowolnym typem muteksu
 
 ```c++
@@ -624,7 +632,7 @@ public:
 };
 ```
 
-Można uprościć kod oczekujący na spełnienie warunku korzystając z przeciążonej wersji metody ``wait(lock_type& lock, predicate_type pred)`` przyjmującej jako argument predykat.
+Można uprościć kod oczekujący na spełnienie warunku korzystając z przeciążonej wersji metody `wait(lock_type& lock, predicate_type pred)` przyjmującej jako argument predykat.
 
 Predykat może być zdefiniowany jako:
 
@@ -643,8 +651,8 @@ void process_data()
 
 Powiadomienie o zdarzeniu może zostać zrealizowane przy pomocy dwóch metod:
 
-* ``void notify_one()`` – odblokowuje jeden z wątków znajdujących się w stanie oczekiwania po uprzednim wywołaniu na obiekcie zmiennej warunkowej metody wait()
-* ``void notify_all()`` – odblokowuje wszystkie wątki znajdujące się w stanie oczekiwania
+* `void notify_one()` – odblokowuje jeden z wątków znajdujących się w stanie oczekiwania po uprzednim wywołaniu na obiekcie zmiennej warunkowej metody `wait()`
+* `void notify_all()` – odblokowuje wszystkie wątki znajdujące się w stanie oczekiwania
 
 #### Zmienne atomowe - C++20
 
