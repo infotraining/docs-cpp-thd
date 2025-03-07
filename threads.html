@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="./" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Wątki &#8212; Programowanie wielowątkowe w C++</title>
   
@@ -15,53 +14,50 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=576ba08b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/clipboard.min.js"></script>
-    <script src="_static/copybutton.js"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js"></script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="_static/design-tabs.js"></script>
-    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
-const thebe_selector = ".thebe,.cell"
-const thebe_selector_input = "pre"
-const thebe_selector_output = ".output, .cell_output"
-</script>
-    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'threads';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -76,19 +72,23 @@ const thebe_selector_output = ".output, .cell_output"
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -110,12 +110,20 @@ const thebe_selector_output = ".output, .cell_output"
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -130,9 +138,11 @@ const thebe_selector_output = ".output, .cell_output"
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
         <div class="sidebar-primary-item">
+
   
 
-<a class="navbar-brand logo" href="intro.html">
+<a class="navbar-brand logo" href="multithreading-cpp.html">
+  
   
   
   
@@ -142,17 +152,28 @@ const thebe_selector_output = ".output, .cell_output"
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="Programowanie wielowątkowe w C++ - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Programowanie wielowątkowe w C++ - Home"/>`);</script>
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
-                <a class="reference internal" href="intro.html">
+                <a class="reference internal" href="multithreading-cpp.html">
                     Programowanie wielowątkowe w C++
                 </a>
             </li>
@@ -178,7 +199,7 @@ const thebe_selector_output = ".output, .cell_output"
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -187,14 +208,14 @@ const thebe_selector_output = ".output, .cell_output"
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
       
-        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
   <span class="fa-solid fa-bars"></span>
-</label></div>
+</button></div>
       
     </div>
   
@@ -284,26 +305,28 @@ const thebe_selector_output = ".output, .cell_output"
 </button>
 
 
+
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script>
 
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
   </button>
 `);
 </script>
-<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
-</label>
+</button>
 </div></div>
       
     </div>
@@ -367,12 +390,12 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="watki">
-<h1>Wątki<a class="headerlink" href="#watki" title="Permalink to this heading">#</a></h1>
+<h1>Wątki<a class="headerlink" href="#watki" title="Link to this heading">#</a></h1>
 <section id="zarzadzanie-watkami">
-<h2>Zarządzanie wątkami<a class="headerlink" href="#zarzadzanie-watkami" title="Permalink to this heading">#</a></h2>
+<h2>Zarządzanie wątkami<a class="headerlink" href="#zarzadzanie-watkami" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Klasa <code class="docutils literal notranslate"><span class="pre">std::thread</span></code> jest odpowiedzialna za tworzenie obiektów, które uruchamiają wątki i zarządzają nimi</p></li>
 <li><p>Każdy obiekt <code class="docutils literal notranslate"><span class="pre">std::thread</span></code> reprezentuje</p>
@@ -396,10 +419,10 @@ funkcji <code class="docutils literal notranslate"><span class="pre">std::move()
 </ul>
 </section>
 <section id="tworzenie-i-uruchamianie-watkow">
-<h2>Tworzenie i uruchamianie wątków<a class="headerlink" href="#tworzenie-i-uruchamianie-watkow" title="Permalink to this heading">#</a></h2>
+<h2>Tworzenie i uruchamianie wątków<a class="headerlink" href="#tworzenie-i-uruchamianie-watkow" title="Link to this heading">#</a></h2>
 <p>Wątek jest uruchamiany przez przekazanie do konstruktora obiektu <code class="docutils literal notranslate"><span class="pre">std::thread</span></code> argumentu w postaci:</p>
 <section id="wskaznika-do-funkcji">
-<h3>Wskaźnika do funkcji<a class="headerlink" href="#wskaznika-do-funkcji" title="Permalink to this heading">#</a></h3>
+<h3>Wskaźnika do funkcji<a class="headerlink" href="#wskaznika-do-funkcji" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
 
@@ -417,7 +440,7 @@ funkcji <code class="docutils literal notranslate"><span class="pre">std::move()
 </div>
 </section>
 <section id="obiektu-funkcyjnego">
-<h3>Obiektu funkcyjnego<a class="headerlink" href="#obiektu-funkcyjnego" title="Permalink to this heading">#</a></h3>
+<h3>Obiektu funkcyjnego<a class="headerlink" href="#obiektu-funkcyjnego" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
 
@@ -442,7 +465,7 @@ funkcji <code class="docutils literal notranslate"><span class="pre">std::move()
 </div>
 </section>
 <section id="funkcji-lambda">
-<h3>Funkcji lambda<a class="headerlink" href="#funkcji-lambda" title="Permalink to this heading">#</a></h3>
+<h3>Funkcji lambda<a class="headerlink" href="#funkcji-lambda" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
 
@@ -456,7 +479,7 @@ funkcji <code class="docutils literal notranslate"><span class="pre">std::move()
 </section>
 </section>
 <section id="dolaczenie-do-watku">
-<h2>Dołączenie do wątku<a class="headerlink" href="#dolaczenie-do-watku" title="Permalink to this heading">#</a></h2>
+<h2>Dołączenie do wątku<a class="headerlink" href="#dolaczenie-do-watku" title="Link to this heading">#</a></h2>
 <p>Aby poczekać na zakończenie wykonywania zadania przez dany wątek należy wywołać na jego rzecz metodę <code class="docutils literal notranslate"><span class="pre">join()</span></code>.
 Metoda <code class="docutils literal notranslate"><span class="pre">join()</span></code> wstrzymuje wykonanie bieżącego wątku, aż do czasu zakończenia pracy przez wskazany wywołaniem wątek.</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span>
@@ -473,7 +496,7 @@ Metoda <code class="docutils literal notranslate"><span class="pre">join()</span
 </div>
 </section>
 <section id="odlaczanie-watkow-od-obiektow">
-<h2>Odłączanie wątków od obiektów<a class="headerlink" href="#odlaczanie-watkow-od-obiektow" title="Permalink to this heading">#</a></h2>
+<h2>Odłączanie wątków od obiektów<a class="headerlink" href="#odlaczanie-watkow-od-obiektow" title="Link to this heading">#</a></h2>
 <p>Wątki odłączone od obiektu typu <code class="docutils literal notranslate"><span class="pre">std::thread</span></code> to tzw. <strong>wątki tła</strong> (<em>deamons</em>)</p>
 <p>Aby utworzyć wątek tła należy na rzecz obiektu reprezentującego dany wątek wywołać metodę <code class="docutils literal notranslate"><span class="pre">detach()</span></code></p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="w"> </span><span class="nf">thd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">do_background_work</span><span class="p">);</span>
@@ -486,7 +509,7 @@ Metoda <code class="docutils literal notranslate"><span class="pre">join()</span
 <p>Zgodnie z wytycznymi <a class="reference external" href="https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#cp26-dont-detach-a-thread">C++ Core Guidelines [CP.26]</a> nie jest zalecane odłączanie wątków za pomocą <code class="docutils literal notranslate"><span class="pre">detach()</span></code>.</p>
 </section>
 <section id="przekazywanie-parametrow-do-watkow">
-<h2>Przekazywanie parametrów do wątków<a class="headerlink" href="#przekazywanie-parametrow-do-watkow" title="Permalink to this heading">#</a></h2>
+<h2>Przekazywanie parametrów do wątków<a class="headerlink" href="#przekazywanie-parametrow-do-watkow" title="Link to this heading">#</a></h2>
 <p>Przekazanie parametrów do uruchamianych wątków może odbywać się na trzy sposoby:</p>
 <ul class="simple">
 <li><p>Korzystając z parametrów konstruktora obiektu funkcyjnego przekazywanego do konstruktora obiektu <code class="docutils literal notranslate"><span class="pre">std::thread</span></code></p></li>
@@ -572,7 +595,7 @@ Metoda <code class="docutils literal notranslate"><span class="pre">join()</span
 </pre></div>
 </div>
 <section id="problem-wiszacych-referencji">
-<h3>Problem wiszących referencji<a class="headerlink" href="#problem-wiszacych-referencji" title="Permalink to this heading">#</a></h3>
+<h3>Problem wiszących referencji<a class="headerlink" href="#problem-wiszacych-referencji" title="Link to this heading">#</a></h3>
 <p>Przy przekazywaniu parametrów do wątków należy unikać wiszących referencji (<em>dangling references</em>) - <a class="reference external" href="https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#cp31-pass-small-amounts-of-data-between-threads-by-value-rather-than-by-reference-or-pointer">C++ Core Guidelines [CP.31]</a>.</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Worker</span>
 <span class="p">{</span>
@@ -600,7 +623,7 @@ Metoda <code class="docutils literal notranslate"><span class="pre">join()</span
 </section>
 </section>
 <section id="transferowanie-watkow">
-<h2>Transferowanie wątków<a class="headerlink" href="#transferowanie-watkow" title="Permalink to this heading">#</a></h2>
+<h2>Transferowanie wątków<a class="headerlink" href="#transferowanie-watkow" title="Link to this heading">#</a></h2>
 <p>Obiekty wątków mogą przenoszone zgodnie z zasadami <strong>move semantics</strong>. Aby przenosić wątki między obiektami należy skorzystać z funkcji <code class="docutils literal notranslate"><span class="pre">std::move()</span></code></p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">task</span><span class="p">()</span>
 <span class="p">{</span>
@@ -632,7 +655,7 @@ Metoda <code class="docutils literal notranslate"><span class="pre">join()</span
 </div>
 </section>
 <section id="destruktor-watku">
-<h2>Destruktor wątku<a class="headerlink" href="#destruktor-watku" title="Permalink to this heading">#</a></h2>
+<h2>Destruktor wątku<a class="headerlink" href="#destruktor-watku" title="Link to this heading">#</a></h2>
 <p>Destrukcja obiektu wątku jest bezpieczna, jeśli obiekt wątku nie jest skojarzony z wątkiem systemowym.
 W przeciwnym wypadku wywołana jest funkcja <code class="docutils literal notranslate"><span class="pre">std::terminate()</span></code>!!!</p>
 <p>Obiekt wątku nie jest skojarzony z wątkiem systemowym:</p>
@@ -651,7 +674,7 @@ W przeciwnym wypadku wywołana jest funkcja <code class="docutils literal notran
 </div>
 </section>
 <section id="klasa-std-jthread-c-20">
-<h2>Klasa std::jthread (C++20)<a class="headerlink" href="#klasa-std-jthread-c-20" title="Permalink to this heading">#</a></h2>
+<h2>Klasa std::jthread (C++20)<a class="headerlink" href="#klasa-std-jthread-c-20" title="Link to this heading">#</a></h2>
 <p>Klasa <code class="docutils literal notranslate"><span class="pre">std::jthread</span></code> to ulepszona wersja <code class="docutils literal notranslate"><span class="pre">std::thread</span></code>, która:</p>
 <ul class="simple">
 <li><p>wywołuje operację <code class="docutils literal notranslate"><span class="pre">join()</span></code> w destruktorze</p></li>
@@ -670,7 +693,7 @@ W przeciwnym wypadku wywołana jest funkcja <code class="docutils literal notran
 </pre></div>
 </div>
 <section id="destruktor-jthread">
-<h3>Destruktor jthread<a class="headerlink" href="#destruktor-jthread" title="Permalink to this heading">#</a></h3>
+<h3>Destruktor jthread<a class="headerlink" href="#destruktor-jthread" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">jthread</span><span class="o">::~</span><span class="n">jthread</span><span class="p">()</span><span class="w"> </span>
 <span class="p">{</span>
 <span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">joinable</span><span class="p">())</span><span class="w"> </span>
@@ -684,7 +707,7 @@ W przeciwnym wypadku wywołana jest funkcja <code class="docutils literal notran
 </section>
 </section>
 <section id="kooperatywne-przerywanie-anulowanie-watkow">
-<h2>Kooperatywne przerywanie (anulowanie) wątków<a class="headerlink" href="#kooperatywne-przerywanie-anulowanie-watkow" title="Permalink to this heading">#</a></h2>
+<h2>Kooperatywne przerywanie (anulowanie) wątków<a class="headerlink" href="#kooperatywne-przerywanie-anulowanie-watkow" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Model kooperatywnego anulowania zadań może być uniwersalnie stososowany</p>
 <ul>
@@ -701,7 +724,7 @@ W przeciwnym wypadku wywołana jest funkcja <code class="docutils literal notran
 </li>
 </ul>
 <section id="implementacja-zadania">
-<h3>Implementacja zadania<a class="headerlink" href="#implementacja-zadania" title="Permalink to this heading">#</a></h3>
+<h3>Implementacja zadania<a class="headerlink" href="#implementacja-zadania" title="Link to this heading">#</a></h3>
 <p>Implementując funkcję należy wykorzystać parameter typu <code class="docutils literal notranslate"><span class="pre">std::stop_token</span></code>, przekazany przez wartość:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">background_work</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">stop_token</span><span class="w"> </span><span class="n">token</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">text</span><span class="p">)</span><span class="w"> </span>
 <span class="p">{</span>
@@ -725,7 +748,7 @@ W przeciwnym wypadku wywołana jest funkcja <code class="docutils literal notran
 <p>Dzięki tokenowi możemy bezpiecznie sprawdzić, czy zażądano przerwania zadania i jeśli tak, to wyjść z funkcji.</p>
 </section>
 <section id="uruchomienia-zadania-i-jego-anulowanie">
-<h3>Uruchomienia zadania i jego anulowanie<a class="headerlink" href="#uruchomienia-zadania-i-jego-anulowanie" title="Permalink to this heading">#</a></h3>
+<h3>Uruchomienia zadania i jego anulowanie<a class="headerlink" href="#uruchomienia-zadania-i-jego-anulowanie" title="Link to this heading">#</a></h3>
 <p>Do tworzenia tokenów i zgłaszania żądania stopu służy obiekt typu <code class="docutils literal notranslate"><span class="pre">std::stop_source</span></code>:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">run_task_and_cancel</span><span class="p">()</span>
 <span class="p">{</span>
@@ -744,7 +767,7 @@ W przeciwnym wypadku wywołana jest funkcja <code class="docutils literal notran
 </pre></div>
 </div>
 <section id="std-jthread-internal-stop-state">
-<h4>std::jthread - internal stop-state<a class="headerlink" href="#std-jthread-internal-stop-state" title="Permalink to this heading">#</a></h4>
+<h4>std::jthread - internal stop-state<a class="headerlink" href="#std-jthread-internal-stop-state" title="Link to this heading">#</a></h4>
 <p>Jeśli nie przekażemy w wywołaniu konstruktora <code class="docutils literal notranslate"><span class="pre">std::jthread</span></code>jawnie tokena (a funkcja go oczekuje), to wykorzystany zostanie wewnętrzny stan obiektu wątku (<em>internal stop-state</em>)</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">background_work</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">stop_token</span><span class="w"> </span><span class="n">st</span><span class="p">,</span><span class="w"> </span>
 <span class="w">                     </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">text</span><span class="p">);</span>
@@ -763,7 +786,7 @@ W przeciwnym wypadku wywołana jest funkcja <code class="docutils literal notran
 </section>
 </section>
 <section id="obsluga-wyjatkow-w-watkach">
-<h2>Obsługa wyjątków w wątkach<a class="headerlink" href="#obsluga-wyjatkow-w-watkach" title="Permalink to this heading">#</a></h2>
+<h2>Obsługa wyjątków w wątkach<a class="headerlink" href="#obsluga-wyjatkow-w-watkach" title="Link to this heading">#</a></h2>
 <p>Jeżeli z funkcji uruchomionej w osobnym wątku wydostanie się wyjątek, zostanie wywołana funkcja <code class="docutils literal notranslate"><span class="pre">std::terminate()</span></code>.</p>
 <p>W celu prawidłowej obsługi wyjątków, należy przechwycić rzucony wyjątek i jeżeli istnieje taka potrzeba przekazać go
 do wątku rodzica wykorzystując klasę <code class="docutils literal notranslate"><span class="pre">std::exception_ptr</span></code>.</p>
@@ -814,9 +837,9 @@ do wątku rodzica wykorzystując klasę <code class="docutils literal notranslat
 </div>
 </section>
 <section id="funkcje-i-klasy-pomocnicze-w-bibliotece-standardowej">
-<h2>Funkcje i klasy pomocnicze w bibliotece standardowej<a class="headerlink" href="#funkcje-i-klasy-pomocnicze-w-bibliotece-standardowej" title="Permalink to this heading">#</a></h2>
+<h2>Funkcje i klasy pomocnicze w bibliotece standardowej<a class="headerlink" href="#funkcje-i-klasy-pomocnicze-w-bibliotece-standardowej" title="Link to this heading">#</a></h2>
 <section id="std-thread-hardware-concurrency">
-<h3><code class="docutils literal notranslate"><span class="pre">std::thread::hardware_concurrency()</span></code><a class="headerlink" href="#std-thread-hardware-concurrency" title="Permalink to this heading">#</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">std::thread::hardware_concurrency()</span></code><a class="headerlink" href="#std-thread-hardware-concurrency" title="Link to this heading">#</a></h3>
 <p>Statyczna metoda zwracająca ilość dostępnych wątków sprzętowych. Zwykle podawana jest ilość procesorów, rdzeni, itp. Jeżeli informacja nie jest dostępna, to zwracana jest wartość <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;number of cores = &quot;</span>
 <span class="w">              </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="kr">thread</span><span class="o">::</span><span class="n">hardware_concurrency</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
@@ -829,7 +852,7 @@ do wątku rodzica wykorzystując klasę <code class="docutils literal notranslat
 </div>
 </section>
 <section id="przestrzen-nazw-std-this-thread">
-<h3>Przestrzeń nazw <code class="docutils literal notranslate"><span class="pre">std::this_thread</span></code><a class="headerlink" href="#przestrzen-nazw-std-this-thread" title="Permalink to this heading">#</a></h3>
+<h3>Przestrzeń nazw <code class="docutils literal notranslate"><span class="pre">std::this_thread</span></code><a class="headerlink" href="#przestrzen-nazw-std-this-thread" title="Link to this heading">#</a></h3>
 <p>Przestrzeń nazw <code class="docutils literal notranslate"><span class="pre">std::this_thread</span></code> zawiera zestaw pomocniczych funkcji lub klas:</p>
 <dl class="simple myst">
 <dt><code class="docutils literal notranslate"><span class="pre">sleep_for(const</span> <span class="pre">chrono::duration&lt;Rep,</span> <span class="pre">Period&gt;&amp;</span> <span class="pre">sleep_duration)</span></code></dt><dd><p>wstrzymuje wykonanie bieżącego wątku na (przynajmniej) określony interwał czasu</p>
@@ -859,7 +882,7 @@ bieżącego wątku</p></li>
 </ul>
 </section>
 <section id="identyfikator-watku-std-thread-id">
-<h3>Identyfikator wątku - <code class="docutils literal notranslate"><span class="pre">std::thread::id</span></code><a class="headerlink" href="#identyfikator-watku-std-thread-id" title="Permalink to this heading">#</a></h3>
+<h3>Identyfikator wątku - <code class="docutils literal notranslate"><span class="pre">std::thread::id</span></code><a class="headerlink" href="#identyfikator-watku-std-thread-id" title="Link to this heading">#</a></h3>
 <p>Klasa <code class="docutils literal notranslate"><span class="pre">std::thread::id</span></code> jest lekką, trywialnie kopiowalną klasą, która opakowuje unikalny identyfikator wątku. Celem klasy jest umożliwienie wykorzystania identyfikatora
 wątku jako klucza w kontenerach asocjacyjnych (np. <code class="docutils literal notranslate"><span class="pre">std::map</span></code>, <code class="docutils literal notranslate"><span class="pre">std::unordered_map</span></code>).</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">thread</span><span class="o">::</span><span class="n">id</span>
@@ -930,11 +953,10 @@ przechowanie wątku w kontenerach hashujących (np. <code class="docutils litera
 
               
               
-                <footer class="bd-footer-article">
+              
+              
+                <footer class="prev-next-footer d-print-none">
                   
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="multithreading-intro.html"
@@ -954,10 +976,7 @@ przechowanie wątku w kontenerach hashujących (np. <code class="docutils litera
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -965,6 +984,7 @@ przechowanie wątku w kontenerach hashujących (np. <code class="docutils litera
             
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
 
   <div class="sidebar-secondary-item">
   <div class="page-toc tocsection onthispage">
@@ -1027,6 +1047,7 @@ By Krystian Piękoś - Infotraining
   
   <div class="footer-item">
     
+
   <p class="copyright">
     
       © Copyright 2023.
@@ -1053,8 +1074,8 @@ By Krystian Piękoś - Infotraining
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
   </footer>

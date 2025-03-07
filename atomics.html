@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="./" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Typy i zmienne atomowe &#8212; Programowanie wielowątkowe w C++</title>
   
@@ -15,53 +14,50 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=576ba08b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/clipboard.min.js"></script>
-    <script src="_static/copybutton.js"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js"></script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="_static/design-tabs.js"></script>
-    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
-const thebe_selector = ".thebe,.cell"
-const thebe_selector_input = "pre"
-const thebe_selector_output = ".output, .cell_output"
-</script>
-    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'atomics';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -75,19 +71,23 @@ const thebe_selector_output = ".output, .cell_output"
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -109,12 +109,20 @@ const thebe_selector_output = ".output, .cell_output"
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -129,9 +137,11 @@ const thebe_selector_output = ".output, .cell_output"
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
         <div class="sidebar-primary-item">
+
   
 
-<a class="navbar-brand logo" href="intro.html">
+<a class="navbar-brand logo" href="multithreading-cpp.html">
+  
   
   
   
@@ -141,17 +151,28 @@ const thebe_selector_output = ".output, .cell_output"
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="Programowanie wielowątkowe w C++ - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Programowanie wielowątkowe w C++ - Home"/>`);</script>
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
-                <a class="reference internal" href="intro.html">
+                <a class="reference internal" href="multithreading-cpp.html">
                     Programowanie wielowątkowe w C++
                 </a>
             </li>
@@ -177,7 +198,7 @@ const thebe_selector_output = ".output, .cell_output"
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -186,14 +207,14 @@ const thebe_selector_output = ".output, .cell_output"
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
       
-        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
   <span class="fa-solid fa-bars"></span>
-</label></div>
+</button></div>
       
     </div>
   
@@ -283,26 +304,28 @@ const thebe_selector_output = ".output, .cell_output"
 </button>
 
 
+
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script>
 
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
   </button>
 `);
 </script>
-<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
-</label>
+</button>
 </div></div>
       
     </div>
@@ -332,9 +355,13 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kluczowe-pojecia">Kluczowe pojęcia</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spojnosc-sekwencyjna-sequential-consistency">Spójność sekwencyjna - <em>Sequential consistency</em></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spojnosc-sekwencyjna-sequential-consistency">Spójność sekwencyjna - <em>Sequential consistency</em></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#kluczowe-punkty-sekwencyjnej-spojnosci">Kluczowe punkty sekwencyjnej spójności</a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wyscig-race-condition-data-race">Wyścig - <em>Race condition (data race)</em></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relacja-happens-before">Relacja <strong>happens-before</strong></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relacja-happens-before">Relacja <em>Happens-before</em></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relacja-synchronizes-with">Relacja <em>Synchronizes-with</em></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transformacje-programu">Transformacje programu</a><ul class="nav section-nav flex-column">
@@ -346,7 +373,6 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ochrona-przed-wyscigiem-data-race-protection">Ochrona przed wyścigiem (<em>data-race protection</em>)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relacja-synchronizacji-synchronizes-with">Relacja synchronizacji <em>synchronizes-with</em></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#semantyka-acquire-release">Semantyka Acquire-Release</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#blokady-locks">Blokady - <em>locks</em></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zmienne-atomowe-lock-free">Zmienne atomowe - <em>lock free</em></a></li>
@@ -375,42 +401,51 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="typy-i-zmienne-atomowe">
-<h1>Typy i zmienne atomowe<a class="headerlink" href="#typy-i-zmienne-atomowe" title="Permalink to this heading">#</a></h1>
+<h1>Typy i zmienne atomowe<a class="headerlink" href="#typy-i-zmienne-atomowe" title="Link to this heading">#</a></h1>
 <section id="problemy-architektur-wieloprocesorowych">
-<h2>Problemy architektur wieloprocesorowych<a class="headerlink" href="#problemy-architektur-wieloprocesorowych" title="Permalink to this heading">#</a></h2>
+<h2>Problemy architektur wieloprocesorowych<a class="headerlink" href="#problemy-architektur-wieloprocesorowych" title="Link to this heading">#</a></h2>
 <section id="cache-coherency">
-<h3>Cache coherency<a class="headerlink" href="#cache-coherency" title="Permalink to this heading">#</a></h3>
+<h3>Cache coherency<a class="headerlink" href="#cache-coherency" title="Link to this heading">#</a></h3>
 <p>Wątki T1 i T2, wykonywane na różnych procesorach/rdzeniach odczytują dane A i B, które znajdują się w tej samej linii cache’a L2. Jeśli następnie
 wątek T1 modyfikuje wartość A, to modyfikacja jest najpierw dokonana w cache’u L2 procesora na którym pracuje wątek. Powstaje problem, ponieważ wątek
 T2 pracuje na innym procesorze, który w swoim cache’u ma nieaktualną już wartość danej A. Cache stają się niekoherentne i należy je uaktualnić.
 Za spójność cache odpowiedzialny jest protokół MESI.</p>
 <section id="false-sharing">
-<h4>False sharing<a class="headerlink" href="#false-sharing" title="Permalink to this heading">#</a></h4>
+<h4>False sharing<a class="headerlink" href="#false-sharing" title="Link to this heading">#</a></h4>
 <p>Mechanizm gwarantujący spójność danych w cache’ach może czasami znacznie spowolnić działanie aplikacji wielowątkowej. Jeśli pracujące wątki nie współdzielą danych, lecz dane te fizycznie leżą blisko siebie, to mogą one znaleźć się na tej samej lini cache’a w procesorach. W rezultacie jakakolwiek modyfikacja stanu zmiennych (teoretycznie niezależnych od siebie) wymusza inwalidację cache’ów.</p>
 </section>
 </section>
 <section id="memory-consistency">
-<h3>Memory consistency<a class="headerlink" href="#memory-consistency" title="Permalink to this heading">#</a></h3>
+<h3>Memory consistency<a class="headerlink" href="#memory-consistency" title="Link to this heading">#</a></h3>
 <p>Protokół spójności cache’a nie daje gwarancji, kiedy modyfikacja wartości (operacja zapisu nowego stanu) zostanie zakończona. Powstaje pytanie: kiedy
 uaktualniona przez jeden wątek wartość będzie widoczna w pozostałych wątkach pracujących na innych procesorach.
 W zachowaniu spójności pamięci pomocny jest model pamięci wprowadzony w C++11.</p>
 </section>
 </section>
 <section id="kluczowe-pojecia">
-<h2>Kluczowe pojęcia<a class="headerlink" href="#kluczowe-pojecia" title="Permalink to this heading">#</a></h2>
+<h2>Kluczowe pojęcia<a class="headerlink" href="#kluczowe-pojecia" title="Link to this heading">#</a></h2>
 <section id="spojnosc-sekwencyjna-sequential-consistency">
-<h3>Spójność sekwencyjna - <em>Sequential consistency</em><a class="headerlink" href="#spojnosc-sekwencyjna-sequential-consistency" title="Permalink to this heading">#</a></h3>
+<h3>Spójność sekwencyjna - <em>Sequential consistency</em><a class="headerlink" href="#spojnosc-sekwencyjna-sequential-consistency" title="Link to this heading">#</a></h3>
 <blockquote class="epigraph">
 <div><p>“The result of any execution is the same as if the reads and writes occurred in some order, and the operations of each individual processor appear in this sequence in the order specified by its program”</p>
 <p class="attribution">—Leslie Lamport, 1979</p>
 </div></blockquote>
+<p><strong>Spójność sekwencyjna</strong> to model spójności stosowany w programowaniu równoległym, który definiuje oczekiwane zachowanie operacji pamięci w systemie wielowątkowym. Zapewnia, że wyniki wykonania są takie, jakby wszystkie operacje były wykonywane w pewnej kolejności sekwencyjnej, a operacje każdego indywidualnego wątku pojawiają się w tej sekwencji w kolejności określonej przez program.</p>
+<section id="kluczowe-punkty-sekwencyjnej-spojnosci">
+<h4>Kluczowe punkty sekwencyjnej spójności<a class="headerlink" href="#kluczowe-punkty-sekwencyjnej-spojnosci" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Intuicyjne zachowanie</strong>: Sekwencyjna spójność zapewnia intuicyjny model do rozumienia zachowania programów wielowątkowych. Gwarantuje, że wyniki programu będą takie, jakby operacje wszystkich wątków były przeplatane w pewnej kolejności sekwencyjnej, która respektuje porządek programu.</p></li>
+<li><p><strong>Porządek programu</strong>: W ramach jednego wątku operacje są wykonywane w kolejności określonej przez program. Oznacza to, że jeśli wątek wykonuje zapis, a następnie odczyt, odczyt zobaczy zapis lub każdy kolejny zapis w globalnym porządku.</p></li>
+<li><p><strong>Globalny porządek</strong>: Istnieje jeden globalny porządek operacji, z którym zgadzają się wszystkie wątki. Ten globalny porządek może nie odpowiadać rzeczywistej fizycznej kolejności wykonywania, ale jest używany do rozumienia zachowania programu.</p></li>
+</ul>
 <p>Spójność sekwencyjna w programach wielowątkowych, które są wykonywane na maszynach wieloprocesorowych wymaga generowania dodatkowych ograniczeń dotyczących operacji na pamięci (np. barier pamięci - <strong>memory fence</strong>). Ponieważ ograniczenia te znacznie obniżają wydajność często wymagane jest poluzowanie tych ograniczeń przy zachowaniu prawidłowego (<em>thread-safe</em>) przebiegu programu.</p>
 </section>
+</section>
 <section id="wyscig-race-condition-data-race">
-<h3>Wyścig - <em>Race condition (data race)</em><a class="headerlink" href="#wyscig-race-condition-data-race" title="Permalink to this heading">#</a></h3>
+<h3>Wyścig - <em>Race condition (data race)</em><a class="headerlink" href="#wyscig-race-condition-data-race" title="Link to this heading">#</a></h3>
 <p>W sytuacji, kiedy ewaluacja jednego wyrażenia zapisuje wartość zmiennej (<strong>memory location</strong>) i jednocześnie inne ewaluowane wyrażenie modyfikuje
 lub odczytuje tą samą zmienną, powstaje <strong>konflikt</strong>. Program, który posiada dwie konfliktowe ewaluacje wyrażeń jest w sytuacji wyścigu (<strong>data race</strong>), chyba, że:</p>
 <ul>
@@ -424,32 +459,44 @@ lub odczytuje tą samą zmienną, powstaje <strong>konflikt</strong>. Program, k
 </ul>
 </section>
 <section id="relacja-happens-before">
-<h3>Relacja <strong>happens-before</strong><a class="headerlink" href="#relacja-happens-before" title="Permalink to this heading">#</a></h3>
-<ul>
-<li><p>Dostęp do pamięci (<em>memory access</em>) A poprzedza (<em>happens-before</em>) B, jeżeli:</p>
-<ul>
-<li><p>A poprzedza B w programie</p></li>
-<li><p>A i B są operacjami synchronizującymi i B obserwuje rezultat A, narzucając kolejność operacji</p>
-<ul>
-<li><p>Przykład: A zwalnia muteks m, B następnie pozyskuje muteks m</p>
-<a class="reference internal image-reference" href="_images/happens-before-mutex.svg"><img alt="happens-before" class="align-center" src="_images/happens-before-mutex.svg" width="400px" /></a>
-</li>
-</ul>
-</li>
-<li><p>lub istnieje C takie, że A poprzedza (<em>happens-before</em>) C i C poprzedza B</p></li>
-</ul>
-</li>
-<li><p>Dwie operacje dostępu do pamięci (<em>memory location</em>) A i B biorą udział w wyścigu (<em>data race</em>), jeżeli:</p>
+<h3>Relacja <em>Happens-before</em><a class="headerlink" href="#relacja-happens-before" title="Link to this heading">#</a></h3>
+<p>Relacja <strong>happens-before</strong> jest kluczowym pojęciem w modelu pamięci dla programowania współbieżnego. Relacja ta definiuje porządek w jakim wykonywane są operacje w programie.
+Jeśli jakaś operacja poprzedza (<strong>happens-before</strong>) inną operację, to pierwsza operacja musi zostać ukończona (i być widoczna) dla drugiej operacji.</p>
+<p>Relacja <strong>happens-before</strong> jest przechodnia, tzn. jeżeli <em>A</em> poprzedza <em>B</em>, a <em>B</em> poprzedza <em>C</em>, to <em>A</em> poprzedza <em>C</em>.</p>
+<p>W przypadku operacji na muteksach, relacja <strong>happens-before</strong> jest wygląda następująco:</p>
+<ol class="arabic simple">
+<li><p>Pozyskanie muteksu (<em>lock</em>) <em>A</em> poprzedza zwolnienie muteksu (<em>unlock</em>) <em>B</em> przez ten sam wątek</p></li>
+<li><p>Operacja <code class="docutils literal notranslate"><span class="pre">unlock()</span></code> na muteksie <em>A</em> poprzedza operację <code class="docutils literal notranslate"><span class="pre">lock()</span></code> na muteksie <em>B</em> przez inny wątek. Jakiekolwiek zmiany dokonane w sekcji krytycznej na współdzielonych w pamięci zmiennych są widoczne dla wątku, który pozyskał muteks <em>B</em>.</p></li>
+</ol>
+<a class="reference internal image-reference" href="_images/happens-before.png"><img alt="happens-before" class="align-center" src="_images/happens-before.png" style="width: 80%;" /></a>
+<p>Dwie operacje dostępu do pamięci (<em>memory location</em>) A i B biorą udział w wyścigu (<em>data race</em>), jeżeli:</p>
 <ul class="simple">
 <li><p>A nie poprzedza B</p></li>
 <li><p>ani B nie poprzedza A</p></li>
 </ul>
-</li>
+</section>
+<section id="relacja-synchronizes-with">
+<h3>Relacja <em>Synchronizes-with</em><a class="headerlink" href="#relacja-synchronizes-with" title="Link to this heading">#</a></h3>
+<blockquote class="epigraph">
+<div><p>An atomic operation A that performs a release operation on an atomic object M synchronizes with an atomic operation B that performs an acquire operation on M and takes its value from any side effect in the release sequence headed by A.</p>
+<p class="attribution">—C++11 standard</p>
+</div></blockquote>
+<p>Relacja <strong>synchronizes-with</strong> ustanawia porządek między operacjami wykonywanymi na zmiennych, które sa współdzielone między wątkami. Zapewnia, że wszystkie operacje zapisu do pamięci wykonane przed punktem synchronizacji są widoczne (gotowe do odczytu) dla innego wątku po punkcie synchronizacji.</p>
+<p>Relacja synchronizacji zachodzi między innymi dla:</p>
+<ul class="simple">
+<li><p>muteksów - kiedy wątek zwalnia muteks (operacją <code class="docutils literal notranslate"><span class="pre">mtx.unlock()</span></code>) synchronizuje się z innym wątkiem, który pozyskuje ten muteks (operacją <code class="docutils literal notranslate"><span class="pre">mtx.lock()</span></code>)</p></li>
+<li><p>zmiennych atomowych - operacja zapisu do zmiennej atomowej (operacja <code class="docutils literal notranslate"><span class="pre">var.store(std::memory_order_release)</span></code>) synchronizuje się z operacją odczytu (operacją <code class="docutils literal notranslate"><span class="pre">var.load(std::memory_order_acquire)</span></code>) tej zmiennej</p></li>
+<li><p>zmiennych warunkowych - operacja <code class="docutils literal notranslate"><span class="pre">cond_var.notify_one()</span></code> lub <code class="docutils literal notranslate"><span class="pre">cond_var.notify_all()</span></code> synchronizuje się z operacją <code class="docutils literal notranslate"><span class="pre">cond_var.wait()</span></code> wykonaną przez inny wątek</p></li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Relacja <strong>happens-before</strong> jest relacją bardziej ogólną i dotyczy porządku wykonywanych operacji, kolejności synchronizacji oraz przechodności. Dotyczy dowolnych operacji w programie (również operacji wykonywanych w jednym wątku).</p>
+<p>Relacja <strong>synchronizes-with</strong> dotyczy konkretnych operacji na zmiennych atomowych, muteksach i zmiennych warunkowych wykonywanych w środowisku wielowątkowym. Jest używana do określenia porządku, a tym samym relacji <strong>happens-before</strong> w programach wielowątkowych.</p>
+</div>
 </section>
 </section>
 <section id="transformacje-programu">
-<h2>Transformacje programu<a class="headerlink" href="#transformacje-programu" title="Permalink to this heading">#</a></h2>
+<h2>Transformacje programu<a class="headerlink" href="#transformacje-programu" title="Link to this heading">#</a></h2>
 <p>Analizę kodu wielowątkowego komplikuje fakt, że kod wykonywany może zostać poddany transformacji.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -471,9 +518,9 @@ lub odczytuje tą samą zmienną, powstaje <strong>konflikt</strong>. Program, k
 </li>
 </ol>
 <section id="przyklady-transformacji-powodujacej-undefined-behaviour">
-<h3>Przykłady transformacji powodującej <em>undefined behaviour</em><a class="headerlink" href="#przyklady-transformacji-powodujacej-undefined-behaviour" title="Permalink to this heading">#</a></h3>
+<h3>Przykłady transformacji powodującej <em>undefined behaviour</em><a class="headerlink" href="#przyklady-transformacji-powodujacej-undefined-behaviour" title="Link to this heading">#</a></h3>
 <section id="busy-wait">
-<h4>Busy wait<a class="headerlink" href="#busy-wait" title="Permalink to this heading">#</a></h4>
+<h4>Busy wait<a class="headerlink" href="#busy-wait" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="n">done</span><span class="p">;</span>
 <span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
 </pre></div>
@@ -567,7 +614,7 @@ Thread#2</div>
 </div>
 </section>
 <section id="algorytm-dekkera">
-<h4>Algorytm Dekker’a<a class="headerlink" href="#algorytm-dekkera" title="Permalink to this heading">#</a></h4>
+<h4>Algorytm Dekker’a<a class="headerlink" href="#algorytm-dekkera" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">flag1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flag2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 </pre></div>
 </div>
@@ -609,7 +656,7 @@ Thread#2</div>
 </section>
 </section>
 <section id="ochrona-przed-wyscigiem-data-race-protection">
-<h2>Ochrona przed wyścigiem (<em>data-race protection</em>)<a class="headerlink" href="#ochrona-przed-wyscigiem-data-race-protection" title="Permalink to this heading">#</a></h2>
+<h2>Ochrona przed wyścigiem (<em>data-race protection</em>)<a class="headerlink" href="#ochrona-przed-wyscigiem-data-race-protection" title="Link to this heading">#</a></h2>
 <p>C++11 umożliwia uniknięcie wyścigu poprzez stosowanie:</p>
 <ol class="arabic simple">
 <li><p>Blokad (muteks + menadżer blokady)</p></li>
@@ -667,15 +714,8 @@ Thread#2</div>
 <li><p>zapis do flagi <code class="docutils literal notranslate"><span class="pre">done</span></code> poprzedza odczyt wartości <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
 <li><p>operacja odczytu wartości <code class="docutils literal notranslate"><span class="pre">true</span></code> poprzedza odczyt zmiennej <code class="docutils literal notranslate"><span class="pre">x</span></code></p></li>
 </ul>
-<section id="relacja-synchronizacji-synchronizes-with">
-<h3>Relacja synchronizacji <em>synchronizes-with</em><a class="headerlink" href="#relacja-synchronizacji-synchronizes-with" title="Permalink to this heading">#</a></h3>
-<blockquote class="epigraph">
-<div><p>An atomic operation A that performs a release operation on an atomic object M synchronizes with an atomic operation B that performs an acquire operation on M and takes its value from any side effect in the release sequence headed by A.</p>
-<p class="attribution">—C++11 standard</p>
-</div></blockquote>
-</section>
 <section id="semantyka-acquire-release">
-<h3>Semantyka Acquire-Release<a class="headerlink" href="#semantyka-acquire-release" title="Permalink to this heading">#</a></h3>
+<h3>Semantyka Acquire-Release<a class="headerlink" href="#semantyka-acquire-release" title="Link to this heading">#</a></h3>
 <dl class="simple myst">
 <dt><strong>Transakcja</strong></dt><dd><p>Zbiór operacji logicznie ze sobą powiązanych, które stanowią pewną całość i jako takie powinny być wykonane wszystkie lub żadna z nich. Właściwości transakcji opisuje zbiór atrybutów <strong>ACID</strong>:</p>
 </dd>
@@ -702,7 +742,7 @@ Thread#2</div>
 <li><p>bariery pamięci - (<strong>memory-fence</strong>)</p></li>
 </ul>
 <section id="blokady-locks">
-<h4>Blokady - <em>locks</em><a class="headerlink" href="#blokady-locks" title="Permalink to this heading">#</a></h4>
+<h4>Blokady - <em>locks</em><a class="headerlink" href="#blokady-locks" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"> </span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">lock_guard</span><span class="w"> </span><span class="nf">hold</span><span class="p">(</span><span class="n">mtx</span><span class="p">);</span><span class="w">  </span><span class="c1">// enter critical region -&gt; lock &quot;acquire&quot;</span>
 <span class="w">                                  </span>
@@ -713,7 +753,7 @@ Thread#2</div>
 </div>
 </section>
 <section id="zmienne-atomowe-lock-free">
-<h4>Zmienne atomowe - <em>lock free</em><a class="headerlink" href="#zmienne-atomowe-lock-free" title="Permalink to this heading">#</a></h4>
+<h4>Zmienne atomowe - <em>lock free</em><a class="headerlink" href="#zmienne-atomowe-lock-free" title="Link to this heading">#</a></h4>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">whose_turn</span><span class="p">;</span>
 
 <span class="k">while</span><span class="p">(</span><span class="n">whose_turn</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">me</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span><span class="w">   </span><span class="c1">// enter critical region</span>
@@ -727,7 +767,7 @@ Thread#2</div>
 </div>
 </section>
 <section id="pamiec-transakcyjna-work-in-progress">
-<h4>Pamięć transakcyjna (work in progress)<a class="headerlink" href="#pamiec-transakcyjna-work-in-progress" title="Permalink to this heading">#</a></h4>
+<h4>Pamięć transakcyjna (work in progress)<a class="headerlink" href="#pamiec-transakcyjna-work-in-progress" title="Link to this heading">#</a></h4>
 <p>Pamięć transakcyjna (<em>transactional memory</em>) umożliwi zgrupowanie szeregu instrukcji
 w transakcję, która jest <strong>atomowa</strong> oraz <strong>izolowana</strong>.</p>
 <p>Implementacja może korzystać z wsparcia sprzętowego (na wspieranych architekturach).</p>
@@ -748,11 +788,11 @@ w transakcję, która jest <strong>atomowa</strong> oraz <strong>izolowana</stro
 </section>
 </section>
 <section id="typy-atomowe-w-c-11">
-<h2>Typy atomowe w C++11<a class="headerlink" href="#typy-atomowe-w-c-11" title="Permalink to this heading">#</a></h2>
+<h2>Typy atomowe w C++11<a class="headerlink" href="#typy-atomowe-w-c-11" title="Link to this heading">#</a></h2>
 <p>Obiekty typów atomowych umożliwiają wykonanie na nich podstawowych operacji (przypisania i odczytu wartości) w niepodzielny sposób oraz zapewniają odpowiednie uporządkowanie operacji dostępu do pamięci. Dzięki tym cechom można uniknąć w kodzie sytuacji wyścigu (<em>data races</em>).
 Jeśli jeden wątek zapisuje obiekt atomowy, w trakcie gdy drugi go odczytuje, to zachowanie się programu jest zdefiniowane.</p>
 <section id="std-atomic-flag">
-<h3><code class="docutils literal notranslate"><span class="pre">std::atomic_flag</span></code><a class="headerlink" href="#std-atomic-flag" title="Permalink to this heading">#</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">std::atomic_flag</span></code><a class="headerlink" href="#std-atomic-flag" title="Link to this heading">#</a></h3>
 <p>Atomowa flaga typu <code class="docutils literal notranslate"><span class="pre">bool</span></code>. Atomowe zachowanie jest <em>gwarantowane</em> przez standard. Interfejs jest bardzo uproszczony:</p>
 <dl class="simple myst">
 <dt><code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">clear()</span></code></dt><dd><p>ustawia (atomowo) flagę na <code class="docutils literal notranslate"><span class="pre">false</span></code></p>
@@ -787,7 +827,7 @@ Jeśli jeden wątek zapisuje obiekt atomowy, w trakcie gdy drugi go odczytuje, t
 </div>
 </section>
 <section id="klasa-std-atomic-t">
-<h3>Klasa <code class="docutils literal notranslate"><span class="pre">std::atomic&lt;T&gt;</span></code><a class="headerlink" href="#klasa-std-atomic-t" title="Permalink to this heading">#</a></h3>
+<h3>Klasa <code class="docutils literal notranslate"><span class="pre">std::atomic&lt;T&gt;</span></code><a class="headerlink" href="#klasa-std-atomic-t" title="Link to this heading">#</a></h3>
 <p>Klasa szablonowa, generująca typy, które zachowują się “atomowo”.</p>
 <dl class="simple myst">
 <dt><code class="docutils literal notranslate"><span class="pre">bool</span> <span class="pre">is_lock_free()</span></code></dt><dd><p>zwraca <code class="docutils literal notranslate"><span class="pre">true</span></code>, jeśli operacje wykonywane na obiekcie są <em>lock-free</em></p>
@@ -838,7 +878,7 @@ Jeśli jeden wątek zapisuje obiekt atomowy, w trakcie gdy drugi go odczytuje, t
 </div>
 </section>
 <section id="opcje-operacji-dostepu-do-pamieci">
-<h3>Opcje operacji dostępu do pamięci<a class="headerlink" href="#opcje-operacji-dostepu-do-pamieci" title="Permalink to this heading">#</a></h3>
+<h3>Opcje operacji dostępu do pamięci<a class="headerlink" href="#opcje-operacji-dostepu-do-pamieci" title="Link to this heading">#</a></h3>
 <p>Model pamięci w C++ definiuje w jaki sposób operacje wykonywane na typach atomowych wpływają na ograniczenia dotyczące zmiany kolejności wykonywania operacji dostępu do pamięci (zapisu i odczytu)
 przez kompilator lub hardware. Opcje te są definiowane poprzez wyliczenie typu <code class="docutils literal notranslate"><span class="pre">std::memory_order</span></code>, które jest przekazywane jako argument przy wywołaniu operacji na zmiennej atomowej.</p>
 <ul>
@@ -860,7 +900,7 @@ nie mogą być przeniesione powyżej punktu synchronizacji.</p></li>
 </li>
 <li><p><strong>Relaxed</strong> (<code class="docutils literal notranslate"><span class="pre">std::memory_order_relaxed</span></code>) - w tym modelu jest zapewniona jedynie niepodzielność wykonywanej operacj. Nie istnieje relacja synchronizacji store-load, a co za tym idzie nie ma relacji <em>happens-before</em></p></li>
 </ul>
-<table class="table">
+<div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Typ operacji</p></th>
 <th class="head"><p>Opcja synchronizacji</p></th>
@@ -878,12 +918,13 @@ nie mogą być przeniesione powyżej punktu synchronizacji.</p></li>
 </tr>
 </tbody>
 </table>
+</div>
 </section>
 </section>
 <section id="przyklady-wykorzystania-typow-atomowych">
-<h2>Przykłady wykorzystania typów atomowych<a class="headerlink" href="#przyklady-wykorzystania-typow-atomowych" title="Permalink to this heading">#</a></h2>
+<h2>Przykłady wykorzystania typów atomowych<a class="headerlink" href="#przyklady-wykorzystania-typow-atomowych" title="Link to this heading">#</a></h2>
 <section id="licznik-zdarzen-event-counter">
-<h3>Licznik zdarzeń (<em>event counter</em>)<a class="headerlink" href="#licznik-zdarzen-event-counter" title="Permalink to this heading">#</a></h3>
+<h3>Licznik zdarzeń (<em>event counter</em>)<a class="headerlink" href="#licznik-zdarzen-event-counter" title="Link to this heading">#</a></h3>
 <p>Zmienna <code class="docutils literal notranslate"><span class="pre">count</span></code> jest typem atomowym, zainicjowanym zerem:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">count</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
 </pre></div>
@@ -893,10 +934,12 @@ nie mogą być przeniesione powyżej punktu synchronizacji.</p></li>
 </ul>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">while</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">  </span><span class="c1">// ...</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span>
-<span class="w">      </span><span class="n">count</span><span class="p">.</span><span class="n">fetch_add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span><span class="p">);</span>
-<span class="w">  </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span>
+<span class="w">        </span><span class="n">count</span><span class="p">.</span><span class="n">fetch_add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span><span class="p">);</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1">// ...</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -918,7 +961,7 @@ nie mogą być przeniesione powyżej punktu synchronizacji.</p></li>
 między wątkami.</p>
 </section>
 <section id="licznik-referencji-reference-counting">
-<h3>Licznik referencji (<em>reference counting</em>)<a class="headerlink" href="#licznik-referencji-reference-counting" title="Permalink to this heading">#</a></h3>
+<h3>Licznik referencji (<em>reference counting</em>)<a class="headerlink" href="#licznik-referencji-reference-counting" title="Link to this heading">#</a></h3>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// thread-safe counter</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RefCounted</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">noncopyable</span>
@@ -975,11 +1018,10 @@ nie publikuje ona danych dla innych wątków.</p>
 
               
               
-                <footer class="bd-footer-article">
+              
+              
+                <footer class="prev-next-footer d-print-none">
                   
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="async-futures.html"
@@ -990,10 +1032,7 @@ nie publikuje ona danych dla innych wątków.</p>
         <p class="prev-next-title">Funkcje asynchroniczne</p>
       </div>
     </a>
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -1001,6 +1040,7 @@ nie publikuje ona danych dla innych wątków.</p>
             
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
 
   <div class="sidebar-secondary-item">
   <div class="page-toc tocsection onthispage">
@@ -1017,9 +1057,13 @@ nie publikuje ona danych dla innych wątków.</p>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kluczowe-pojecia">Kluczowe pojęcia</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spojnosc-sekwencyjna-sequential-consistency">Spójność sekwencyjna - <em>Sequential consistency</em></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spojnosc-sekwencyjna-sequential-consistency">Spójność sekwencyjna - <em>Sequential consistency</em></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#kluczowe-punkty-sekwencyjnej-spojnosci">Kluczowe punkty sekwencyjnej spójności</a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wyscig-race-condition-data-race">Wyścig - <em>Race condition (data race)</em></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relacja-happens-before">Relacja <strong>happens-before</strong></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relacja-happens-before">Relacja <em>Happens-before</em></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relacja-synchronizes-with">Relacja <em>Synchronizes-with</em></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transformacje-programu">Transformacje programu</a><ul class="nav section-nav flex-column">
@@ -1031,7 +1075,6 @@ nie publikuje ona danych dla innych wątków.</p>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ochrona-przed-wyscigiem-data-race-protection">Ochrona przed wyścigiem (<em>data-race protection</em>)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relacja-synchronizacji-synchronizes-with">Relacja synchronizacji <em>synchronizes-with</em></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#semantyka-acquire-release">Semantyka Acquire-Release</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#blokady-locks">Blokady - <em>locks</em></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zmienne-atomowe-lock-free">Zmienne atomowe - <em>lock free</em></a></li>
@@ -1072,6 +1115,7 @@ By Krystian Piękoś - Infotraining
   
   <div class="footer-item">
     
+
   <p class="copyright">
     
       © Copyright 2023.
@@ -1098,8 +1142,8 @@ By Krystian Piękoś - Infotraining
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
   </footer>

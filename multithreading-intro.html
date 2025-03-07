@@ -1,13 +1,12 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="./" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Wprowadzenie do programowania wielowątkowego &#8212; Programowanie wielowątkowe w C++</title>
   
@@ -15,58 +14,55 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
-    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=576ba08b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/clipboard.min.js"></script>
-    <script src="_static/copybutton.js"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js"></script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    <script src="_static/design-tabs.js"></script>
-    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
-const thebe_selector = ".thebe,.cell"
-const thebe_selector_input = "pre"
-const thebe_selector_output = ".output, .cell_output"
-</script>
-    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'multithreading-intro';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Wątki" href="threads.html" />
-    <link rel="prev" title="Programowanie wielowątkowe w C++" href="intro.html" />
+    <link rel="prev" title="Programowanie wielowątkowe w C++" href="multithreading-cpp.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -76,19 +72,23 @@ const thebe_selector_output = ".output, .cell_output"
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -110,12 +110,20 @@ const thebe_selector_output = ".output, .cell_output"
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -130,9 +138,11 @@ const thebe_selector_output = ".output, .cell_output"
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
         <div class="sidebar-primary-item">
+
   
 
-<a class="navbar-brand logo" href="intro.html">
+<a class="navbar-brand logo" href="multithreading-cpp.html">
+  
   
   
   
@@ -142,17 +152,28 @@ const thebe_selector_output = ".output, .cell_output"
       
     
     
-    <img src="_static/logo.png" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="Programowanie wielowątkowe w C++ - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Programowanie wielowątkowe w C++ - Home"/>`);</script>
   
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1">
-                <a class="reference internal" href="intro.html">
+                <a class="reference internal" href="multithreading-cpp.html">
                     Programowanie wielowątkowe w C++
                 </a>
             </li>
@@ -178,7 +199,7 @@ const thebe_selector_output = ".output, .cell_output"
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
 
@@ -187,14 +208,14 @@ const thebe_selector_output = ".output, .cell_output"
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
       
-        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
   <span class="fa-solid fa-bars"></span>
-</label></div>
+</button></div>
       
     </div>
   
@@ -284,26 +305,28 @@ const thebe_selector_output = ".output, .cell_output"
 </button>
 
 
+
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script>
 
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
   </button>
 `);
 </script>
-<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
-</label>
+</button>
 </div></div>
       
     </div>
@@ -324,20 +347,27 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#podstawowe-pojecia">Podstawowe pojęcia</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wspolbieznosc">Współbieżność</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rownoleglosc">Równoległość</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#proces">Proces</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sposoby-komunikacji-miedzy-procesami">Sposoby komunikacji między procesami</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wspolbieznosc-concurrency">Współbieżność - <em>Concurrency</em></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rownoleglosc-parallelism">Równoległość - <em>Parallelism</em></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proces">Proces</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#struktura-procesu-posix">Struktura procesu (POSIX)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sposoby-komunikacji-miedzy-procesami">Sposoby komunikacji między procesami</a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#watek">Wątek</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#watek-thread">Wątek - <em>Thread</em></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proces-czy-watek">Proces czy wątek?</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#po-co-uzywac-wspolbieznosci">Po co używać współbieżności</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kiedy-nie-uzywac-wspolbieznosci">Kiedy nie używać współbieżności?</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testowanie-aplikacji-wielowatkowych">Testowanie aplikacji wielowątkowych</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#przelaczanie-kontekstu-context-switch">Przełączanie kontekstu - <em>Context Switch</em></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kroki-przelaczania-kontekstu">Kroki przełączania kontekstu</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rodzaje-przelaczania-kontekstu">Rodzaje przełączania kontekstu</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#koszty-przelaczania-kontekstu">Koszty przełączania kontekstu</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#programowanie-wspolbiezne-zalety-i-wady">Programowanie współbieżne - zalety i wady</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#po-co-uzywac-wspolbieznosci">Po co używać współbieżności</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kiedy-nie-uzywac-wspolbieznosci">Kiedy nie używać współbieżności?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#testowanie-aplikacji-wielowatkowych">Testowanie aplikacji wielowątkowych</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -347,10 +377,10 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="wprowadzenie-do-programowania-wielowatkowego">
-<h1>Wprowadzenie do programowania wielowątkowego<a class="headerlink" href="#wprowadzenie-do-programowania-wielowatkowego" title="Permalink to this heading">#</a></h1>
+<h1>Wprowadzenie do programowania wielowątkowego<a class="headerlink" href="#wprowadzenie-do-programowania-wielowatkowego" title="Link to this heading">#</a></h1>
 <blockquote class="epigraph">
 <div><p><strong>Concurrency</strong> is about dealing with lots of things at once.</p>
 <p><strong>Parallelism</strong> is about doing lots of things at once.</p>
@@ -359,37 +389,69 @@ document.write(`
 <p>Concurrency provides a way to structure a solution to solve a problem that may (but not necessarily) be parallelizable.</p>
 <p class="attribution">—Rob Pike, co-inventor of the Go language</p>
 </div></blockquote>
-<section id="podstawowe-pojecia">
-<h2>Podstawowe pojęcia<a class="headerlink" href="#podstawowe-pojecia" title="Permalink to this heading">#</a></h2>
-<section id="wspolbieznosc">
-<h3>Współbieżność<a class="headerlink" href="#wspolbieznosc" title="Permalink to this heading">#</a></h3>
-<p>Możliwość obsługi wielu działających zadań, które są wykonywane jedno po drugim w przydzielonym czasie procesora (maszyna jednoprocesorowa + OS scheduler = <em>multitasking</em>) lub równolegle na wielu procesorach.</p>
+<section id="wspolbieznosc-concurrency">
+<h2>Współbieżność - <em>Concurrency</em><a class="headerlink" href="#wspolbieznosc-concurrency" title="Link to this heading">#</a></h2>
+<p><strong>Współbieżność</strong> (ang. <em>Concurrency</em>) odnosi się do zdolności systemu do obsługi wielu zadań jednocześnie. Oznacza to, że system może przełączać się między różnymi zadaniami, sprawiając wrażenie, że są one wykonywane równolegle. W rzeczywistości zadania mogą się przeplatać, ale niekoniecznie są wykonywane w tym samym czasie (maszyna jednoprocesorowa + OS scheduler = <em>multitasking</em>).</p>
 <p><img alt="concurrent-vs-parallel" src="_images/concurrency-vs-parallel.png" /></p>
 </section>
-<section id="rownoleglosc">
-<h3>Równoległość<a class="headerlink" href="#rownoleglosc" title="Permalink to this heading">#</a></h3>
-<p>Możliwość wykonywania wielu obliczeń w tym samym czasie. Wymaga CPU z wieloma rdzeniami, wielu CPU, GPU lub klastra komputerów.</p>
+<section id="rownoleglosc-parallelism">
+<h2>Równoległość - <em>Parallelism</em><a class="headerlink" href="#rownoleglosc-parallelism" title="Link to this heading">#</a></h2>
+<p><strong>Równoległość</strong> (ang. <em>Parallelism</em>) oznacza jednoczesne wykonywanie wielu zadań. Jest to możliwe dzięki wykorzystaniu wielu procesorów lub rdzeni, które współpracują ze sobą nad różnymi częściami problemu. Równoległość ma na celu przyspieszenie przetwarzania poprzez podzielenie zadania na mniejsze podzadania, które są wykonywane równocześnie.</p>
 </section>
 <section id="proces">
-<h3>Proces<a class="headerlink" href="#proces" title="Permalink to this heading">#</a></h3>
-<p>Egzemplarz wykonywanego programu. Współczesne systemy operacyjne zarządzają setkami procesów, które są jednocześnie uruchomione.</p>
+<h2>Proces<a class="headerlink" href="#proces" title="Link to this heading">#</a></h2>
+<p><strong>Proces</strong> to podstawowa jednostka pracy w systemie operacyjnym. Proces jest uruchomioną instancją programu, która zawiera kod programu oraz aktualny stan jego wykonania. Proces może być uruchomiony przez użytkownika lub system, a także może tworzyć inne procesy, które nazywają się <strong>procesami potomnymi</strong> (<em>child processes</em>).</p>
+<p>Współczesne systemy operacyjne zarządzają setkami procesów, które są jednocześnie uruchomione.</p>
 <p>Za zarządzanie procesami odpowiada jądro systemu operacyjnego (<em>process scheduler</em>). Scheduler decyduje, który proces wykonuje swoje zadania w przydzielonym przedziale czasu. System operacyjny zarządza także priorytetami procesów.</p>
-<p>Proces może tworzyć procesy potomne (<em>child processes</em>).</p>
-<section id="sposoby-komunikacji-miedzy-procesami">
-<h4>Sposoby komunikacji między procesami<a class="headerlink" href="#sposoby-komunikacji-miedzy-procesami" title="Permalink to this heading">#</a></h4>
-<p>Procesy są izolowane. Dotyczy to także procesów potomnych. W rezultacie procesy mogą komunikować się między sobą przy pomocy:</p>
+<section id="struktura-procesu-posix">
+<h3>Struktura procesu (POSIX)<a class="headerlink" href="#struktura-procesu-posix" title="Link to this heading">#</a></h3>
+<p>Proces składa się z kilku kluczowych elementów:</p>
 <ul class="simple">
-<li><p>pamięci współdzielonej</p></li>
-<li><p>gniazd (<em>socketów</em>)</p></li>
-<li><p>potoków</p></li>
-<li><p>plików</p></li>
-<li><p>sygnałów</p></li>
+<li><p><strong>Identyfikator procesu (PID)</strong>: Unikalny identyfikator przypisany do każdego procesu.</p></li>
+<li><p><strong>Konto użytkownika</strong>: Informacje o użytkowniku, który uruchomił proces, takie jak identyfikator użytkownika (UID) i grupa (GID).</p></li>
+<li><p><strong>Kody wyjścia</strong>: Informacje o zakończeniu procesu, w tym kod wyjścia wskazujący sukces lub niepowodzenie.</p></li>
+<li><p><strong>Segment kodu</strong>: Sekcja pamięci zawierająca instrukcje programu do wykonania.</p></li>
+<li><p><strong>Segment danych</strong>: Sekcja pamięci przechowująca zmienne globalne i dane statyczne.</p></li>
+<li><p><strong>Segment stosu</strong>: Obszar pamięci używany do przechowywania zmiennych lokalnych i informacji o wywołaniach funkcji.</p></li>
+<li><p><strong>Sterta</strong>: Dynamiczny obszar pamięci używany do alokacji dynamicznych zasobów w trakcie działania programu.</p></li>
+<li><p><strong>Tablica deskryptorów plików</strong>: Lista otwartych plików i urządzeń, z którymi proces może się komunikować.</p></li>
+</ul>
+</section>
+<section id="sposoby-komunikacji-miedzy-procesami">
+<h3>Sposoby komunikacji między procesami<a class="headerlink" href="#sposoby-komunikacji-miedzy-procesami" title="Link to this heading">#</a></h3>
+<p>Procesy są izolowane. Dotyczy to także procesów potomnych. W rezultacie procesy mogą komunikować się między sobą przy pomocy mechanizmów IPC (<em>Inter-Process Communication</em>). Najpopularniejsze metody komunikacji między procesami to:</p>
+<ul class="simple">
+<li><p><strong>Sygnały</strong> (<em>Signals</em>)</p>
+<ul>
+<li><p>Sygnały są asynchronicznymi komunikatami wysyłanymi do procesów w celu powiadomienia o zdarzeniach. Pozwalają procesom na przesyłanie krótkich powiadomień o zdarzeniach, takich jak prośby o zakończenie, zawieszenie, lub obsługę specjalnych warunków.</p></li>
+</ul>
+</li>
+<li><p><strong>Pamięć współdzielona</strong> - <em>Shared Memory</em></p>
+<ul>
+<li><p>Procesy mogą dzielić segmenty pamięci, co umożliwia szybki dostęp do wspólnych danych (<code class="docutils literal notranslate"><span class="pre">shm_open</span></code>, <code class="docutils literal notranslate"><span class="pre">mmap</span></code>)</p></li>
+</ul>
+</li>
+<li><p><strong>Gniazda</strong> (<em>Socketów</em>)</p>
+<ul>
+<li><p>Gniazda umożliwiają komunikację między procesami na tym samym komputerze lub w sieci.</p></li>
+</ul>
+</li>
+<li><p><strong>Potoki</strong> (<em>Pipes</em>) i <strong>potoki nazwane</strong> (<em>Named Pipes</em>)</p>
+<ul>
+<li><p>Potoki umożliwiają jednokierunkową komunikację między procesami. Potoki nazwane mogą być używane przez procesy niepowiązane ze sobą.</p></li>
+</ul>
+</li>
+<li><p><strong>Kolejki komunikatów</strong> (<em>Message Queues</em>)</p>
+<ul>
+<li><p>Kolejki komunikatów umożliwiają przesyłanie komunikatów między procesami (<code class="docutils literal notranslate"><span class="pre">mq_open</span></code>, <code class="docutils literal notranslate"><span class="pre">mq_send</span></code>).</p></li>
+</ul>
+</li>
 </ul>
 </section>
 </section>
-<section id="watek">
-<h3>Wątek<a class="headerlink" href="#watek" title="Permalink to this heading">#</a></h3>
-<p>Niezależny ciąg instrukcji wykonywany współbieżnie w ramach jednego procesu.</p>
+<section id="watek-thread">
+<h2>Wątek - <em>Thread</em><a class="headerlink" href="#watek-thread" title="Link to this heading">#</a></h2>
+<p><strong>Wątek</strong> (ang. <em>Thread</em>) to jednostka wykonawcza w ramach procesu. Proces może składać się z jednego lub wielu wątków, które współdzielą zasoby procesu, takie jak pamięć i deskryptory plików. Każdy wątek posiada swój własny stos oraz rejestry, co pozwala mu na niezależne wykonywanie zadań.</p>
 <p>Wszystkie wątki działające w danym procesie współdzielą przestrzeń adresową oraz zasoby systemowe przydzielone procesowi. Dzięki temu wątki w obrębie procesu mają łatwy dostęp do:</p>
 <ul class="simple">
 <li><p>pamięci (<em>heap</em>, <em>static storage</em>)</p></li>
@@ -404,9 +466,8 @@ document.write(`
 <li><p>Linux, BSD - pthread</p></li>
 </ul>
 </section>
-</section>
 <section id="proces-czy-watek">
-<h2>Proces czy wątek?<a class="headerlink" href="#proces-czy-watek" title="Permalink to this heading">#</a></h2>
+<h2>Proces czy wątek?<a class="headerlink" href="#proces-czy-watek" title="Link to this heading">#</a></h2>
 <p>Procesy:</p>
 <ul class="simple">
 <li><p>są niezależne (izolowane)</p></li>
@@ -425,8 +486,34 @@ document.write(`
 <li><p>jeśli wątki wymagają zasobów, które nie mogą być użyte przez wiele procesów jednocześnie, należy korzystać z wątków</p></li>
 </ul>
 </section>
+<section id="przelaczanie-kontekstu-context-switch">
+<h2>Przełączanie kontekstu - <em>Context Switch</em><a class="headerlink" href="#przelaczanie-kontekstu-context-switch" title="Link to this heading">#</a></h2>
+<p><strong>Przełączanie kontekstu</strong> (ang. <em>Context Switch</em>) to proces, w którym system operacyjny przełącza CPU z wykonywania jednego wątku lub procesu na inny. Przełączanie kontekstu jest niezbędne w systemach wielozadaniowych, gdzie wiele procesów lub wątków jest wykonywanych równolegle, aby zapewnić efektywne wykorzystanie zasobów procesora.</p>
+<section id="kroki-przelaczania-kontekstu">
+<h3>Kroki przełączania kontekstu<a class="headerlink" href="#kroki-przelaczania-kontekstu" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Zapisywanie stanu bieżącego procesu</strong>: Stan bieżącego procesu, w tym jego rejestry procesora, licznik programu, wskaźnik stosu i inne informacje, musi być zapisany w strukturze danych zwanej deskryptorem procesu.</p></li>
+<li><p><strong>Zmiana kontekstu</strong>: System operacyjny zmienia stan CPU na stan nowego procesu lub wątku, który ma zostać wykonany.</p></li>
+<li><p><strong>Przywracanie stanu nowego procesu</strong>: Stan nowego procesu, w tym jego rejestry procesora, licznik programu, wskaźnik stosu i inne informacje, jest przywracany z deskryptora procesu.</p></li>
+<li><p><strong>Wznowienie wykonania</strong>: Nowy proces lub wątek zaczyna swoje wykonywanie od punktu, w którym został wcześniej zatrzymany.</p></li>
+</ol>
+</section>
+<section id="rodzaje-przelaczania-kontekstu">
+<h3>Rodzaje przełączania kontekstu<a class="headerlink" href="#rodzaje-przelaczania-kontekstu" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Przełączanie kontekstu procesów</strong>: Obejmuje przełączanie pomiędzy różnymi procesami, co zwykle jest bardziej kosztowne, ponieważ wymaga przełączania między różnymi przestrzeniami adresowymi.</p></li>
+<li><p><strong>Przełączanie kontekstu wątków</strong>: Obejmuje przełączanie pomiędzy wątkami tego samego procesu, co jest zazwyczaj mniej kosztowne, ponieważ wątki współdzielą przestrzeń adresową.</p></li>
+</ul>
+</section>
+<section id="koszty-przelaczania-kontekstu">
+<h3>Koszty przełączania kontekstu<a class="headerlink" href="#koszty-przelaczania-kontekstu" title="Link to this heading">#</a></h3>
+<p>Przełączanie kontekstu jest operacją <a class="reference external" href="https://blog.codingconfessions.com/p/context-switching-and-performance">kosztowną</a> w sensie zużycia zasobów systemowych. Wprowadza pewne opóźnienia i zużywa zasoby CPU, co może wpłynąć na ogólną wydajność systemu. Dlatego systemy operacyjne starają się minimalizować częstotliwość przełączania kontekstu, zachowując równowagę pomiędzy responsywnością systemu a wydajnością.</p>
+</section>
+</section>
+<section id="programowanie-wspolbiezne-zalety-i-wady">
+<h2>Programowanie współbieżne - zalety i wady<a class="headerlink" href="#programowanie-wspolbiezne-zalety-i-wady" title="Link to this heading">#</a></h2>
 <section id="po-co-uzywac-wspolbieznosci">
-<h2>Po co używać współbieżności<a class="headerlink" href="#po-co-uzywac-wspolbieznosci" title="Permalink to this heading">#</a></h2>
+<h3>Po co używać współbieżności<a class="headerlink" href="#po-co-uzywac-wspolbieznosci" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Rozdzielenie odpowiedzialności</p>
 <ul>
@@ -451,7 +538,7 @@ document.write(`
 </ul>
 </section>
 <section id="kiedy-nie-uzywac-wspolbieznosci">
-<h2>Kiedy nie używać współbieżności?<a class="headerlink" href="#kiedy-nie-uzywac-wspolbieznosci" title="Permalink to this heading">#</a></h2>
+<h3>Kiedy nie używać współbieżności?<a class="headerlink" href="#kiedy-nie-uzywac-wspolbieznosci" title="Link to this heading">#</a></h3>
 <p>Należy unikać wielowątkowości, gdy korzyści nie są warte kosztów:</p>
 <ul class="simple">
 <li><p>Kod wielowątkowy jest dużo bardziej skomplikowany - trudniejszy do pisania, czytania i testowania niż kod jednowątkowy</p></li>
@@ -466,7 +553,7 @@ document.write(`
 </ul>
 </section>
 <section id="testowanie-aplikacji-wielowatkowych">
-<h2>Testowanie aplikacji wielowątkowych<a class="headerlink" href="#testowanie-aplikacji-wielowatkowych" title="Permalink to this heading">#</a></h2>
+<h3>Testowanie aplikacji wielowątkowych<a class="headerlink" href="#testowanie-aplikacji-wielowatkowych" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Kod jednowątkowy może być testowany jednostkowo (unit tests)</p>
 <ul>
@@ -482,6 +569,7 @@ document.write(`
 <li><p>Dobrze jest zapewnić możliwość skalowania ilości wątków do jednego (single threaded
 code) aby wykluczyć inne przyczyny błędów</p></li>
 </ul>
+</section>
 </section>
 </section>
 
@@ -510,14 +598,13 @@ code) aby wykluczyć inne przyczyny błędów</p></li>
 
               
               
-                <footer class="bd-footer-article">
+              
+              
+                <footer class="prev-next-footer d-print-none">
                   
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="intro.html"
+       href="multithreading-cpp.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
@@ -534,10 +621,7 @@ code) aby wykluczyć inne przyczyny błędów</p></li>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -546,26 +630,34 @@ code) aby wykluczyć inne przyczyny błędów</p></li>
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
   <div class="sidebar-secondary-item">
   <div class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#podstawowe-pojecia">Podstawowe pojęcia</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wspolbieznosc">Współbieżność</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rownoleglosc">Równoległość</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#proces">Proces</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#sposoby-komunikacji-miedzy-procesami">Sposoby komunikacji między procesami</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wspolbieznosc-concurrency">Współbieżność - <em>Concurrency</em></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rownoleglosc-parallelism">Równoległość - <em>Parallelism</em></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proces">Proces</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#struktura-procesu-posix">Struktura procesu (POSIX)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sposoby-komunikacji-miedzy-procesami">Sposoby komunikacji między procesami</a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#watek">Wątek</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#watek-thread">Wątek - <em>Thread</em></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#proces-czy-watek">Proces czy wątek?</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#po-co-uzywac-wspolbieznosci">Po co używać współbieżności</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kiedy-nie-uzywac-wspolbieznosci">Kiedy nie używać współbieżności?</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testowanie-aplikacji-wielowatkowych">Testowanie aplikacji wielowątkowych</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#przelaczanie-kontekstu-context-switch">Przełączanie kontekstu - <em>Context Switch</em></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kroki-przelaczania-kontekstu">Kroki przełączania kontekstu</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rodzaje-przelaczania-kontekstu">Rodzaje przełączania kontekstu</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#koszty-przelaczania-kontekstu">Koszty przełączania kontekstu</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#programowanie-wspolbiezne-zalety-i-wady">Programowanie współbieżne - zalety i wady</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#po-co-uzywac-wspolbieznosci">Po co używać współbieżności</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kiedy-nie-uzywac-wspolbieznosci">Kiedy nie używać współbieżności?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#testowanie-aplikacji-wielowatkowych">Testowanie aplikacji wielowątkowych</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
@@ -587,6 +679,7 @@ By Krystian Piękoś - Infotraining
   
   <div class="footer-item">
     
+
   <p class="copyright">
     
       © Copyright 2023.
@@ -613,8 +706,8 @@ By Krystian Piękoś - Infotraining
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
   </footer>

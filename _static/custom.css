@@ -1,5 +1,10 @@
 @import url("https://fonts.googleapis.com/css?family=Fira+Sans+Extra+Condensed:300,300i,400,400i,500,500i,600,600i|Fira+Sans:400,400i,500,600,600i,700,700i|Roboto+Condensed:400,400i,700,700i&subset=latin-ext");
 
+/* .bd-main
+{
+  min-width: 1250px;
+} */
+
 html[data-theme="dark"] {
   --pst-color-inline-code: #abe338;
   --my-color-definition-background: var(--bs-gray-800);
@@ -20,9 +25,19 @@ p {
   font-size: 1.1em !important;
 }
 
+ol li > p + ul.simple
+{
+  margin-top: 0.4rem !important;
+}
+
 p + ul.simple
 {
   margin-top: -1rem !important;
+}
+
+img {
+  margin-top: 2em;
+  margin-bottom: 2em;
 }
 
 main.bd-content #main-content h1,
@@ -71,7 +86,7 @@ code,
 kbd,
 samp,
 pre {
-  font-family: "Cascadia Code", var(--pst-font-family-monospace) !important;
+  font-family: "Cascadia Mono", var(--pst-font-family-monospace) !important;
   font-size: 95% !important;
   border-radius: 0px !important;
 }
@@ -115,4 +130,28 @@ dt {
 
 .h4 h4 {
   font-size: 1.2rem !important;
+}
+
+@media print {
+  .skip-link {
+    display: none !important;
+    position: absolute;
+  }
+}
+
+.table tbody tr:hover {
+  background-color: #ababab33 !important;
+}
+
+blockquote.epigraph, blockquote.highlights, blockquote.pull-quote {
+  background-color: #e0fff0;
+  border-left: none;
+  font-family: "Merriweather", serif;
+  font-style: italic;
+  font-size: 1em;
+}
+
+.bd-content .sd-card {
+  margin-bottom: 5px;
+  margin-top: 5px;
 }
