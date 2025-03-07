@@ -150,3 +150,8 @@ blockquote.epigraph, blockquote.highlights, blockquote.pull-quote {
   font-style: italic;
   font-size: 1em;
 }
+
+.bd-content .sd-card {
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
