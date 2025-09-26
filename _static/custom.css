@@ -18,7 +18,7 @@ html[data-theme="light"] {
 }
 
 body {
-  font-family: "Fira Sans", "Open Sans", sans-serif;
+  font-family: "Roboto Sans", "Fira Sans", "Open Sans", sans-serif;
 }
 
 p {
@@ -143,12 +143,24 @@ dt {
   background-color: #ababab33 !important;
 }
 
+blockquote.epigraph[data-theme="dark"],
+blockquote.highlights[data-theme="dark"],
+blockquote.pull-quote[data-theme="dark"] {
+  background-color: #0f3623;
+}
+
+blockquote.epigraph[data-theme="light"],
+blockquote.highlights[data-theme="light"],
+blockquote.pull-quote[data-theme="light"] {
+  background-color: #dafeed;
+}
+
 blockquote.epigraph, blockquote.highlights, blockquote.pull-quote {
-  background-color: #e0fff0;
+  
   border-left: none;
   font-family: "Merriweather", serif;
   font-style: italic;
-  font-size: 1em;
+  font-size: 1.2em !important;
 }
 
 .bd-content .sd-card {

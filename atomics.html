@@ -32,10 +32,10 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=576ba08b" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=cb8bacdd" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
@@ -468,7 +468,8 @@ Jeśli jakaś operacja poprzedza (<strong>happens-before</strong>) inną operacj
 <li><p>Pozyskanie muteksu (<em>lock</em>) <em>A</em> poprzedza zwolnienie muteksu (<em>unlock</em>) <em>B</em> przez ten sam wątek</p></li>
 <li><p>Operacja <code class="docutils literal notranslate"><span class="pre">unlock()</span></code> na muteksie <em>A</em> poprzedza operację <code class="docutils literal notranslate"><span class="pre">lock()</span></code> na muteksie <em>B</em> przez inny wątek. Jakiekolwiek zmiany dokonane w sekcji krytycznej na współdzielonych w pamięci zmiennych są widoczne dla wątku, który pozyskał muteks <em>B</em>.</p></li>
 </ol>
-<a class="reference internal image-reference" href="_images/happens-before.png"><img alt="happens-before" class="align-center" src="_images/happens-before.png" style="width: 80%;" /></a>
+<a class="reference internal image-reference" href="_images/happens-before.png"><img alt="happens-before" class="align-center" src="_images/happens-before.png" style="width: 80%;" />
+</a>
 <p>Dwie operacje dostępu do pamięci (<em>memory location</em>) A i B biorą udział w wyścigu (<em>data race</em>), jeżeli:</p>
 <ul class="simple">
 <li><p>A nie poprzedza B</p></li>
