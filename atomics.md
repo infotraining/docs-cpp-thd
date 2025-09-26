@@ -28,8 +28,19 @@ Mechanizm gwarantujący spójność danych w cache'ach może czasami znacznie sp
     
   -- Leslie Lamport, 1979
   ```
-  
-  Spójność sekwencyjna w programach wielowątkowych, które są wykonywane na maszynach wieloprocesorowych wymaga generowania dodatkowych ograniczeń dotyczących operacji na pamięci (np. barier pamięci - **memory fence**). Ponieważ ograniczenia te znacznie obniżają wydajność często wymagane jest poluzowanie tych ograniczeń przy zachowaniu prawidłowego (*thread-safe*) przebiegu programu.
+
+**Spójność sekwencyjna** to model spójności stosowany w programowaniu równoległym, który definiuje oczekiwane zachowanie operacji pamięci w systemie wielowątkowym. Zapewnia, że wyniki wykonania są takie, jakby wszystkie operacje były wykonywane w pewnej kolejności sekwencyjnej, a operacje każdego indywidualnego wątku pojawiają się w tej sekwencji w kolejności określonej przez program.
+
+#### Kluczowe punkty sekwencyjnej spójności
+
+* **Intuicyjne zachowanie**: Sekwencyjna spójność zapewnia intuicyjny model do rozumienia zachowania programów wielowątkowych. Gwarantuje, że wyniki programu będą takie, jakby operacje wszystkich wątków były przeplatane w pewnej kolejności sekwencyjnej, która respektuje porządek programu.
+
+* **Porządek programu**: W ramach jednego wątku operacje są wykonywane w kolejności określonej przez program. Oznacza to, że jeśli wątek wykonuje zapis, a następnie odczyt, odczyt zobaczy zapis lub każdy kolejny zapis w globalnym porządku.
+
+* **Globalny porządek**: Istnieje jeden globalny porządek operacji, z którym zgadzają się wszystkie wątki. Ten globalny porządek może nie odpowiadać rzeczywistej fizycznej kolejności wykonywania, ale jest używany do rozumienia zachowania programu.
+
+
+Spójność sekwencyjna w programach wielowątkowych, które są wykonywane na maszynach wieloprocesorowych wymaga generowania dodatkowych ograniczeń dotyczących operacji na pamięci (np. barier pamięci - **memory fence**). Ponieważ ograniczenia te znacznie obniżają wydajność często wymagane jest poluzowanie tych ograniczeń przy zachowaniu prawidłowego (*thread-safe*) przebiegu programu.
 
 ### Wyścig - *Race condition (data race)*
   
@@ -43,28 +54,51 @@ Mechanizm gwarantujący spójność danych w cache'ach może czasami znacznie sp
   Jeśli w programie pojawia się wyścig (*data race*), zachowanie programu staje się niezdefiniowane (*undefined behaviour*)
   ```
 
-### Relacja **happens-before**
-  
-* Dostęp do pamięci (*memory access*) A poprzedza (*happens-before*) B, jeżeli:
+### Relacja *Happens-before*
 
-  * A poprzedza B w programie
-  * A i B są operacjami synchronizującymi i B obserwuje rezultat A, narzucając kolejność operacji
+Relacja **happens-before** jest kluczowym pojęciem w modelu pamięci dla programowania współbieżnego. Relacja ta definiuje porządek w jakim wykonywane są operacje w programie.
+Jeśli jakaś operacja poprzedza (**happens-before**) inną operację, to pierwsza operacja musi zostać ukończona (i być widoczna) dla drugiej operacji.
 
-    * Przykład: A zwalnia muteks m, B następnie pozyskuje muteks m
+Relacja **happens-before** jest przechodnia, tzn. jeżeli *A* poprzedza *B*, a *B* poprzedza *C*, to *A* poprzedza *C*.
 
-      ```{image} ./_images/happens-before-mutex.pdf
-      :alt: happens-before
-      :width: 400px
-      :height: 450px
-      :align: center
-      ```
+W przypadku operacji na muteksach, relacja **happens-before** jest wygląda następująco:
 
-  * lub istnieje C takie, że A poprzedza (*happens-before*) C i C poprzedza B
+1. Pozyskanie muteksu (*lock*) *A* poprzedza zwolnienie muteksu (*unlock*) *B* przez ten sam wątek
+2. Operacja `unlock()` na muteksie *A* poprzedza operację `lock()` na muteksie *B* przez inny wątek. Jakiekolwiek zmiany dokonane w sekcji krytycznej na współdzielonych w pamięci zmiennych są widoczne dla wątku, który pozyskał muteks *B*.
 
-* Dwie operacje dostępu do pamięci (*memory location*) A i B biorą udział w wyścigu (*data race*), jeżeli:
+```{image} ./_images/happens-before.png
+:alt: happens-before
+:width: 80%
+:align: center
+```
+
+Dwie operacje dostępu do pamięci (*memory location*) A i B biorą udział w wyścigu (*data race*), jeżeli:
 
   * A nie poprzedza B
   * ani B nie poprzedza A
+
+### Relacja *Synchronizes-with*
+
+```{epigraph}
+An atomic operation A that performs a release operation on an atomic object M synchronizes with an atomic operation B that performs an acquire operation on M and takes its value from any side effect in the release sequence headed by A.
+
+-- C++11 standard
+```
+
+Relacja **synchronizes-with** ustanawia porządek między operacjami wykonywanymi na zmiennych, które sa współdzielone między wątkami. Zapewnia, że wszystkie operacje zapisu do pamięci wykonane przed punktem synchronizacji są widoczne (gotowe do odczytu) dla innego wątku po punkcie synchronizacji.
+
+Relacja synchronizacji zachodzi między innymi dla:
+
+* muteksów - kiedy wątek zwalnia muteks (operacją `mtx.unlock()`) synchronizuje się z innym wątkiem, który pozyskuje ten muteks (operacją `mtx.lock()`)
+* zmiennych atomowych - operacja zapisu do zmiennej atomowej (operacja `var.store(std::memory_order_release)`) synchronizuje się z operacją odczytu (operacją `var.load(std::memory_order_acquire)`) tej zmiennej
+* zmiennych warunkowych - operacja `cond_var.notify_one()` lub `cond_var.notify_all()` synchronizuje się z operacją `cond_var.wait()` wykonaną przez inny wątek
+
+
+```{note}
+Relacja **happens-before** jest relacją bardziej ogólną i dotyczy porządku wykonywanych operacji, kolejności synchronizacji oraz przechodności. Dotyczy dowolnych operacji w programie (również operacji wykonywanych w jednym wątku).
+
+Relacja **synchronizes-with** dotyczy konkretnych operacji na zmiennych atomowych, muteksach i zmiennych warunkowych wykonywanych w środowisku wielowątkowym. Jest używana do określenia porządku, a tym samym relacji **happens-before** w programach wielowątkowych.
+```
 
 ## Transformacje programu
 
@@ -249,13 +283,6 @@ Kiedy wartość flagi odczytana w drugim wątku ma wartość ``true``, zapis fla
 * zapis do flagi ``done`` poprzedza odczyt wartości ``true``
 * operacja odczytu wartości ``true`` poprzedza odczyt zmiennej ``x``
 
-### Relacja synchronizacji *synchronizes-with*
-
-```{epigraph}
-An atomic operation A that performs a release operation on an atomic object M synchronizes with an atomic operation B that performs an acquire operation on M and takes its value from any side effect in the release sequence headed by A.
-
--- C++11 standard
-```
 
 ### Semantyka Acquire-Release
 
@@ -474,10 +501,12 @@ std::atomic<int> count{0};
 ```c++
 while(/* ... */)
 {
-  // ...
-  if (/* ... */)
-      count.fetch_add(1, std::memory_order_relaxed);
-  // ...
+    // ...
+    
+    if (/* ... */)
+        count.fetch_add(1, std::memory_order_relaxed);
+    
+    // ...
 }
 ```
 
