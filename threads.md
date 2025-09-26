@@ -279,13 +279,113 @@ Jawne wykonanie operacji na wątku, które jest wymagane przed wywołaniem destr
 Sytuacja ta powinna zostać rozwiązana przy pomocy obiektu implementującego technikę RAII. Niestety dopiero C++20 dostarcza odpowiedniej implementacji w postaci klasy `std::jthread`.
 ```
 
-## Klasa std::jthread
+## Klasa std::jthread (C++20)
 
-TODO
+Klasa `std::jthread` to ulepszona wersja `std::thread`, która:
+
+* wywołuje operację `join()` w destruktorze
+* obsługuje możliwość kooperatywnego anulowania wątku przez `std::stop_token`
+
+``` c++
+void safe_join_in_cpp20() 
+{
+    std::jthread thd1{&background_work, 1, "Hello", 100ms};
+    std::jthread thd2{&background_work, 2, "Multithreading", 250ms};
+    
+    may_throw(); 
+    
+    thd1.join(); // explicit join
+    
+} // implicit join in the destructor for thd2 & thd1 joins in case of exception
+```
+
+### Destruktor jthread
+
+``` c++
+std::jthread::~jthread() 
+{
+  if (joinable()) 
+  {
+      request_stop(); // cooperative cancelling of the task
+      join();
+  }
+}
+```
 
 ## Kooperatywne przerywanie (anulowanie) wątków
 
-TODO
+* Model kooperatywnego anulowania zadań może być uniwersalnie stososowany
+  * wątki, korutyny, operacje sieciowe, I/O, itp.
+* Nagłówek `<stop_token>`
+* Podstawowe typy:
+  * `std::stop_source` - obiekt *źródła* - umożliwia zażądania anulowania zadania
+  * `std::stop_token` - obiekt umożliwiający sprawdzenie, czy zażądano anulowania zadania
+  * `std::stop_callback` - callback w przypadku anulowania zadania
+
+### Implementacja zadania
+
+Implementując funkcję należy wykorzystać parameter typu `std::stop_token`, przekazany przez wartość:
+
+``` c++
+void background_work(std::stop_token token, const int id, const std::string text) 
+{
+    std::cout << "Thread#" << id << " started..." << std::endl;
+
+    for(const auto& letter : text)
+    {
+        if (token.stop_requested())
+        {
+            std::cout << "Stop has been requested..." << std::endl;
+            std::cout << "Thread#" << id << " cancelled" << std::endl;
+            return;
+        }
+
+        std::cout << "Thread#" << id << " - " << letter << std::endl;
+        std::this_thread::sleep_for(250ms);
+    }
+}
+```
+
+Dzięki tokenowi możemy bezpiecznie sprawdzić, czy zażądano przerwania zadania i jeśli tak, to wyjść z funkcji.
+
+### Uruchomienia zadania i jego anulowanie
+
+Do tworzenia tokenów i zgłaszania żądania stopu służy obiekt typu `std::stop_source`:
+
+```c++
+void run_task_and_cancel()
+{
+    std::stop_source stop_src; 
+    std::stop_token st = stop_src.get_token();
+
+    std::jthread thd1{&background_work, st, 1, "FIRST_TASK"};
+    std::jthread thd2{&background_work, stop_src.get_token(), 2, "SECOND_TASK"};
+    
+    std::this_thread::sleep_for(2s);
+    
+    stop_src.request_stop();
+
+    //...
+}
+```
+
+#### std::jthread - internal stop-state
+
+Jeśli nie przekażemy w wywołaniu konstruktora `std::jthread`jawnie tokena (a funkcja go oczekuje), to wykorzystany zostanie wewnętrzny stan obiektu wątku (*internal stop-state*)
+
+```c++
+void background_work(std::stop_token st, 
+                     const int id, const std::string text);
+
+//...                     
+
+std::jthread thd1{&background_work, 1, "TASK"};     // missing stop-token
+
+std::stop_source stop_src = thd1.get_stop_source(); // get stop_source from jthread
+std::stop_token st = thd1.get_stop_token();
+
+stop_src.request_stop(); // or thd1.request_stop();
+```
 
 ## Obsługa wyjątków w wątkach
 

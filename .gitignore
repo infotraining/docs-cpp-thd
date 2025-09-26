@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 
 # jbook build
-_build/
+_build*/
 .vscode/settings.json

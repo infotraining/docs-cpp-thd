@@ -304,7 +304,7 @@ Przykładowa implementacja klasy kontrolującej wyjątek poprzez wywołanie oper
 
     class JoiningThread
     {
-        thread thd_;
+        std::thread thd_;
 
     public:
         // perfect forwarding constructor
@@ -314,7 +314,7 @@ Przykładowa implementacja klasy kontrolującej wyjątek poprzez wywołanie oper
                 std::enable_if_t<
                     !is_same<Typelist<JoiningThread>, 
                              Typelist<std::decay_t<Args>...>>::value>>
-        JoiningThread(Args&&... args) : thd_{forward<Args>(args)...}
+        JoiningThread(Args&&... args) : thd_(forward<Args>(args)...)
         {
         }
 

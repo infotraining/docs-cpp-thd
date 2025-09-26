@@ -1,5 +1,8 @@
 format: jb-article
-root: intro
+root: multithreading-cpp
 sections:
   - file: multithreading-intro
   - file: threads
+  - file: synchronization
+  - file: async-futures
+  - file: atomics
