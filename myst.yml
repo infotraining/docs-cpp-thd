@@ -10,12 +10,12 @@ project:
       template: plain_latex_book
       output: exports/cpp-thd.pdf
   toc:
-    - file: multithreading-cpp.md
-    - file: multithreading-intro.md
-    - file: threads.md
-    - file: synchronization.md
-    - file: async-futures.md
-    - file: atomics.md
+    - file: content/multithreading-cpp.md
+    - file: content/multithreading-intro.md
+    - file: content/threads.md
+    - file: content/synchronization.md
+    - file: content/async-futures.md
+    - file: content/atomics.md
 
 site:
   template: book-theme
