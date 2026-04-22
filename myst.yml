@@ -1,0 +1,28 @@
+version: 1
+project:
+  title: Programowanie wielowątkowe w C++
+  authors:
+    - name: Krystian Piękoś - Infotraining
+  copyright: '2026'
+  github: infotraining/docs-cpp-thd
+  exports:
+    - format: pdf
+      template: plain_latex_book
+      output: exports/cpp-thd.pdf
+  toc:
+    - file: multithreading-cpp.md
+    - file: multithreading-intro.md
+    - file: threads.md
+    - file: synchronization.md
+    - file: async-futures.md
+    - file: atomics.md
+
+site:
+  template: book-theme
+  options:
+    analytics_google: G-YWDPT5L41K
+    style: ./css/custom.css
+    logo: ./images/logo-infotraining-light.svg     # path to your logo, shown top left at site
+    logo_dark: ./images/logo-infotraining-dark.svg # path to your logo for dark mode, shown top left at site
+    folders: false
+    hide_authors: true
