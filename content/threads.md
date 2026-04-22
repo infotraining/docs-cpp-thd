@@ -19,7 +19,7 @@ Wątek jest uruchamiany przez przekazanie do konstruktora obiektu `std::thread` 
 
 ### Wskaźnika do funkcji
 
-```c++
+```cpp
 #include <thread>
 #include <iostream>
 
@@ -37,7 +37,7 @@ int main()
 
 ### Obiektu funkcyjnego
 
-```c++
+```cpp
 #include <thread>
 #include <iostream>
 
@@ -62,7 +62,7 @@ int main()
 
 ### Funkcji lambda
 
-```c++
+```cpp
 #include <thread>
 #include <iostream>
 
@@ -78,7 +78,7 @@ int main()
 Aby poczekać na zakończenie wykonywania zadania przez dany wątek należy wywołać na jego rzecz metodę ``join()``.
 Metoda ``join()`` wstrzymuje wykonanie bieżącego wątku, aż do czasu zakończenia pracy przez wskazany wywołaniem wątek.
 
-```c++
+```cpp
 int main()
 {
     BackgroundTask task;
@@ -97,7 +97,7 @@ Wątki odłączone od obiektu typu `std::thread` to tzw. **wątki tła** (*deamo
 
 Aby utworzyć wątek tła należy na rzecz obiektu reprezentującego dany wątek wywołać metodę ``detach()``
 
-```c++
+```cpp
 std::thread thd(&do_background_work);
 
 thd.detach();
@@ -113,7 +113,7 @@ Przekazanie parametrów do uruchamianych wątków może odbywać się na trzy sp
 
 * Korzystając z parametrów konstruktora obiektu funkcyjnego przekazywanego do konstruktora obiektu ``std::thread``
 
-```c++
+```cpp
 class BackgroundTask
 {
     int x_;
@@ -138,7 +138,7 @@ thd.join();
   
   Jeśli wymagane jest przekazanie referencji do funkcji uruchamianej w nowym wątku należy użyć standardowych wraperów referencji ``std::ref()`` lub ``std::cref()``.
 
- ```c++
+ ```cpp
 void f1(int n)
 {
     for (int i = 0; i < n; ++i) 
@@ -175,7 +175,7 @@ int main()
 
 * Wykorzystując obiekt domknięcia, który przechwytuje zmienne będące argumentami wywoływanej funkcji
 
-```c++
+```cpp
 void process(int index, std::vector<int>& data)
 {
     //... processing data
@@ -198,7 +198,7 @@ thd_2.join();
 
 Przy przekazywaniu parametrów do wątków należy unikać wiszących referencji (*dangling references*) - [C++ Core Guidelines [CP.31]](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#cp31-pass-small-amounts-of-data-between-threads-by-value-rather-than-by-reference-or-pointer).
 
-```c++
+```cpp
 class Worker
 {
     int& ref;
@@ -226,7 +226,7 @@ std::thread create_thread()
 
 Obiekty wątków mogą przenoszone zgodnie z zasadami **move semantics**. Aby przenosić wątki między obiektami należy skorzystać z funkcji ``std::move()``
 
-```c++
+```cpp
 void task()
 {
     /* implementation */
@@ -241,7 +241,7 @@ std::thread create_thread()
 
 Wątki mogą być grupowane i przechowywane w kontenerach standardowych:
 
-```c++
+```cpp
 std::thread thd(&task);
 
 std::vector<std::thread> threads(2);
@@ -352,7 +352,7 @@ Dzięki tokenowi możemy bezpiecznie sprawdzić, czy zażądano przerwania zadan
 
 Do tworzenia tokenów i zgłaszania żądania stopu służy obiekt typu `std::stop_source`:
 
-```c++
+```cpp
 void run_task_and_cancel()
 {
     std::stop_source stop_src; 
@@ -373,7 +373,7 @@ void run_task_and_cancel()
 
 Jeśli nie przekażemy w wywołaniu konstruktora `std::jthread`jawnie tokena (a funkcja go oczekuje), to wykorzystany zostanie wewnętrzny stan obiektu wątku (*internal stop-state*)
 
-```c++
+```cpp
 void background_work(std::stop_token st, 
                      const int id, const std::string text);
 
@@ -401,7 +401,7 @@ Instancje `std::exception_ptr` posiadają następujące cechy:
 * dwa obiekty są uznawane za równe, jeśli są puste lub wskazują na ten sam obiekt wyjątku.
 * instancja ``std::exception_ptr`` jest konwertowalna do wartości logicznej
 
-```c++
+```cpp
 void my_task(std::exception_ptr& excpt)
 {
     try
@@ -446,14 +446,14 @@ int main()
 
 Statyczna metoda zwracająca ilość dostępnych wątków sprzętowych. Zwykle podawana jest ilość procesorów, rdzeni, itp. Jeżeli informacja nie jest dostępna, to zwracana jest wartość ``0``.
 
-```c++
+```cpp
     std::cout << "number of cores = "
               << thread::hardware_concurrency() << std::endl;
 ```
 
 W praktyce często używa się kontenerów wątków o rozmiarze równym ilości wątków sprzętowych:
 
-```c++
+```cpp
 auto hardware_threads_count = std::max(1u, std::thread::hardware_concurrency());
 std::vector<std::thread> threads(hardware_threads_count);
 ```
@@ -465,7 +465,7 @@ Przestrzeń nazw ``std::this_thread`` zawiera zestaw pomocniczych funkcji lub kl
 ``sleep_for(const chrono::duration<Rep, Period>& sleep_duration)``
 : wstrzymuje wykonanie bieżącego wątku na (przynajmniej) określony interwał czasu
 
-```c++
+```cpp
 using namespace std::chrono_literals;
 
 std::cout << "Hello waiter" << std::endl;
@@ -494,7 +494,7 @@ std::cout << "Waited " << elapsed.count() << " ms\n";
 Klasa ``std::thread::id`` jest lekką, trywialnie kopiowalną klasą, która opakowuje unikalny identyfikator wątku. Celem klasy jest umożliwienie wykorzystania identyfikatora
 wątku jako klucza w kontenerach asocjacyjnych (np. ``std::map``, ``std::unordered_map``).
 
-```c++
+```cpp
 class thread::id
 {
 public:
@@ -519,7 +519,7 @@ public:
     przechowanie wątku w kontenerach hashujących (np. ``unordered_map``)
 * Klasa posiada operator wyjścia do strumienia ``<<`` zależny od implementacji.
 
-```c++
+```cpp
 std::thread::id master_thread;
 
 void some_core_part_of_algorithm()

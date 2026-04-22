@@ -122,7 +122,7 @@ Transformacje mogą zachodzić na dowolnym poziomie:
 
 #### Busy wait
 
-```c++
+```cpp
 bool done;
 int x;
 ```
@@ -131,7 +131,7 @@ int x;
 
 :::{grid-item-card} Thread#1
 
-```c++
+```cpp
 x = 42;
 done = true;
 ```
@@ -140,7 +140,7 @@ done = true;
 
 :::{grid-item-card} Thread#2
 
-```c++
+```cpp
 while (!done) {}
 assert(x == 42);
 ```
@@ -155,7 +155,7 @@ Kompilator może przetransformować ten kod do postaci:
 
 :::{grid-item-card} Thread#1
 
-```c++
+```cpp
 x = 42;
 done = true;
 ```
@@ -164,7 +164,7 @@ done = true;
 
 :::{grid-item-card} Thread#2
 
-```c++
+```cpp
 tmp = done;
 while (!tmp) {};
 assert(x == 42);
@@ -180,7 +180,7 @@ Ewentualnie kompilator lub hardware (ARM, PowerPC) mogą dokonać następującej
 
 :::{grid-item-card} Thread#1
 
-```c++
+```cpp
 done = true;
 x = 42;
 ```
@@ -189,7 +189,7 @@ x = 42;
 
 :::{grid-item-card} Thread#2
 
-```c++
+```cpp
 while (!done) {}
 assert(x == 42);
 ```
@@ -200,7 +200,7 @@ assert(x == 42);
 
 #### Algorytm Dekker'a
 
-```c++
+```cpp
 int flag1 = flag2 = 0;
 ```
 
@@ -208,7 +208,7 @@ int flag1 = flag2 = 0;
 
 :::{grid-item-card} Thread#1
 
-```c++
+```cpp
 flag_1 = 1        // (a)
 if (flag_2 != 0)  // (b)
   // contention         
@@ -220,7 +220,7 @@ else
 
 :::{grid-item-card} Thread#2
 
-```c++
+```cpp
 flag_2 = 1        // (c)
 if (flag_1 != 0)  // (d)
   // contention         
@@ -245,7 +245,7 @@ C++11 umożliwia uniknięcie wyścigu poprzez stosowanie:
   
 Stosując atomową flagę typu ``atomic<bool>`` możemy rozwiązać problem implementacji algorytmu *busy-wait*:
 
-```c++
+```cpp
 std::atomic<bool> done;
 int x;
 ```
@@ -254,7 +254,7 @@ int x;
 
 :::{grid-item-card} Thread#1
 
-```c++
+```cpp
 x = 42;
 done = true;
 ```
@@ -263,7 +263,7 @@ done = true;
 
 :::{grid-item-card} Thread#2
 
-```c++
+```cpp
 while (!done) {}
 assert(x == 42);
 ```
@@ -294,7 +294,7 @@ Kiedy wartość flagi odczytana w drugim wątku ma wartość ``true``, zapis fla
 * **I**soloation - Niezależnie: Poprawne działanie gdy wykonywane są inne transakcje.
 * **D**urability - Trwale
 
-```c++
+```cpp
 BankAccount account_1;
 BankAccount account_2;
 
@@ -312,7 +312,7 @@ W programowaniu współbieżnym transakcyjność wykonywanych operacji możemy o
 
 #### Blokady - *locks*
 
-```c++
+```cpp
 { 
   std::lock_guard hold(mtx);  // enter critical region -> lock "acquire"
                                   
@@ -323,7 +323,7 @@ W programowaniu współbieżnym transakcyjność wykonywanych operacji możemy o
 
 #### Zmienne atomowe - *lock free*
 
-```c++
+```cpp
 std::atomic<int> whose_turn;
 
 while(whose_turn != me) { }   // enter critical region
@@ -344,7 +344,7 @@ Implementacja może korzystać z wsparcia sprzętowego (na wspieranych architekt
 
 Przykład:
 
-```c++
+```cpp
 // each call to worker() retrieves a unique value of i, even when done in parallel
 int worker()
 {
@@ -374,7 +374,7 @@ Atomowa flaga typu `bool`. Atomowe zachowanie jest *gwarantowane* przez standard
 
 Za pomocą tej flagi można skonstruować prosty obiekt blokady, zachowujący się jak muteks (*tzw. spin-lock*):
 
-```c++
+```cpp
 class SpinLock
 {
     std::atomic_flag flag;
@@ -424,7 +424,7 @@ Klasa szablonowa, generująca typy, które zachowują się "atomowo".
   `T fetch_sub(T arg, std::memory_order order = std::memory_order_seq_cst )`
   : atomowo odejmuje argument od wartości przechowywanej w obiekcie i zwraca poprzednią wartość
 
-```c++
+```cpp
 template<typename T>
 class Stack
 {
@@ -492,13 +492,13 @@ przez kompilator lub hardware. Opcje te są definiowane poprzez wyliczenie typu 
 
 Zmienna ``count`` jest typem atomowym, zainicjowanym zerem:
 
-```c++
+```cpp
 std::atomic<int> count{0};
 ```
 
 * Wątki 1..N:
 
-```c++
+```cpp
 while(/* ... */)
 {
     // ...
@@ -512,7 +512,7 @@ while(/* ... */)
 
 * Wątek główny:
 
-```c++
+```cpp
 int main()
 {
     launch_workers();
@@ -530,7 +530,7 @@ między wątkami.
 
 ### Licznik referencji (*reference counting*)
 
-```c++
+```cpp
 // thread-safe counter
 template <typename T>
 class RefCounted : boost::noncopyable

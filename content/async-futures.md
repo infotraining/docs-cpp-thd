@@ -30,7 +30,7 @@ Obiekty typu futures umożliwiają odczytanie wyników funkcji asynchronicznych:
     `T get()`
     : wstrzymuje bieżący wątek do momentu zakończenia asynchronicznej funkcji i następnie zwraca otrzymaną wartość lub rzuca przechowany w *shared state* wyjątek
 
-    ```c++
+    ```cpp
     #include <iostream>
     #include <future>
     #include <thread>
@@ -63,7 +63,7 @@ Obiekty typu futures umożliwiają odczytanie wyników funkcji asynchronicznych:
       - ``future_status::ready`` - wynik obliczenia jest gotowy
       - ``future_status::timeout`` - czas oczekiwania na wynik się zakończył (funkcja jeszcze nie zwróciła wyniku)
 
-    ```c++
+    ```cpp
     #include <iostream>
     #include <future>
     #include <thread>
@@ -148,7 +148,7 @@ Każdy obiekt ``std::promise<T>`` związany jest jednym obiektem ``std::future<T
 Wątek z dostępem do obiektu *future* po wywołaniu metody ``wait()`` będzie czekać na rezultat zwrócony przez obiekt
 ``std::promise`` z innego wątku przy pomocy metody ``set_value()``.
 
-```c++
+```cpp
 #include <thread>
 #include <future>
 #include <chrono>
@@ -215,7 +215,7 @@ int main()
 `std::packaged_task<R(TArgs...)>`
 : Instancja tej klasy jest pomocniczym obiektem opakowującym wywołanie funkcji lub funktora (obiektu wywoływalnego - *callable*) i implementującym zapisanie wyniku w *shared state*, który może być odczytany przez obiekt `std::future<T>`.
 
-```c++
+```cpp
 #include <future>
 #include <thread>
 
@@ -249,7 +249,7 @@ Wrapper ``std::packaged_task`` pozwala oddzielić:
 
 Przykład wykorzystania obiektów ``std::packaged_task``:
 
-```c++
+```cpp
 #include <iostream>
 #include <thread>
 #include <future>
@@ -304,7 +304,7 @@ int main()
 
 Obiekt ``packaged_task`` może zostać użyty w połączeniu z obiektami ``shared_future`` do implementacji funkcji asynchronicznych.
 
-```c++
+```cpp
 #include <iostream>
 #include <string>
 #include <thread>
