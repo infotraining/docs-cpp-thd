@@ -283,9 +283,9 @@ int main()
 
     // definition of some tasks
     std::packaged_task<int (char)> t1(&func);
-    tasks.push_back(move(t1));
+    tasks.push_back(std::move(t1));
     std::packaged_task<int (char)> t2([](char c) { return c; });
-    tasks.push_back(move(t2));
+    tasks.push_back(std::move(t2));
     tasks.emplace_back(&func);
     
     // start all tasks in one separate thread
@@ -321,11 +321,11 @@ FileContent download_file(const std::string& url)
     return "content of file: " + url;
 }
 
-std::shared_future<FileContent> download_file_async(const std::string& u
+std::shared_future<FileContent> download_file_async(const std::string& url)
 {
-    std::packaged_task<FileContent ()> task([=] { return download_file(u
+    std::packaged_task<FileContent ()> task([=] { return download_file(url); });
     std::shared_future<FileContent> sf(task.get_future());
-    std::thread thd(move(task));
+    std::thread thd(std::move(task));
     thd.detach();
     return sf;
 }

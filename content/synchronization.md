@@ -440,7 +440,7 @@ public:
 
 Mamy dwa obiekty ``x1`` i ``x2`` i dwa wątki próbujące je porównać, ale w odwrotną stronę:
 
-::::{grid}
+::::{grid} 2
 
 :::{grid-item-card} Wątek #1
 ```cpp
@@ -530,7 +530,7 @@ volatile bool data_ready;
 std::mutex mtx;
 ```
 
-::::{grid}
+::::{grid} 2
 
 :::{grid-item-card} Thread#1
 
@@ -578,7 +578,7 @@ std::atomic<bool> data_ready;
 ```
 
 
-::::{grid}
+::::{grid} 2
 
 :::{grid-item-card} Thread#1
 
@@ -640,7 +640,7 @@ std::mutex mtx_data_ready;
 std::condition_variable cv_is_data_ready;
 ```
 
-::::{grid}
+::::{grid} 2
 
 :::{grid-item-card} Thread#1
 
@@ -712,7 +712,7 @@ void prepare_data();
 void process_data();
 ```
 
-::::{grid}
+::::{grid} 2
 
 :::{grid-item-card} Thread#1
 
@@ -865,7 +865,7 @@ Obiekt bariery przechodzie przez następujące fazy:
 
 3. Wraz z końcem *phase completion step* licznik jest resetowany do wartości ustawionej w konstruktorze bariery, pomniejszonej o ilość wywołań `arrive_and_drop()`
 
-``` c++
+```cpp
 #include <barrier>
 #include <iostream>
 #include <string>

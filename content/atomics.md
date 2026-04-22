@@ -66,7 +66,7 @@ W przypadku operacji na muteksach, relacja **happens-before** jest wygląda nast
 1. Pozyskanie muteksu (*lock*) *A* poprzedza zwolnienie muteksu (*unlock*) *B* przez ten sam wątek
 2. Operacja `unlock()` na muteksie *A* poprzedza operację `lock()` na muteksie *B* przez inny wątek. Jakiekolwiek zmiany dokonane w sekcji krytycznej na współdzielonych w pamięci zmiennych są widoczne dla wątku, który pozyskał muteks *B*.
 
-```{image} ./_images/happens-before.png
+```{image} ./images/happens-before.png
 :alt: happens-before
 :width: 80%
 :align: center
@@ -127,7 +127,7 @@ bool done;
 int x;
 ```
 
-::::{grid}
+::::{grid} 2
 
 :::{grid-item-card} Thread#1
 
@@ -151,7 +151,7 @@ assert(x == 42);
 
 Kompilator może przetransformować ten kod do postaci:
 
-::::{grid}
+::::{grid} 2
 
 :::{grid-item-card} Thread#1
 
@@ -176,7 +176,7 @@ assert(x == 42);
 
 Ewentualnie kompilator lub hardware (ARM, PowerPC) mogą dokonać następującej transformacji:
 
-::::{grid}
+::::{grid} 2
 
 :::{grid-item-card} Thread#1
 
@@ -204,7 +204,7 @@ assert(x == 42);
 int flag1 = flag2 = 0;
 ```
 
-::::{grid}
+::::{grid} 2
 
 :::{grid-item-card} Thread#1
 
@@ -250,7 +250,7 @@ std::atomic<bool> done;
 int x;
 ```
 
-::::{grid}
+::::{grid} 2
 
 :::{grid-item-card} Thread#1
 

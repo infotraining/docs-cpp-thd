@@ -286,7 +286,7 @@ Klasa `std::jthread` to ulepszona wersja `std::thread`, która:
 * wywołuje operację `join()` w destruktorze
 * obsługuje możliwość kooperatywnego anulowania wątku przez `std::stop_token`
 
-``` c++
+``` cpp
 void safe_join_in_cpp20() 
 {
     std::jthread thd1{&background_work, 1, "Hello", 100ms};
@@ -301,7 +301,7 @@ void safe_join_in_cpp20()
 
 ### Destruktor jthread
 
-``` c++
+``` cpp
 std::jthread::~jthread() 
 {
   if (joinable()) 
@@ -326,7 +326,7 @@ std::jthread::~jthread()
 
 Implementując funkcję należy wykorzystać parameter typu `std::stop_token`, przekazany przez wartość:
 
-``` c++
+``` cpp
 void background_work(std::stop_token token, const int id, const std::string text) 
 {
     std::cout << "Thread#" << id << " started..." << std::endl;
@@ -442,7 +442,7 @@ int main()
 
 ## Funkcje i klasy pomocnicze w bibliotece standardowej
 
-### `std::thread::hardware_concurrency()`
+### std::thread::hardware_concurrency()
 
 Statyczna metoda zwracająca ilość dostępnych wątków sprzętowych. Zwykle podawana jest ilość procesorów, rdzeni, itp. Jeżeli informacja nie jest dostępna, to zwracana jest wartość ``0``.
 
@@ -458,7 +458,7 @@ auto hardware_threads_count = std::max(1u, std::thread::hardware_concurrency());
 std::vector<std::thread> threads(hardware_threads_count);
 ```
 
-### Przestrzeń nazw ``std::this_thread``
+### Przestrzeń nazw std::this_thread
 
 Przestrzeń nazw ``std::this_thread`` zawiera zestaw pomocniczych funkcji lub klas:
 
@@ -489,7 +489,7 @@ std::cout << "Waited " << elapsed.count() << " ms\n";
 * ``get_id()`` - zwraca obiekt typu ``std::thread::id`` reprezentujący identyfikator
   bieżącego wątku
 
-### Identyfikator wątku - `std::thread::id`
+### Identyfikator wątku - std::thread::id
 
 Klasa ``std::thread::id`` jest lekką, trywialnie kopiowalną klasą, która opakowuje unikalny identyfikator wątku. Celem klasy jest umożliwienie wykorzystania identyfikatora
 wątku jako klucza w kontenerach asocjacyjnych (np. ``std::map``, ``std::unordered_map``).

@@ -18,7 +18,10 @@ Concurrency provides a way to structure a solution to solve a problem that may (
 
 **Współbieżność** (ang. *Concurrency*) odnosi się do zdolności systemu do obsługi wielu zadań jednocześnie. Oznacza to, że system może przełączać się między różnymi zadaniami, sprawiając wrażenie, że są one wykonywane równolegle. W rzeczywistości zadania mogą się przeplatać, ale niekoniecznie są wykonywane w tym samym czasie (maszyna jednoprocesorowa + OS scheduler = *multitasking*).
 
-![concurrent-vs-parallel](./_images/concurrency-vs-parallel.png)
+```{image} ./images/concurrency-vs-parallel.png
+:alt: Concurrency vs Parallelism
+:align: center
+```
 
 ## Równoległość - *Parallelism*
 
