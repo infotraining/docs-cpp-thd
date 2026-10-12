@@ -17,6 +17,7 @@ fonts:
 defaults:
    layout: default
 layout: cover
+lineNumbers: true
 background: /img/bg-blue-1.jpg
 ---
 

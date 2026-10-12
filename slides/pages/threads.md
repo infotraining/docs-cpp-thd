@@ -23,19 +23,28 @@ background: /img/header-bg.svg
 
 # Wątek pusty
 
-<v-clicks>
-
-* Instancja `std::thread` utworzona konstruktorem domyślnym 
-* lub obiekt wątku po wykonaniu na nim operacji `std::move()`
-
-```c++
+<!-- old snippet
+```cpp
 std::thread thd_empty; // not-a-thread
 
 std::thread thd1(&some_function);
 std::thread thd2 = std::move(thd1); // thd1 is now not-a-thread
 thd2.join();
 ```
+-->
+
+<v-clicks>
+
+* Instancja `std::thread` utworzona konstruktorem domyślnym 
+* lub obiekt wątku po wykonaniu na nim operacji `std::move()`
+
 </v-clicks>
+
+<div v-click>
+
+<<< @/../examples/01_threads_basics.cpp#empty_thread {all}
+
+</div>
 
 ---
 
@@ -54,8 +63,9 @@ thd2.join();
 
 # Tworzenie wątku - wskaźnik do funkcji
 
-Tworzenie wątku przez przekazanie wskaźnika do funkcji
+* Tworzenie wątku przez przekazanie wskaźnika do funkcji
 
+<!-- old snippet
 ```cpp {all|1|3-6|10-11}
 #include <thread>
 
@@ -70,13 +80,17 @@ int main()
     thd.join();
 }
 ```
+-->
+
+<<< @/../examples/01_threads_basics.cpp#function_pointer {all|1-4|8-9}
 
 ---
 
 # Tworzenie wątku - obiekt funkcyjny
  
-Tworzenie wątku przez przekazanie obiektu funkcyjnego (funktora)
+*  Tworzenie wątku przez przekazanie obiektu funkcyjnego (funktora)
 
+<!-- old snippet
 <div class="text-code-07">
 ```cpp  {all|1-11|15-19} 
 class BackgroundTask
@@ -101,13 +115,21 @@ int main()
 }
 ```
 </div>
+-->
+
+<div class="text-code-07">
+
+<<< @/../examples/01_threads_basics.cpp#functor {all|1-13|17-21}
+
+</div>
 
 ---
 
 # Tworzenie wątku - obiekt domknięcia (lambda)
 
-Tworzenie wątku przez przekazanie obiektu domknięcia (lambdy)
+* Tworzenie wątku przez przekazanie obiektu domknięcia (lambdy)
 
+<!-- old snippet
 ```cpp
 auto task = [] {
     std::cout << "My first task..." << std::endl;
@@ -122,6 +144,9 @@ std::thread thd_2([] {
 thd_1.join();
 thd_2.join();
 ```
+-->
+
+<<< @/../examples/01_threads_basics.cpp#lambda
 
 ---
 
@@ -136,6 +161,7 @@ thd_2.join();
 
 # Dołączenie do wątku
 
+<!-- old snippet
 ```cpp
 int main()
 {
@@ -148,6 +174,9 @@ int main()
     assert(!thd.joinable());
 }
 ```
+-->
+
+<<< @/../examples/01_threads_basics.cpp#join
 
 ---
 
@@ -159,7 +188,7 @@ int main()
 
 # Destruktor wątku
 
-* Jeśli obiekt wątku jest skojarzony z wątkiem systemowym wywołanie metody `joinable()` zwraca `true`.
+* Jeśli obiekt wątku reprezentuje aktywny wątek systemowy (*active thread of execution*), metoda `joinable()` zwraca `true`.
 * Destrukcja obiektu wątku jest bezpieczna, jeśli obiekt wątku nie jest skojarzony z wątkiem systemowym. 
 * W przeciwnym wypadku wywołana jest funkcja `std::terminate()`
 
@@ -177,7 +206,7 @@ int main()
 
 # Destrukcja wątku
 
-Standard C++ wymusza jawne wywołanie `join()` lub `detach()` przed wywołaniem destruktora wątku, który jest skojarzony z wątkiem systemowym.
+* Standard C++ wymusza jawne wywołanie `join()` lub `detach()` przed wywołaniem destruktora wątku, który jest skojarzony z wątkiem systemowym.
 
 ---
 
@@ -192,6 +221,7 @@ Standard C++ wymusza jawne wywołanie `join()` lub `detach()` przed wywołaniem 
 * Przekazując argumenty jako kolejne (po funkcji lub obiekcie funkcyjnym) parametry konstruktora `std::thread`
 * Podane argumenty są kopiowane lub przenoszone do uruchamianego wątku
 
+<!-- old snippet
 ```cpp
 void do_work(int value, std::string text)
 {
@@ -201,6 +231,9 @@ void do_work(int value, std::string text)
 std::thread thd{&do_work, 42, "some data"};
 thd.join();
 ```
+-->
+
+<<< @/../examples/02_thread_args.cpp#by_value
 
 ---
 
@@ -214,6 +247,7 @@ thd.join();
 
 # Przekazanie referencji - przykład
 
+<!-- old snippet
 ```cpp {all|1-5|1,9-15}
 void do_work(ThreadSafeQueue<Data>& q, const std::string& value)
 {
@@ -232,6 +266,9 @@ int main()
     thd.join();
 }
 ```
+-->
+
+<<< @/../examples/02_thread_args.cpp#by_reference {all|1-5|9-15}
 
 ---
 
@@ -239,6 +276,7 @@ int main()
 
 * Wykorzystując obiekt domknięcia, który przechwytuje zmienne będące argumentami wywoływanej funkcji
 
+<!-- old snippet
 ```cpp
 void do_work(ThreadSafeQueue<Data>& q, std::string value)
 {
@@ -258,6 +296,13 @@ int main()
     thd.join();
 }
 ```
+-->
+
+<div class="text-08">
+
+<<< @/../examples/02_thread_args.cpp#by_closure {all|12}
+
+</div>
 
 ---
 
@@ -265,6 +310,7 @@ int main()
 
 * Konstrukcja obiektu funkcyjnego przekazywanego do konstruktora instancji `std::thread`:
 
+<!-- old snippet
 ```cpp
 class BackgroundTask {
     const int id_;
@@ -284,21 +330,41 @@ std::thread thd2{BackgroundTask{2}};
 thd1.join();
 thd2.join();
 ```
+-->
+
+<div class="text-07">
+
+<<< @/../examples/01_threads_basics.cpp#functor {all}
+
+</div>
 
 ---
 
 # Problem wiszących referencji
 
-Przy przekazywaniu parametrów do wątków należy unikać wiszących referencji (dangling references)
+* Przy przekazywaniu parametrów do wątków należy unikać wiszących referencji (dangling references)
 
 [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#rconc-data-by-value)
 
 ---
 
-# std::thread & move semantics
+# std::thread i semantyka przenoszenia
 
-Klasa `std::thread` implementuje tylko semantykę przenoszenia
+* Klasa `std::thread` jest **move-only**
+* Nie można kopiować obiektów `std::thread`, można je jedynie przenosić
+* Obiekty `std::thread` można przechowywać w kontenerach, takich jak `std::vector`, pod warunkiem użycia semantyki przenoszenia
 
+---
+
+# std::thread i kontenery std
+
+<div class="text-09">
+
+* Wątki można grupować w kontenerach, takich jak `std::vector`, przy użyciu semantyki przenoszenia
+
+</div>
+
+<!-- old snippet
 <div class="text-sm">
 ```cpp {all|3-7|12|15-16}
 void task() { /* implementation */ }
@@ -322,6 +388,13 @@ for(auto& thd : threads)
     thd.join();
 ```
 </div>
+-->
+
+<div class="text-sm">
+
+<<< @/../examples/02_thread_args.cpp#move_semantics {all|3-7|14|16-18}
+
+</div>
 
 ---
 layout: cover
@@ -342,6 +415,7 @@ background: /img/header-bg.svg
 
 # std::jthread
 
+<!-- old snippet
 <div class="text-code-08">
 ```cpp{all|16,21|17,22}
 void background_work(const int id, const std::string text, 
@@ -368,6 +442,13 @@ void safe_join_in_cpp20()
 } // implicit join in the destructor for thd2 & thd1 joins in case of exception
 ```
 </div>
+-->
+
+<div class="text-code-08">
+
+<<< @/../examples/03_jthread.cpp#safe_join {all|15-16|18|20-21}
+
+</div>
 
 ---
 
@@ -390,7 +471,7 @@ std::jthread::~jthread()
 
 # Kooperatywne anulowanie zadań
 
-* Model kooperatywnego anulowania zadań może być uniwersalnie stosowany
+* Model kooperatywnego anulowania zadań może być uniwersalnie stosowany przez
   * wątki, korutyny, operacje sieciowe, I/O, itp.
 * Nagłówek `<stop_token>`
 * Podstawowe typy:
@@ -402,8 +483,9 @@ std::jthread::~jthread()
 
 # std::stop_source / std::stop_token
 
-Implementacja zadania:
+* Implementacja zadania z obsługą kooperatywnego anulowania:
 
+<!-- old snippet
 ```cpp {all|1|4-7,10-11,15}
 void background_work(std::stop_token st, const int id, const std::string text) {
     std::cout << "Thread#" << id << " started..." << std::endl;
@@ -422,13 +504,21 @@ void background_work(std::stop_token st, const int id, const std::string text) {
     }
 }
 ```
+-->
+
+<div class="text-code-08">
+
+<<< @/../examples/03_jthread.cpp#stop_token_task {all|1|7-12|14-15}
+
+</div>
 
 ---
 
 # std::stop_source / std::stop_token
 
-Uruchomienia zadania i jego anulowanie
+* Uruchomienia zadania i jego anulowanie
 
+<!-- old snippet
 ```cpp {all|3-4|6-7|11|1-14}
 void run_task_and_cancel()
 {
@@ -445,13 +535,17 @@ void run_task_and_cancel()
     //...
 }
 ```
+-->
+
+<<< @/../examples/03_jthread.cpp#run_task_and_cancel {all|3-4|6-7|11}
 
 ---
 
 # std::jthread - internal stop-state
 
-Jeśli nie przekażemy w wywołaniu konstruktora `std::jthread` jawnie tokena (a funkcja go oczekuje), to wykorzystany zostanie wewnętrzny stan obiektu wątku (*internal stop-state*)
+* Jeśli nie przekażemy w wywołaniu konstruktora `std::jthread` jawnie tokena (a funkcja go oczekuje), to wykorzystany zostanie wewnętrzny stan obiektu wątku (*internal stop-state*)
 
+<!-- old snippet
 ```cpp
 void background_work(std::stop_token st, 
                      const int id, const std::string text);
@@ -463,6 +557,26 @@ std::stop_token st = thd1.get_stop_token();
 
 stop_src.request_stop(); // or thd1.request_stop();
 ```
+-->
+
+<<< @/../examples/03_jthread.cpp#internal_stop_state
+
+---
+
+# std::stop_callback
+
+* Obiekt RAII, umożliwiający rejestrację callbacku dla skojarzonego obiektu `std::stop_token`
+* Callback zostanie wywołany, gdy skojarzony z obiektem `std::stop_token` obiekt `std::stop_source` zgłosi żądanie zatrzymania wątku
+* Destruktor obiektu `std::stop_callback` automatycznie wyrejestruje callback, jeśli nie został on wcześniej wywołany
+* Callback jest wywołany:
+  *  w wątku, który zgłosił żądanie zatrzymania wątku
+  *  lub w przypadku, gdy żądanie anulowania wątku zostało zgłoszone przed rejestracją callbacku, w wątku, w którym nastąpiła rejestracja callbacku
+
+---
+
+# std::stop_callback
+
+<<< @/../examples/03_jthread.cpp#stop_callback
 
 ---
 layout: cover
@@ -498,6 +612,7 @@ background: /img/header-bg.svg
 
 # Przechwytywanie wyjątku w wątku
 
+<!-- old snippet
 ```cpp {all|3-12|5|9-12}
 void background_work(std::exception_ptr& excpt)
 {
@@ -513,11 +628,15 @@ void background_work(std::exception_ptr& excpt)
     }
 }
 ```
+-->
+
+<<< @/../examples/04_thread_exceptions.cpp#capture_exception {all|3-8|5|9-12}
 
 ---
 
 # Obsługa wyjątku w wątku głównym
 
+<!-- old snippet
 ```cpp {all|3|5|6|8-16}
 int main()
 {
@@ -539,6 +658,13 @@ int main()
     }
 }
 ```
+-->
+
+<div class="text-08">
+
+<<< @/../examples/04_thread_exceptions.cpp#handle_exception {all|3|5|6|8-18}
+
+</div>
 
 ---
 layout: cover
@@ -554,16 +680,16 @@ background: /img/header-bg.svg
 * Statyczna metoda zwracająca ilość dostępnych wątków sprzętowych
 * Zwykle podawana jest ilość procesorów, rdzeni, itp. Jeżeli informacja nie jest dostępna zwraca wartość `0`
 
-<v-click>
+<!-- old snippet
+    auto hardware_threads_count = std::max(1u, std::thread::hardware_concurrency());
+    std::vector<std::thread> threads(hardware_threads_count);
+-->
 
-```cpp
-auto hardware_threads_count = 
-    std::max(1u, std::thread::hardware_concurrency());
+<div v-click>
 
-std::vector<std::thread> threads(hardware_threads_count);
-```
+<<< @/../examples/05_thread_helpers.cpp#hardware_concurrency {all}
 
-</v-click>
+</div>
 
 ---
 

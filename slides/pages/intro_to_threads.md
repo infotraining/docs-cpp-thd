@@ -30,7 +30,6 @@ layout: default
   * wykorzystanie wielu wątków w ramach jednego procesu
 * Wektoryzacja SIMD - Single Instruction, Multiple Data
   * nowoczesne procesory umożliwiają wykonywanie jednej instrukcji na wielu danych jednocześnie
-ector parallelism (SIMD)
 * Korutyny
   * umożliwiają zawieszenie i wznowienie wykonywania funkcji w określonych punktach
   * umożliwiają efektywne zarządzanie operacjami (I/O) 
