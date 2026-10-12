@@ -79,17 +79,21 @@ jobs:
         run: pnpm run build slides.md --base "/slides/" --out dist/pl
         # run: pnpm build --base /slides/
 
-      - name: Build Slidev deck EN
-        working-directory: slides
-        run: pnpm run build slides.en.md --base "/slides/en/" --out dist/en
-        # run: pnpm build --base /slides/
+      # - name: Build Slidev deck EN
+      #   working-directory: slides
+      #   run: pnpm run build slides.en.md --base "/slides/en/" --out dist/en
+      #   # run: pnpm build --base /slides/
 
-      - name: Copy slides into site
+      - name: Copy slides into site PL
         run: |
-          mkdir -p docs/_build/html/slides docs/_build/html/slides/en
+          mkdir -p docs/_build/html/slides
           cp -r slides/dist/pl/* docs/_build/html/slides/
-          cp -r slides/dist/en/* docs/_build/html/slides/en/
-        
+
+      # - name: Copy slides into site EN
+      #   run: |
+      #     mkdir -p docs/_build/html/slides/en
+      #     cp -r slides/dist/en/* docs/_build/html/slides/en/
+      
       - name: Upload Output HTML as Artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -98,5 +102,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-    
