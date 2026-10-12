@@ -17,7 +17,7 @@ fonts:
 defaults:
    layout: default
 layout: cover
-background: /img/cover.jpg
+background: /img/bg-blue-1.jpg
 ---
 
 # Programowanie wielowątkowe w C++

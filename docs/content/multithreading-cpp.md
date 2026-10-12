@@ -1,6 +1,6 @@
 # Programowanie wielowątkowe w C++
 
-```{image} ./images/multithreading-cpp.png
+```{image} ./images/single-vs-parallel.jpeg
 :alt: Programowanie wielowątkowe w C++
 :align: center
 ```

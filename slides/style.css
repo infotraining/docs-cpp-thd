@@ -4,16 +4,60 @@
   /* font-size: 1em; */
 }
 
+.slidev-layout::before {
+  content: "";
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  width: 12rem;
+  height: 6rem;
+  background-image: url('/img/logo-grey.svg');
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-size: contain;
+  opacity: 0.14;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dark .slidev-layout::before {
+  background-image: url('/img/logo-grey.svg');
+}
+
+
+strong {
+  color: gold;
+}
+
+:root:not(.dark) strong {
+  color: #045475;
+}
+
+em {
+  /* color: gold; */
+  background-color: #055c7c !important;
+  color:#32ebcf;
+  border-radius: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+:root:not(.dark) em {
+  background-color: #04537510 !important;
+  color: #045475;
+}
+
 /* Base font size for slides */
 .slidev-layout {
-  padding-top: 3.0em;
-  font-size: 1.1em;
+  /* padding-top: 3.0em; */
+  font-size: 1.2em;
 }
 
 /* Code blocks */
 .slidev-layout pre {
   margin-top: 0.8em;
-  font-size: 0.85em;
+  margin-bottom: 0.8em;
+  font-size: 0.85em !important;
 }
 
 .slidev-layout code {
@@ -55,6 +99,7 @@ h1, h2, h3, h4, h5, h6 {
 .slidev-layout p {
   font-size: 1.1em;
   line-height: 1.6;
+  margin-bottom: 0 !important;
 }
 
 /* Light theme styles */
@@ -147,9 +192,38 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--slidev-theme-primary);
 }
 
+.slidev-layout li {
+    line-height: 1.6em;
+}
+
+.slidev-layout ul > li + li {
+  /* padding-top: 0.6em; */
+}
+
+.slidev-layout ul > li > ul > li {
+  line-height: 1.5em;
+}
+
+.slidev-layout ul > li > ul > li + li {
+  padding-top: 0em;
+}
+
 .slidev-layout ol li::marker {
   color: var(--slidev-theme-primary);
   font-weight: 700;
+}
+
+
+.slidev-layout ol > li + li {
+  padding-top: 0.6em;
+}
+
+.slidev-layout ol > li > ul > li {
+  line-height: 1.5em;
+}
+
+.slidev-layout ol > li > ul > li + li {
+  padding-top: 0em;
 }
 
 /* Blockquotes */
@@ -161,7 +235,7 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(135deg, rgba(4, 84, 117, 0.08), rgba(4, 84, 117, 0.02));
   border-radius: 0 8px 8px 0;
   position: relative;
-}
+} 
 
 .slidev-layout blockquote::before {
   content: '"';
@@ -179,6 +253,10 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0;
   font-size: 1.05em;
   line-height: 1.7;
+}
+
+.slidev-layout .text-xl blockquote p {
+  font-size: 2.0em !important;
 }
 
 .dark .slidev-layout blockquote {
@@ -209,7 +287,7 @@ h1, h2, h3, h4, h5, h6 {
 .slidev-layout table th,
 .slidev-layout table td {
   border: 1px solid rgba(128, 128, 128, 0.3);
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 1rem;
 }
 
 .text-code-sm {
@@ -230,4 +308,149 @@ h1, h2, h3, h4, h5, h6 {
 
 .text-code-06 {
   font-size: 0.6em !important
+}
+
+.text-2 {
+  font-size: 2em !important;
+}
+
+.text-09 {
+  font-size: 0.9em !important
+}
+
+.text-08 {
+  font-size: 0.85em !important
+}
+
+.text-07 {
+  font-size: 0.7em !important
+}
+
+.two-cols-header {
+  column-gap: 20px; /* Adjust the gap size as needed */
+}
+
+.span-v-1 {
+  margin: 1em;
+}
+
+.span-v-2 {
+  margin: 2em;
+}
+
+.span-v-3 {
+  margin: 3em;
+}
+
+.span-v-4 {
+  margin: 4em;
+}
+
+.logo {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+  width: 200px;
+  height: auto;
+  opacity: 0.6;
+} 
+
+.white-slide {
+  background: #ffffff !important;
+  color: rgb(95, 95, 95) !important;
+}
+.white-slide h1,
+.white-slide h2 {
+  color: rgb(53, 84, 116) !important;
+}
+
+.center {
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+  justify-content: center;
+}
+
+.br-lg {
+  height: 3em;
+}
+
+.img-lg {
+  width: 900x;
+  max-width: 80%;
+  max-height: 90%;
+  margin: 0 auto; /* center */
+  display: block;
+}
+
+.img-md {
+  width: 700x;
+  max-width: 60%;
+  max-height: 70%;
+  margin: 0 auto; /* center */
+  display: block;
+}
+
+.width-100 {
+  width: 100%;
+}
+
+.width-90 {
+  width: 90%;
+}
+
+.width-80 {
+  width: 80%;
+}
+
+.width-70 {
+  width: 70%;
+}
+
+.width-60 {
+  width: 60%;
+}
+
+.width-50 {
+  width: 50%;
+}
+
+.width-40 {
+  width: 40%;
+}
+
+.width-30 {
+  width: 30%;
+}
+
+.hint {
+  background-color: rgba(201, 208, 214, 0.1);
+  padding: 5px !important;
+  border-left: 3px solid #045475;
+  border-right: 3px solid #045475;
+  font-size: 0.9em;
+  font-style: italic;
+  text-align: center;
+}
+
+.slogan {
+  font-size: xx-large;
+  color: #045475;
+}
+
+.no-bullets ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.slidev-layout iframe,
+.slidev-layout-iframe iframe {
+  width: 100% !important;
+  height: 100% !important;
+  border: 0;
+}
+
+.slidev-layout-iframe {
+  width: 100% !important;
+  height: 100% !important;
 }
