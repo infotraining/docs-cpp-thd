@@ -2,7 +2,10 @@
 
 #include <atomic>
 #include <cassert>
+#include <cstddef>
+#include <cstdlib>
 #include <iostream>
+#include <memory>
 #include <thread>
 
 // Each variant lives in its own namespace, so that all of them can be compiled together.
@@ -166,15 +169,90 @@ void cas_strong(std::atomic<bool>& b) // b is set somewhere else
 // #endregion
 
 // #region cas_weak
-void cas_weak(std::atomic<bool>& b) // b is set somewhere else
+bool try_increment_below_limit(std::atomic<int>& counter, int limit)
 {
-    bool expected = false;
+    int expected = counter.load();
 
-    while (!b.compare_exchange_weak(expected, true) && !expected)
+    while (expected < limit)
     {
+        if (counter.compare_exchange_weak(expected, expected + 1))
+            return true;
     }
+
+    return false;
 }
 // #endregion
+
+class LockFreeStack
+{
+    struct Node
+    {
+        int value{};
+        Node* next{};
+    };
+
+    std::unique_ptr<Node[]> nodes_;
+    const std::size_t capacity_;
+    std::atomic<std::size_t> allocated_{0};
+    std::atomic<Node*> head_{nullptr};
+
+    // #region lockfree_stack_reserve_node
+    Node* reserve_node()
+    {
+        auto index = allocated_.load(std::memory_order_relaxed);
+        while (index < capacity_)
+        {
+            if (allocated_.compare_exchange_weak(
+                    index, index + 1, std::memory_order_relaxed))
+                return &nodes_[index];
+        }
+        return nullptr;
+    }
+    // #endregion
+
+public:
+    explicit LockFreeStack(std::size_t capacity)
+        : nodes_(std::make_unique<Node[]>(capacity)), capacity_(capacity)
+    {
+    }
+
+    // #region lockfree_stack_push
+    bool push(int value)
+    {
+        Node* node = reserve_node();
+        if (node == nullptr)
+            return false;
+        node->value = value;
+        
+        Node* expected = head_.load(std::memory_order_relaxed);
+        do
+        {
+            node->next = expected;
+        } while (!head_.compare_exchange_weak(
+            expected, node, std::memory_order_release, std::memory_order_relaxed));
+
+        return true;
+    }
+    // #endregion
+
+    // #region lockfree_stack_pop
+    bool try_pop(int& value)
+    {
+        Node* expected = head_.load(std::memory_order_acquire);
+        while (expected != nullptr)
+        {
+            Node* next = expected->next;
+            if (head_.compare_exchange_weak(
+                    expected, next, std::memory_order_acq_rel, std::memory_order_acquire))
+            {
+                value = expected->value;
+                return true;
+            }
+        }
+        return false;
+    }
+    // #endregion
+};
 
 int main()
 {
@@ -213,6 +291,44 @@ int main()
     atomic_bool_orders(b);
     b = false;
     cas_strong(b);
-    b = false;
-    cas_weak(b);
+
+    std::atomic<int> bounded_counter{0};
+    assert(try_increment_below_limit(bounded_counter, 1));
+    assert(!try_increment_below_limit(bounded_counter, 1));
+
+    constexpr int stack_capacity = 2'000;
+    LockFreeStack stack{stack_capacity};
+    {
+        std::jthread producer_1{[&] {
+            for (int i = 1; i <= stack_capacity / 2; ++i)
+            {
+                if (!stack.push(i))
+                    std::abort();
+            }
+        }};
+        std::jthread producer_2{[&] {
+            for (int i = stack_capacity / 2 + 1; i <= stack_capacity; ++i)
+            {
+                if (!stack.push(i))
+                    std::abort();
+            }
+        }};
+    }
+
+    std::atomic<int> popped_count{0};
+    std::atomic<int> popped_sum{0};
+    auto consume = [&] {
+        int value;
+        while (stack.try_pop(value))
+        {
+            popped_count.fetch_add(1);
+            popped_sum.fetch_add(value);
+        }
+    };
+    {
+        std::jthread consumer_1{consume};
+        std::jthread consumer_2{consume};
+    }
+    assert(popped_count == stack_capacity);
+    assert(popped_sum == stack_capacity * (stack_capacity + 1) / 2);
 }

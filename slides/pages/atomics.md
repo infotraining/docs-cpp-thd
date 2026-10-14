@@ -578,8 +578,38 @@ auto reader = [&data]() {
 ## Operacje compare_exchange
 
 * Operacja `compare_exchange` jest fundamentalną konstrukcją dla typów atomowych
-* Porównuje bieżącą wartość zmiennej atomowej z wartością dostarczoną jako argument `expected` i gdy wartości są równe zapisuje wartość `desired` tylko w przypadku, zwracając `true`
-* Jeśli wartości porównywane nie są równe, wartość `expected` jest uaktualniona i zwracana jest wartość `false`
+* Porównuje bieżącą wartość zmiennej atomowej z wartością `expected`; jeśli są równe, zapisuje `desired` i zwraca `true`
+* Jeśli wartości są różne, nie zapisuje `desired`, uaktualnia `expected` bieżącą wartością i zwraca `false`
+* Porównanie i warunkowy zapis są **jedną niepodzielną operacją read-modify-write**
+
+---
+
+## Po co nam compare_exchange?
+
+* Czasem nowa wartość zależy od aktualnej, a sprawdzenie warunku i zapis muszą być jednym krokiem
+* Osobne `load()` i `store()` nie wystarczą: inny wątek może zmienić wartość pomiędzy nimi
+* `compare_exchange` zapisuje nową wartość tylko wtedy, gdy zmienna atomowa nadal ma oczekiwaną wartość
+* Przy niepowodzeniu `expected` dostaje aktualną wartość — można na jej podstawie policzyć nową i spróbować ponownie
+
+---
+
+## Przykład użycia compare_exchange
+
+```cpp
+std::atomic<bool> claimed{false};
+
+// Dwa wątki mogą odczytać false i oba wejść do sekcji:
+if (!claimed.load())
+{
+    claimed.store(true);
+    enter_critical_section();
+}
+
+// Tylko jeden wątek atomowo zmieni false na true:
+bool expected = false;
+if (claimed.compare_exchange_strong(expected, true))
+    enter_critical_section();
+```
 
 ---
 
@@ -603,18 +633,15 @@ bool atomic<T>::compare_exchange_strong(T& expected, T desired)
 
 ## compare_exchange_strong
 
-<!-- old snippet
-```cpp
-bool expected = false;
+<div class="text-m">
 
-extern atomic<bool> b; // set somewhere else
+* Użyj, gdy pojedyncza próba ma dać jednoznaczny wynik
 
-if (b.compare_exchange_strong(expected, true))
-    std::cout << "b was set by me\n";
-else
-    std::cout << "b was set by someone else\n";
-```
--->
+* `false` oznacza, że wartość atomowa nie była równa `expected`; nie występuje pozorne niepowodzenie (*spurious failure*)
+
+* Operacja może się nie udać, jeśli inny wątek wcześniej zmienił wartość
+
+</div>
 
 <<< @/../examples/12_atomics.cpp#cas_strong
 
@@ -622,20 +649,144 @@ else
 
 ## compare_exchange_weak
 
-<!-- old snippet
-```cpp
-bool expected = false;
-extern atomic<bool> b; // set somewhere else
+<div class="text-m">
 
-while (!b.compare_exchange_weak(expected, true) && !expected);
-```
--->
+* Może zwrócić `false` także wtedy, gdy wartości są równe — to pozorne niepowodzenie (*spurious failure*)
+* Zwykle używa się jej w pętli, która ponawia próbę i przelicza `desired` dla aktualnego `expected`
+* Gdy wartości są różne, `expected` zostaje uaktualnione; pętla może więc sprawdzić nową wartość
+* To typowy wzorzec dla aktualizacji, które można bezpiecznie ponawiać — np. ograniczania licznika do limitu
 
-<<< @/../examples/12_atomics.cpp#cas_weak
+</div>
 
-* Dla operacji `compare_exchange_weak()` zapis wartości może się nie udać nawet wtedy, gdy bieżąca wartość zmiennej jest równa wartości oczekiwanej (tzw. *spurious failure*). Zwracana jest wtedy wartość `false`
-* W efekcie taka operacja musi zostać wykonana w pętli
-* Taka sytuacja występuje zwykle na maszynach, które nie mają pojedynczej instrukcji *compare-and-exchange*
+<div class="text-code-08">
+
+<<< @/../examples/12_atomics.cpp#cas_weak {all}
+
+</div>
+
+---
+
+## Struktury Lock-Free
+
+* Struktury lock-free pozwalają na bezpieczne operacje wielowątkowe bez użycia blokad, wykorzystując atomowe operacje CAS (Compare-And-Swap)
+* Dzięki temu można osiągnąć wysoką wydajność w środowiskach wielowątkowych, unikając kosztów związanych z blokadami.
+* Mogą być trudniejsze do zaprojektowania i zweryfikowania niż tradycyjne struktury z blokadami.
+
+---
+
+## Rodzaje struktur lock-free
+
+* **SPSC** - Single Producer, Single Consumer
+* **MPSC** - Multiple Producers, Single Consumer
+* **SPMC** - Single Producer, Multiple Consumers
+* **MPMC** - Multiple Producers, Multiple Consumers
+
+---
+
+## Lock-Free Stack - przykład implementacji
+
+* Prealokowana pula węzłów - brak dynamicznej alokacji podczas operacji na stosie
+* Brak muteksów - synchronizacja odbywa się wyłącznie za pomocą operacji atomowych CAS
+* Brak problemu ABA - problem z podwójnym odczytem i zapisem tego samego węzła (brak zwalniania pamięci)
+* MPMC - Multiple Producers, Multiple Consumers
+
+---
+
+## LockFreeStack - rezerwacja węzła
+
+<<< @/../examples/12_atomics.cpp#lockfree_stack_reserve_node {all|3|4-9}{at:1}
+
+<v-switch>
+  <template #1>
+    <code>allocated_</code> - licznik ile węzłów już przydzielono
+  </template>
+  <template #2>
+    Każdy wątek próbuje zwiększyć licznik o 1
+  </template>
+  <template #3>
+    Jeśli CAS się uda → wątek dostaje węzeł <code>nodes_[index]</code>
+    <br/>
+    Jeśli CAS się nie uda → index jest aktualizowany i pętla próbuje ponownie.
+  </template>
+  <template #4>
+    <code>memory_order_relaxed</code> jest używane do operacji na liczniku, ponieważ nie wymaga synchronizacji z innymi wątkami - jedyne wymaganie to niepodzielność operacji (atomicity)
+  </template>
+</v-switch>
+
+---
+
+## LockFreeStack — dodawanie elementu przez CAS
+
+<div class="text-code-09">
+
+<<< @/../examples/12_atomics.cpp#lockfree_stack_push {all|3-6|8|11|9-10,12-13}{at:1}
+
+<v-switch>
+  <template #1>
+    Najpierw rezerwowany jest nieużywany węzeł z puli
+  </template>
+  <template #2>
+    Odczytujemy aktualny <code>head</code> stosu i zapisujemy go w zmiennej <code>expected</code>
+  </template>
+  <template #3>
+    Ustawiamy <code>node->next = head</code>
+  </template>
+  <template #4>
+    Próbujemy CAS: <code>head → node</code> pod warunkiem, że <code>head</code> nadal wskazuje <code>expected</code>
+  </template>
+  <template #5>
+    Jeśli CAS się nie uda (bo ktoś inny zrobił push/pop) to <code>expected</code> jest aktualizowany i powtarzamy próbę
+  </template>
+  <template #6>
+    <code>memory_order_release</code> przy sukcesie publikuje zapisy dla wątku, który zrobi <code>pop()</code> z <code>memory_order_acquire</code>
+  </template>
+  <template #7>
+    <code>memory_order_relaxed</code> jest używane przy porażce, ponieważ nie wymaga synchronizacji z innymi wątkami - jedyne wymaganie to niepodzielność operacji (atomicity)
+  </template>
+</v-switch>
+
+</div>
+
+---
+
+## LockFreeStack — zdejmowanie elementu przez CAS
+
+<div class="text-code-09">
+
+<<< @/../examples/12_atomics.cpp#lockfree_stack_pop {all|3|4,14|6|7-8|4-13|7-12|7-8|7-8}{at:1}
+
+<v-switch>
+  <template #1>
+    Odczytujemy <code>head</code> z <code>memory_order_acquire</code> - gwarantuje widoczność zapisów dokonanych przez inne wątki przed ich zwolnieniem (release)
+  </template>
+  <template #2>
+    Jeśli <code>head == nullptr</code> → stos pusty
+  </template>
+  <template #3>
+    Pobieramy <code>next = head->next</code>
+  </template>
+  <template #4>
+    Próbujemy CAS: <code>head → next</code> pod warunkiem, że <code>head</code> nadal wskazuje <code>expected</code>
+  </template>
+  <template #5>
+    Jeśli CAS się nie uda (bo ktoś inny zrobił push/pop) to <code>expected</code> jest aktualizowany i powtarzamy próbę
+  </template>
+  <template #6>
+  Jeśli CAS się powiedzie, zwracamy zdjęty węzeł
+  </template>
+  <template #7>
+    <code>memory_order_acq_rel</code> przy sukcesie CAS
+    <br/>
+    <code>acquire</code>: widzimy poprawnie zawartość węzła
+    <br/>
+    <code>release</code>: zapewnia poprawną publikację zmian w stosie (np. dla innych pop/push).
+  </template>
+  <template #8>
+    <code>memory_order_acquire</code> na porażce CAS
+  </template>
+</v-switch> 
+
+</div>
 
 ---
 
@@ -681,5 +832,3 @@ while (!b.compare_exchange_weak(expected, true) && !expected);
   * Usuwanie nieużywanych zmiennych i instrukcji
   * Caching - kompilator może zmieniać sposób korzystania z pamięci podręcznej w celu optymalizacji dostępu do danych
   
-
-
