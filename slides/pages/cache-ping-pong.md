@@ -7,7 +7,7 @@ background: /img/header-bg.svg
 
 
 ---
-colorSchema: light
+class: white-slide
 ---
 
 # Cache Ping-Pong
@@ -15,7 +15,7 @@ colorSchema: light
 <img src="/img/cache/cache-ping-pong-1.png" class="h-80 mx-auto"/>
 
 ---
-colorSchema: light
+class: white-slide
 ---
 
 # Cache Ping-Pong
@@ -23,7 +23,7 @@ colorSchema: light
 <img src="/img/cache/cache-ping-pong-2.png" class="h-80 mx-auto"/>
 
 ---
-colorSchema: light
+class: white-slide
 ---
 
 # Cache Ping-Pong
@@ -31,7 +31,7 @@ colorSchema: light
 <img src="/img/cache/cache-ping-pong-3.png" class="h-80 mx-auto"/>
 
 ---
-colorSchema: light
+class: white-slide
 ---
 
 # Cache Ping-Pong
@@ -39,7 +39,7 @@ colorSchema: light
 <img src="/img/cache/cache-ping-pong-4.png" class="h-80 mx-auto"/>
 
 ---
-colorSchema: light
+class: white-slide
 ---
 
 # Cache Ping-Pong
@@ -48,21 +48,18 @@ colorSchema: light
 
 ---
 layout: center
-colorSchema: light
 ---
 
 # Cache Ping-Pong - Solution
 
 ---
-colorSchema: light
+class: white-slide
 ---
 
 # Solution
 
 <img src="/img/cache/cache-ping-pong-solution.png" class="h-80 mx-auto"/>
 
----
-colorSchema: light
 ---
 
 # Code

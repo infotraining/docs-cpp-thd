@@ -7,27 +7,21 @@ background: /img/header-bg.svg
 
 ---
 
-## Sequential consistency
+## Spójność sekwencyjna - Sequential consistency
 
-Defined by Leslie Lamport as 
+* To najsilniejszy i najprostszy **model pamięci**, w którym wszystkie operacje atomowe w programie **wydają się wykonywać w jednej, globalnej kolejności**, wspólnej dla wszystkich wątków
 
-> "… the result of any execution is the same as if the reads and writes occurred in some order, and the operations of each individual processor appear in this sequence in the order specified by its program"
+* Intuicyjny model myślenia o współbieżności — dokładnie tak, jakby program był wykonywany na jednym procesorze, krok po kroku
 
----
+* Zdefiniowana została w 1979 roku przez Leslie Lamporta jako 
 
-## Spójność sekwencyjna
-
-* Spójność sekwencyjna w programach wielowątkowych, które są wykonywane na maszynach wieloprocesorowych wymaga generowania dodatkowych ograniczeń dotyczących operacji na pamięci (np. barier pamięci - *memory fence*)
-* Ponieważ ograniczenia te znacznie obniżają wydajność często wymagane jest poluzowanie tych ograniczeń przy zachowaniu prawidłowego (thread-safe) przebiegu programu
+  > "… the result of any execution is the same as if the reads and writes occurred in some order, and the operations of each individual processor appear in this sequence in the order specified by its program"
 
 ---
 
-## Wyścig - Race condition (data race)
+## Wyścig - Race condition - Data race
 
-* W sytuacji, kiedy ewaluacja jednego wyrażenia zapisuje wartość zmiennej (*memory location*) i jednocześnie inne ewaluowane wyrażenie, modyfikuje lub odczytuje tą samą zmienną, powstaje konflikt
-* Program, który posiada takie dwie konfliktowe ewaluacje wyrażeń jest w sytuacji wyścigu (*data race*), chyba, że:
-  * oba wyrażenia są operacjami atomowymi (`std::atomic<T>`)
-  * jedno z wyrażeń poprzedza (*happens-before*) drugie (`std::memory_order`)
+* **Data race** występuje, gdy dwa lub więcej wątków wykonuje operacje na tym samym obiekcie (**memory location**), z których co najmniej jedna jest zapisem, i nie ma między nimi relacji synchronizacji (**happens-before**).
 
 ---
 
@@ -193,11 +187,15 @@ else
 </div>
 
 ---
+class: white-slide
+---
 
 ## Algorytm Dekkera
 
 <img src="/img/atomics/dekker-1.png" class="h-90 mx-auto bg-white p-4"/>
 
+---
+class: white-slide
 ---
 
 ## Algorytm Dekkera
@@ -205,11 +203,15 @@ else
 <img src="/img/atomics/dekker-2.png" class="h-90 mx-auto bg-white p-4"/>
 
 ---
+class: white-slide
+---
 
 ## Algorytm Dekkera
 
 <img src="/img/atomics/dekker-3.png" class="h-90 mx-auto bg-white p-4"/>
 
+---
+class: white-slide
 ---
 
 ## Algorytm Dekkera
@@ -217,11 +219,15 @@ else
 <img src="/img/atomics/dekker-4.png" class="h-90 mx-auto bg-white p-4"/>
 
 ---
+class: white-slide
+---
 
 ## Algorytm Dekkera
 
 <img src="/img/atomics/dekker-5.png" class="h-90 mx-auto bg-white p-4"/>
 
+---
+class: white-slide
 ---
 
 ## Algorytm Dekkera
@@ -229,11 +235,15 @@ else
 <img src="/img/atomics/dekker-6.png" class="h-90 mx-auto bg-white p-4"/>
 
 ---
+class: white-slide
+---
 
 ## Algorytm Dekkera
 
 <img src="/img/atomics/dekker-7.png" class="h-90 mx-auto bg-white p-4"/>
 
+---
+class: white-slide
 ---
 
 ## Algorytm Dekkera
@@ -245,9 +255,20 @@ else
 
 ## Ochrona przed wyścigiem (data race)
 
-* C++11 umożliwia uniknięcie wyścigu poprzez stosowanie:
-  * Blokad (muteks + menadżer blokady)
-  * Zmiennych typów atomowych
+<v-clicks>
+
+* Brak/Obecność relacji **happens-before** jest kluczowym kryterium dla określenia, czy występuje **data race**
+
+* C++ Memory Model umożliwia synchronizaję poprzez relacje **happens-before**, co pozwala uniknąć wyścigów danych
+
+* Synchronizacja może pochodzić z:
+  * Blokad mutexów (`lock() / unlock()`)
+  * Operacji na zmiennych atomowych (`store() / load()`)
+  * Zmiennych warunkowych (`wait() / notify_one() / notify_all()`)
+  * Operacji na pamięci współdzielonej z użyciem barier pamięci (`atomic_thread_fence()`)
+  * Start wątku (`std::thread` constructor) / Dołączenie wątku (`std::thread::join()`)
+
+</v-clicks>
 
 ---
 
@@ -367,7 +388,7 @@ assert(x == 42);
 ## Typy atomowe
 
 * Standardowe typy atomowe są zdefiniowane w nagłówku `<atomic>`
-* Wszystkie operacje zdefiniowane dla tych typów są atomowe
+* Wszystkie operacje zdefiniowane dla tych typów są niepodzielne (atomowe)
 * Do implementacji atomowych operacji mogą być wykorzystane muteksy
   * można to sprawdzić:
     - metodą `x.is_lock_free()`
@@ -380,8 +401,28 @@ assert(x == 42);
 * Atomowa flaga typu *Boolean*
 * Standard wymusza, aby wszystkie operacje wykonywane na niej były *lock-free*
 * Obiekty typu `std::atomic_flag` są inicjalizowane to stanu *clear*
-* Operacja `test_and_set()` umożliwia ustawienie flagi wraz z odpytaniem się o status
-* Operacja `clear()` czyści flagę
+* Interfejs:
+  * `bool test_and_set()` - ustawia flagę i zwraca jej poprzedni stan
+   * `void clear()` - czyści flagę
+
+---
+
+## std::atomic_flag - przykład użycia
+
+
+<<< @/../examples/12_atomics.cpp#atomic_flag_usage
+
+---
+
+## Spin Lock
+
+* Implementacja prostego spin locka przy użyciu `std::atomic_flag`
+
+<div class="text-code-08">
+
+<<< @/../examples/12_atomics.cpp#spin_lock {all|3|10-12|17}
+
+</div>
 
 ---
 
@@ -392,6 +433,7 @@ assert(x == 42);
   - `atomic_bool` `->` `std::atomic<bool>`
   - `atomic_int` `->` `std::atomic<int>`
 * Dla danego typu `T` specjalizacja udostępnia określone operatory
+  - np. `operator++` dla `std::atomic<int>`
 
 ---
 
@@ -425,7 +467,11 @@ assert(x == 42);
 
 ## Memory ordering - std::memory_order
 
+* Określa, w jaki sposób operacje atomowe są widoczne dla innych wątków
+
 * Każda operacja atomowa otrzymuje opcjonalny argument typu `std::memory_order`
+
+
 * Wyliczenie `std::memory_order` ma sześć możliwych wartości:
   * `std::memory_order_relaxed`
   * `std::memory_order_acquire`
@@ -448,61 +494,89 @@ assert(x == 42);
 
 ---
 
-## std::atomic_flag
+## memory_order_relaxed
 
-* Jest najprostszym typem atomowym, który reprezentuje *flagę boolowską*
-* Obiekty mogą być tylko w jednym z dwóch stanów:
-  - `set`
-  - lub `clear`
+* Operacja atomowa z `memory_order_relaxed` nie wprowadza żadnych dodatkowych ograniczeń dotyczących kolejności względem innych operacji atomowych
 
----
+* Zapewnia jedynie niepodzielność samej operacji
 
-## std::atomic_flag - użycie
-
-* Obiekty `std::atomic_flag` są w stanie *clear* po utworzeniu (od C++20; wcześniej wymagały `ATOMIC_FLAG_INIT`)
-* `clear()` czyści stan obiektu
-* `test_and_set()` - operacja RMW
-
-<!-- old snippet
-```cpp
-std::atomic_flag f = ATOMIC_FLAG_INIT;
-
-f.clear(std::memory_order_release);
-bool prev_state = f.test_and_set();
-```
--->
-
-<<< @/../examples/12_atomics.cpp#atomic_flag_usage
+* Może być używana, gdy nie zależy nam na synchronizacji z innymi wątkami, a jedynie na bezpiecznym odczycie lub zapisie wartości atomowej - np. liczniki
 
 ---
 
-## Spin Lock
+## memory_order_relaxed - przykład
 
-<!-- old snippet
-```cpp
-class SpinLockMutex
-{
-    std::atomic_flag flag_;
-public:
-    SpinLockMutex(): flag_(ATOMIC_FLAG_INIT)
-    {}
+```c++
+std::atomic<int> counter{0};
 
-    void lock()
-    {
-        while(flag_.test_and_set(std::memory_order_acquire));
-    }
-
-    void unlock()
-    {
-        flag_.clear(std::memory_order_release);
-    }
+auto incrementer = [&counter]() {
+    counter.fetch_add(1, std::memory_order_relaxed);
 };
-```
--->
 
-<<< @/../examples/12_atomics.cpp#spin_lock
+{
+    std::jthread t1{incrementer};
+    std::jthread t2{incrementer};
+} // join provides happens-before relationship
+
+int value = counter.load(std::memory_order_relaxed);
+```
 
 ---
+
+## memory_order_release / memory_order_acquire
+
+* `memory_order_release` - stosowane przy zapisie wartości atomowej, zapewnia, że wszystkie wcześniejsze operacje w tym wątku są widoczne dla innych wątków przed tym zapisem
+* `memory_order_acquire` - stosowane przy odczycie wartości atomowej, zapewnia, że wszystkie późniejsze operacje w tym wątku widzą efekty wszystkich wcześniejszych operacji w innych wątkach, które zakończyły się `memory_order_release` na tej samej zmiennej atomowej
+
+* `memory_order_acq_rel` - stosowane przy operacjach RMW, łączy efekty `memory_order_acquire` i `memory_order_release`
+
+---
+
+## memory_order_release / memory_order_acquire
+
+<div class="text-code-08">
+
+```c++
+std::vector<int> data;
+std::atomic<bool> data_is_ready{false};
+
+auto writer = [&data]() {
+    data = collect_data();
+    data_is_ready.store(true, std::memory_order_release); // synchronizes with acquire load in reader 
+};                                                        // -> establishes happens-before relationship
+
+auto reader = [&data]() {
+    while (!data_is_ready.load(std::memory_order_acquire))
+    {} // spin-wait until data is ready - synchronizes with release store in writer
+
+    process_data(data);
+};
+
+{
+    std::jthread t1{writer};
+    std::jthread t2{reader};
+}
+```
+
+</div>
+
+---
+
+## memory_order_seq_cst - spójność sekwencyjna
+
+* Domyślny i najbardziej restrykcyjny porządek pamięci, zapewniający spójność sekwencyjną wszystkich operacji atomowych w programie
+
+* Każda operacja atomowa z `memory_order_seq_cst` jest częścią globalnego porządku i jest widoczna dla wszystkich wątków w tej samej kolejności
+
+* Ponieważ jest to porządek najmocniejszy:
+  * `store(..., std::memory_order_seq_cst)` może zastąpić zapis z `memory_order_release`
+  * `load(std::memory_order_seq_cst)` może zastąpić odczyt z `memory_order_acquire`
+  * operacje RMW z `memory_order_seq_cst` mogą zastąpić operacje z `memory_order_acq_rel`
+
+---
+
+
+
 
 ## Operacje na std::atomic\<bool\> - 1
 
@@ -592,3 +666,50 @@ while (!b.compare_exchange_weak(expected, true) && !expected);
 * Dla operacji `compare_exchange_weak()` zapis wartości może się nie udać nawet wtedy, gdy bieżąca wartość zmiennej jest równa wartości oczekiwanej (tzw. *spurious failure*). Zwracana jest wtedy wartość `false`
 * W efekcie taka operacja musi zostać wykonana w pętli
 * Taka sytuacja występuje zwykle na maszynach, które nie mają pojedynczej instrukcji *compare-and-exchange*
+
+---
+
+## Atomics ≠ volatile
+
+* `volatile`:
+  * nie zapewnia synchronizacji
+  * nie zapewnia niepodzielności operacji (atomicity)
+  * służy do Memory-Mapped I/O (MMIO)
+
+* `std::atomic<T>`
+  * semantyka typów atomowych zapewnia pełną synchronizację
+
+---
+
+## Reordering
+
+* Kompilator i procesor mogą zmieniać kolejność instrukcji w celu optymalizacji
+
+* Dla zmiennych nieatomowych może to prowadzić do nieoczekiwanych wyników w programach wielowątkowych
+
+* Typy atomowe zapewniają mechanizmy synchronizacji, które ograniczają możliwość zmiany kolejności instrukcji w sposób, który mógłby naruszyć spójność danych
+
+---
+
+## Reordering - Hardware
+
+* Store buffers - mogą powodować, że zapis do pamięci nie jest natychmiast widoczny dla innych wątków, nawet jeśli operacja została wykonana w kolejności programowej
+
+* Invalidation queues - mogą powodować, że zmiany w pamięci podręcznej nie są natychmiast widoczne dla innych wątków
+
+* Pipelining - może powodować, że instrukcje są wykonywane w kolejności różnej od kolejności programowej, co może wpływać na widoczność zmian w pamięci dla innych wątków
+
+---
+
+## Reordering - Kompilator
+
+* Kompilator może zmieniać kolejność instrukcji w celu optymalizacji kodu
+
+* Rodzaje optymalizacji kompilatora obejmują:
+  * Przesuwanie instrukcji w górę lub w dół w celu zmniejszenia liczby opóźnień
+  * Łączenie instrukcji w celu zmniejszenia liczby operacji pamięciowych - 
+  * Usuwanie nieużywanych zmiennych i instrukcji
+  * Caching - kompilator może zmieniać sposób korzystania z pamięci podręcznej w celu optymalizacji dostępu do danych
+  
+
+

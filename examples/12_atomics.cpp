@@ -122,8 +122,13 @@ void use_atomic_flag()
 {
     std::atomic_flag f; // clear state since C++20
 
-    f.clear(std::memory_order_release);
     bool prev_state = f.test_and_set();
+    assert(prev_state == false);
+
+    prev_state = f.test_and_set();
+    assert(prev_state == true);
+
+    f.clear(std::memory_order_release);
 }
 // #endregion
 
