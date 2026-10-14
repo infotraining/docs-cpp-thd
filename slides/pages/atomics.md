@@ -48,6 +48,7 @@ layout: center
 
 ## Busy wait
 
+<!-- old snippet
 ```cpp
 int data{0};
 bool is_data_ready{false};
@@ -78,11 +79,28 @@ assert(x == 42);
 
 </div>
 </div>
+-->
+
+<<< @/../examples/12_atomics.cpp#race_decl
+
+<div class="grid grid-cols-2 gap-4">
+<div>
+
+<<< @/../examples/12_atomics.cpp#race_thd1 {all}
+
+</div>
+<div>
+
+<<< @/../examples/12_atomics.cpp#race_thd2 {all}
+
+</div>
+</div>
 
 ---
 
 ## Busy wait - przykład transformacji
 
+<!-- old snippet
 ```cpp
 int data{0};
 bool is_data_ready{false};
@@ -110,6 +128,24 @@ while (!tmp) {}
 
 assert(x == 42);
 ```
+
+transformacja dokonana przez kompilator - assert fails
+
+</div>
+</div>
+-->
+
+<<< @/../examples/12_atomics.cpp#race_decl
+
+<div class="grid grid-cols-2 gap-4">
+<div>
+
+<<< @/../examples/12_atomics.cpp#race_thd1 {all}
+
+</div>
+<div>
+
+<<< @/../examples/12_atomics.cpp#race_transformed_thd2 {all|3-6|8}
 
 transformacja dokonana przez kompilator - assert fails
 
@@ -226,6 +262,7 @@ else
 
 ## Busy wait - poprawna wersja
 
+<!-- old snippet
 ```cpp
 int data{0};
 std::atomic<bool> is_data_ready{false};
@@ -256,11 +293,28 @@ assert(x == 42);
 
 </div>
 </div>
+-->
+
+<<< @/../examples/12_atomics.cpp#atomic_decl
+
+<div class="grid grid-cols-2 gap-4">
+<div>
+
+<<< @/../examples/12_atomics.cpp#atomic_thd1 {all}
+
+</div>
+<div>
+
+<<< @/../examples/12_atomics.cpp#atomic_thd2 {all}
+
+</div>
+</div>
 
 ---
 
 ## Busy wait - z metodami store/load
 
+<!-- old snippet
 ```cpp
 int data{0};
 std::atomic<bool> is_data_ready{false};
@@ -288,6 +342,22 @@ while (!is_data_ready.load())
 
 assert(x == 42);
 ```
+
+</div>
+</div>
+-->
+
+<<< @/../examples/12_atomics.cpp#atomic_decl
+
+<div class="grid grid-cols-2 gap-4">
+<div>
+
+<<< @/../examples/12_atomics.cpp#store_load_thd1 {all}
+
+</div>
+<div>
+
+<<< @/../examples/12_atomics.cpp#store_load_thd2 {all}
 
 </div>
 </div>
@@ -389,21 +459,26 @@ assert(x == 42);
 
 ## std::atomic_flag - użycie
 
-* Obiekty `std::atomic_flag` muszą być zainicjowane `ATOMIC_FLAG_INIT`
+* Obiekty `std::atomic_flag` są w stanie *clear* po utworzeniu (od C++20; wcześniej wymagały `ATOMIC_FLAG_INIT`)
 * `clear()` czyści stan obiektu
 * `test_and_set()` - operacja RMW
 
+<!-- old snippet
 ```cpp
 std::atomic_flag f = ATOMIC_FLAG_INIT;
 
 f.clear(std::memory_order_release);
 bool prev_state = f.test_and_set();
 ```
+-->
+
+<<< @/../examples/12_atomics.cpp#atomic_flag_usage
 
 ---
 
 ## Spin Lock
 
+<!-- old snippet
 ```cpp
 class SpinLockMutex
 {
@@ -423,11 +498,15 @@ public:
     }
 };
 ```
+-->
+
+<<< @/../examples/12_atomics.cpp#spin_lock
 
 ---
 
 ## Operacje na std::atomic\<bool\> - 1
 
+<!-- old snippet
 ```cpp
 std::atomic<bool> b{true};
 
@@ -444,6 +523,11 @@ b.store(true); // == b.store(true, std::memory_order_seq_cst);
 
 x = b.exchange(false, std::memory_order_acq_rel);
 ```
+-->
+
+<<< @/../examples/12_atomics.cpp#atomic_bool_basic
+
+<<< @/../examples/12_atomics.cpp#atomic_bool_orders
 
 ---
 
@@ -475,6 +559,7 @@ bool atomic<T>::compare_exchange_strong(T& expected, T desired)
 
 ## compare_exchange_strong
 
+<!-- old snippet
 ```cpp
 bool expected = false;
 
@@ -485,17 +570,24 @@ if (b.compare_exchange_strong(expected, true))
 else
     std::cout << "b was set by someone else\n";
 ```
+-->
+
+<<< @/../examples/12_atomics.cpp#cas_strong
 
 ---
 
 ## compare_exchange_weak
 
+<!-- old snippet
 ```cpp
 bool expected = false;
 extern atomic<bool> b; // set somewhere else
 
 while (!b.compare_exchange_weak(expected, true) && !expected);
 ```
+-->
+
+<<< @/../examples/12_atomics.cpp#cas_weak
 
 * Dla operacji `compare_exchange_weak()` zapis wartości może się nie udać nawet wtedy, gdy bieżąca wartość zmiennej jest równa wartości oczekiwanej (tzw. *spurious failure*). Zwracana jest wtedy wartość `false`
 * W efekcie taka operacja musi zostać wykonana w pętli

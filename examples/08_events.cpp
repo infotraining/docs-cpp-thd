@@ -22,7 +22,7 @@ namespace busy_wait_mutex
     void set_data_ready()
     {
         prepare_data();
-        std::lock_guard<std::mutex> lk(mtx);
+        std::lock_guard lk(mtx);
         data_ready = true;
     }
     // #endregion
@@ -34,7 +34,7 @@ namespace busy_wait_mutex
 
         do
         {
-            std::lock_guard<std::mutex> lk{mtx};
+            std::lock_guard lk{mtx};
             ready_flag = data_ready;
         } while (!ready_flag);
 
@@ -78,21 +78,22 @@ namespace busy_wait_memory_order
     // #region busy_mo_set
     void set_data_ready()
     {
-        prepare_data();
-        data_ready.store(true, std::memory_order_release);
+      prepare_data();
+      data_ready.store(true, 
+                       std::memory_order_release);
     }
     // #endregion
 
     // #region busy_mo_task
     void task()
     {
-        while (!data_ready.load(std::memory_order_acquire))
-        {
-            // ...
-            std::this_thread::yield();
-        }
+      while (!data_ready.load(std::memory_order_acquire))
+      {
+          // ...
+          std::this_thread::yield();
+      }
 
-        process_data();
+      process_data();
     }
     // #endregion
 }
@@ -111,7 +112,7 @@ namespace idle_wait_cv
         prepare_data();
 
         {
-            std::lock_guard<std::mutex> lk(mtx_ready);
+            std::lock_guard lk(mtx_ready);
             data_ready = true;
         } // release lock
 
@@ -122,7 +123,7 @@ namespace idle_wait_cv
     // #region cv_task
     void task()
     {
-        std::unique_lock<std::mutex> lk(mtx_ready);
+        std::unique_lock lk(mtx_ready);
         while (!data_ready)
         {
             cv_ready.wait(lk);
@@ -155,12 +156,13 @@ namespace idle_wait_cv_predicate
     // #region cv_pred_task
     void task()
     {
-        std::unique_lock<std::mutex> lk(mtx_ready);
-        cv_ready.wait(lk, [] { return data_ready; });
+      std::unique_lock lk(mtx_ready);
+      cv_ready.wait(lk, 
+                    [] { return data_ready; });
 
-        lk.unlock();
+      lk.unlock();
 
-        process_data();
+      process_data();
     }
     // #endregion
 }

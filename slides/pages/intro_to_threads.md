@@ -158,7 +158,20 @@ g++ -std=c++11 -pthread main.cpp
   - problemy pojawiają często przy dużym obciążeniu lub zwielokrotnieniu wątków
 * Dobrze jest zapewnić możliwość skalowania ilości wątków do jednego (single threaded code) aby wykluczyć inne przyczyny błędów
 
-
 </v-clicks>
 
+---
+
+# Testowanie współbieżności
+
+* Testy współbieżności muszą być:
+  * stresowe (dużo wątków, dużo iteracji)
+  * chaotyczne (randomizacja interleavingów)
+  * deterministyczne (jeśli to możliwe — np. TLA+, model checking)
+
+* Narzędzia:
+  * Thread Sanitizer (TSan)
+  * Valgrind/Helgrind
+  * model checking (TLA+)
+  * chaos testing (np. losowe opóźnienia)
 

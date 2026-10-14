@@ -11,10 +11,9 @@ constexpr std::uint32_t MASK = 0x7FFFFFFF;
 constexpr double SCALE = 1.0 / 2147483648.0;
 
 // #region unsafe_random
-namespace Unsafe
+namespace Unsafe 
 {
-    double rand()
-    {
+    double rand() {
         static std::uint32_t seed = 665; // shared state
 
         seed = (seed * IMUL + IADD) & MASK;
@@ -24,28 +23,23 @@ namespace Unsafe
 // #endregion
 
 // #region unsafe_random_usage
-void use_unsafe_random()
+void use_unsafe_random() 
 {
-    std::thread thd1([] {
+    std::jthread thd1([] {
         for (size_t i = 0; i < 10; ++i)
             std::cout << Unsafe::rand() << std::endl;
     });
 
-    std::thread thd2([] {
+    std::jthread thd2([] {
         for (size_t i = 0; i < 10; ++i)
             std::cout << Unsafe::rand() << std::endl;
     });
-
-    thd1.join();
-    thd2.join();
 }
 // #endregion
 
 // #region thread_safe_random
-namespace ThreadSafe
-{
-    double rand_double()
-    {
+namespace ThreadSafe {
+    double rand_double() {
         std::hash<std::thread::id> hasher;
         thread_local std::uint32_t thd_seed =
             665 * static_cast<std::uint32_t>(hasher(std::this_thread::get_id()));
@@ -57,20 +51,16 @@ namespace ThreadSafe
 // #endregion
 
 // #region thread_safe_random_usage
-void use_thread_safe_random()
-{
-    std::thread thd1([] {
+void use_thread_safe_random() {
+    std::jthread thd1([] {
         for (size_t i = 0; i < 10; ++i)
             std::cout << ThreadSafe::rand_double() << std::endl;
     });
 
-    std::thread thd2([] {
+    std::jthread thd2([] {
         for (size_t i = 0; i < 10; ++i)
             std::cout << ThreadSafe::rand_double() << std::endl;
     });
-
-    thd1.join();
-    thd2.join();
 }
 // #endregion
 

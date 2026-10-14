@@ -67,6 +67,7 @@ colorSchema: light
 
 # Code
 
+<!-- old snippet
 ```cpp
 struct Data
 {
@@ -74,3 +75,6 @@ struct Data
     alignas(std::hardware_destructive_interference_size) std::atomic<int> v2;
 };
 ```
+-->
+
+<<< @/../examples/13_cache_ping_pong.cpp#solution

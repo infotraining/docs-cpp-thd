@@ -37,7 +37,7 @@ void use_latch()
     std::latch all_done(4);
     std::vector<std::jthread> thds;
 
-    for (size_t i = 0; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)
         thds.emplace_back([id = i + 1, &all_ready, &all_done] {
             background_work(id, "LATCH", all_ready, all_done);
         });

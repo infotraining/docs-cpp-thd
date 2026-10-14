@@ -103,6 +103,7 @@ Jako zadanie do funkcji `std::async` można przekazać:
 * obiekt domknięcia
 * obiekt + wskaźnik do metody
 
+<!-- old snippet
 ```cpp
 int fib(int n);
 Gadget g{42, "ipad"};
@@ -112,6 +113,9 @@ std::future<int> f2 = std::async(std::launch::async, [] { return fib(20);});
 std::future<int> f3 = std::async(std::launch::async, [g] { g.use(); });
 std::future<int> f4 = std::async(std::launch::async, &Gadget::use, g);
 ```
+-->
+
+<<< @/../examples/11_futures.cpp#async_callables
 
 ---
 
@@ -131,6 +135,7 @@ std::future<int> f4 = std::async(std::launch::async, &Gadget::use, g);
 
 ## std::async - argumenty funkcji
 
+<!-- old snippet
 ```cpp
 void work(int id, const std::string& path, std::atomic<int>& counter);
 
@@ -148,6 +153,9 @@ std::atomic<int> counter{0};
                     [id, &path, &counter] { work(id, path, counter); });                    
 }
 ```
+-->
+
+<<< @/../examples/11_futures.cpp#async_args
 
 ---
 
@@ -182,6 +190,7 @@ jeśli obiekt typu `std::future` został utworzony przez wywołanie `std::async`
 
 ## std::async - destruktory - WTF!!!
 
+<!-- old snippet
 ```cpp
 void save_to_file(const std::string& path, const std::string& msg);
 
@@ -190,11 +199,15 @@ void save_to_file(const std::string& path, const std::string& msg);
   std::async(std::launch::async, &save_to_file, "b.log", "like THIS");
 }
 ```
+-->
+
+<<< @/../examples/11_futures.cpp#async_destructor_bad
 
 ---
 
 ## std::async - destruktory - poprawna wersja
 
+<!-- old snippet
 ```cpp {all|4,5}
 void save_to_file(const std::string& path, const std::string& msg);
 
@@ -203,6 +216,9 @@ void save_to_file(const std::string& path, const std::string& msg);
   auto f2 = std::async(std::launch::async, &save_to_file, "b.log", "THIS");
 }
 ```
+-->
+
+<<< @/../examples/11_futures.cpp#async_destructor_good {all|3-4}
 
 Przypisanie do nazwanych zmiennych powoduje, że funkcje są rzeczywiście wykonywane asynchronicznie
 
@@ -225,6 +241,7 @@ jest klasą dostarczającą wrapper umożliwiający wywołanie funkcji lub funkt
 
 ## std::packaged_task
 
+<!-- old snippet
 ```cpp {all|3|5|7-8|12}
 int calculate(int arg); // may throw std::runtime_error
 
@@ -244,6 +261,9 @@ catch(const std::runtime_error& e)
    // handle the exception
 }
 ```
+-->
+
+<<< @/../examples/11_futures.cpp#packaged_task {all|3|5|7|9-17}
 
 ---
 
@@ -268,7 +288,7 @@ catch(const std::runtime_error& e)
 
 ## std::promise - kod
 
-<div class="text-code-sm">
+<!-- old snippet
 ```cpp {all|2|8-10|15-18|19-22}
 class DataSource {
     std::vector<std::promise<Data>> channels_;
@@ -296,12 +316,19 @@ public:
     }
 };
 ```
+-->
+
+<div class="text-code-sm">
+
+<<< @/../examples/11_futures.cpp#promise_data_source {all|3|11-14|21-25|26-30}
+
 </div>
 
 ---
 
 ## std::promise - użycie
 
+<!-- old snippet
 ```cpp {all|2|4,5|7-8|10,11}
 const size_t channel_count = 128;
 DataSource data_source(channel_count);
@@ -315,3 +342,6 @@ thd.detach();
 assert(future_channel_4.get() == 16);
 assert_throws(future_channel_13.get();
 ```
+-->
+
+<<< @/../examples/11_futures.cpp#promise_usage {all|3-4|6-7|9|11-21}

@@ -5,6 +5,7 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <optional>
 
 // #region lock_guard
 template <typename Value>
@@ -23,17 +24,12 @@ void apply(F f, Synchronized<Value>& sync_value)
 // #endregion
 
 // #region lock_guard_usage
-void use_synchronized()
+void use_synchronized(Synchronized<std::vector<int>>& sync_vec)
 {
-    Synchronized<std::vector<int>> sync_vec;
-
-    std::thread thd([&] {
-        apply([](std::vector<int>& v) {
+    apply([](std::vector<int>& v) {
             v.push_back(1);
             v.push_back(2);
         }, sync_vec);
-    });
-    thd.join();
 }
 // #endregion
 
@@ -56,9 +52,35 @@ void try_lock_with_timeout(std::timed_mutex& mtx)
 }
 // #endregion
 
+// #region shared_mutex_usage
+#include <shared_mutex>
+#include <unordered_map>
+
+class DnsCache {
+public:
+    void update(std::string host, std::string ip) {
+        std::unique_lock lock(m_);        // writer
+        cache_[std::move(host)] = std::move(ip);
+    }
+
+    std::optional<std::string> resolve(const std::string& host) const {
+        std::shared_lock lock(m_);        // reader
+        if (auto it = cache_.find(host); it != cache_.end())
+            return it->second;
+        return std::nullopt;
+    }
+
+private:
+    mutable std::shared_mutex m_;
+    std::unordered_map<std::string, std::string> cache_;
+};
+// #endregion
+
 int main()
 {
-    use_synchronized();
+    Synchronized<std::vector<int>> sync_vec;
+
+    use_synchronized(sync_vec);
 
     std::timed_mutex mtx;
     std::jthread holder{[&mtx] {

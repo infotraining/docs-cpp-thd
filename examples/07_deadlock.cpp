@@ -34,8 +34,7 @@ class XStdLock
 public:
     XStdLock(int data)
         : data_{data}
-    {
-    }
+    {}
 
     bool operator<(const XStdLock& other) const
     {
@@ -43,7 +42,6 @@ public:
         std::unique_lock<std::mutex> l2(other.mtx_, std::defer_lock);
 
         std::lock(l1, l2); // avoiding deadlock
-
         return data_ < other.data_;
     }
 };
@@ -67,7 +65,6 @@ public:
         std::unique_lock l2(other.mtx_, std::defer_lock);
 
         std::lock(l1, l2); // avoiding deadlock
-
         return data_ < other.data_;
     }
 };
@@ -88,7 +85,6 @@ public:
     bool operator<(const XScopedLock& other) const
     {
         std::scoped_lock lk{mtx_, other.mtx_};
-
         return data_ < other.data_;
     }
 };
