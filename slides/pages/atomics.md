@@ -575,37 +575,7 @@ auto reader = [&data]() {
 
 ---
 
-
-
-
-## Operacje na std::atomic\<bool\> - 1
-
-<!-- old snippet
-```cpp
-std::atomic<bool> b{true};
-
-b = false; // == b.store(false, std::memory_order_seq_cst);
-bool current_state = b; // == b.load(std::memory_order_seq_cst);
-```
-
-```cpp
-extern std::atomic<bool> b;
-
-bool x = b.load(std::memory_order_acquire);
-
-b.store(true); // == b.store(true, std::memory_order_seq_cst);
-
-x = b.exchange(false, std::memory_order_acq_rel);
-```
--->
-
-<<< @/../examples/12_atomics.cpp#atomic_bool_basic
-
-<<< @/../examples/12_atomics.cpp#atomic_bool_orders
-
----
-
-## Operacje compare_exchange na std::atomic\<bool\>
+## Operacje compare_exchange
 
 * Operacja `compare_exchange` jest fundamentalną konstrukcją dla typów atomowych
 * Porównuje bieżącą wartość zmiennej atomowej z wartością dostarczoną jako argument `expected` i gdy wartości są równe zapisuje wartość `desired` tylko w przypadku, zwracając `true`
