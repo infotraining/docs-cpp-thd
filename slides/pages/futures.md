@@ -29,17 +29,23 @@ jest współdzielony między:
 * *asynchronous provider* - zapisuje wynik w obiekcie shared-state
 
 ---
+class: white-slide
+---
 
 ## Shared state
 
 <img src="/img/shared-state-1.png" class="h-80 mx-auto"/>
 
 ---
+class: white-slide
+---
 
 ## Shared state
 
 <img src="/img/shared-state-2.png" class="h-80 mx-auto"/>
 
+---
+class: white-slide
 ---
 
 ## Shared state
@@ -72,6 +78,8 @@ jest współdzielony między:
     - `future_status::ready`
 
 ---
+class: white-slide
+---
 
 ## std::future
 
@@ -103,6 +111,10 @@ Jako zadanie do funkcji `std::async` można przekazać:
 * obiekt domknięcia
 * obiekt + wskaźnik do metody
 
+---
+
+## Wywołania asynchroniczne funkcji - std::async
+
 <!-- old snippet
 ```cpp
 int fib(int n);
@@ -114,6 +126,8 @@ std::future<int> f3 = std::async(std::launch::async, [g] { g.use(); });
 std::future<int> f4 = std::async(std::launch::async, &Gadget::use, g);
 ```
 -->
+
+* Przykłady wywołań asynchronicznych funkcji przy użyciu `std::async`:
 
 <<< @/../examples/11_futures.cpp#async_callables
 
@@ -188,7 +202,7 @@ jeśli obiekt typu `std::future` został utworzony przez wywołanie `std::async`
 
 ---
 
-## std::async - destruktory - WTF!!!
+## std::async - destruktory - BUG in std!!!
 
 <!-- old snippet
 ```cpp
@@ -318,9 +332,9 @@ public:
 ```
 -->
 
-<div class="text-code-sm">
+<div class="text-code-07">
 
-<<< @/../examples/11_futures.cpp#promise_data_source {all|3|11-14|21-25|26-30}
+<<< @/../examples/11_futures.cpp#promise_data_source {all|2|9-11|16-19|20-23}
 
 </div>
 
@@ -344,4 +358,8 @@ assert_throws(future_channel_13.get();
 ```
 -->
 
+<div class="text-code-08">
+
 <<< @/../examples/11_futures.cpp#promise_usage {all|3-4|6-7|9|11-21}
+
+</div>

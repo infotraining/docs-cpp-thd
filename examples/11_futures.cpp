@@ -11,17 +11,17 @@
 #include <vector>
 
 // #region async_callables
-int fib(int n)
+uint64_t fib(uint64_t n) 
 {
-    return static_cast<int>(fibonacci(n));
+    return (n <= 1) ? n : fib(n - 1) + fib(n - 2);
 }
 
-void async_callables()
+void async_callables() 
 {
     Gadget g{42, "ipad"};
 
-    std::future<int> f1 = std::async(std::launch::async, fib, 10);
-    std::future<int> f2 = std::async(std::launch::async, [] { return fib(20); });
+    std::future<uint64_t> f1 = std::async(std::launch::async, fib, 10);
+    std::future<uint64_t> f2 = std::async(std::launch::async, [] { return fib(20); });
     std::future<int> f3 = std::async(std::launch::async, [g] { return g.use(); });
     std::future<int> f4 = std::async(std::launch::async, &Gadget::use, g);
 }
@@ -92,33 +92,26 @@ void use_packaged_task()
 // #endregion
 
 // #region promise_data_source
-class DataSource
-{
+class DataSource {
     std::vector<std::promise<int>> channels_;
 
 public:
-    DataSource(size_t channels_count)
+    explicit DataSource(size_t channels_count)
         : channels_(channels_count)
-    {
-    }
+    {}
 
-    std::future<int> get_future_channel(size_t channel_no)
-    {
+    std::future<int> get_future_channel(size_t channel_no) {
         return channels_.at(channel_no).get_future();
     }
 
-    void read_data()
-    {
-        for (size_t i = 0; i < channels_.size(); ++i)
-        {
+    void read_data() {
+        for (size_t i = 0; i < channels_.size(); ++i) {
             std::this_thread::sleep_for(25ms);
-            try
-            {
+            try {
                 auto result = calculate(i);
                 channels_[i].set_value(result);
             }
-            catch (...)
-            {
+            catch (...) {
                 std::exception_ptr eptr = std::current_exception();
                 channels_[i].set_exception(eptr);
             }
@@ -128,7 +121,7 @@ public:
 // #endregion
 
 // #region promise_usage
-void use_promise()
+void use_promise() 
 {
     const size_t channel_count = 16;
     DataSource data_source(channel_count);
