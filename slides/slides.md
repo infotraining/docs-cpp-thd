@@ -64,3 +64,12 @@ src: ./pages/atomics.md
 ---
 src: ./pages/cache-ping-pong.md
 ---
+
+---
+layout: cover
+background: /img/bg-blue-1.jpg
+---
+
+# Dziękuję za uwagę!
+
+<a href="https://www.linkedin.com/in/krystian-piekos">Zapraszam do kontaktu na LinkedIn</a>
