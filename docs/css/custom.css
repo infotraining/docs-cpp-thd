@@ -36,6 +36,7 @@ kbd,
 samp {
   font-family: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
   font-weight: 500;
+  font-size: 1.04em !important;
   line-height: 1.5em;
 }
 
