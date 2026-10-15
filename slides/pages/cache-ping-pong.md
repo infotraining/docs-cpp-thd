@@ -64,14 +64,5 @@ class: white-slide
 
 # Code
 
-<!-- old snippet
-```cpp
-struct Data
-{
-    alignas(std::hardware_destructive_interference_size) std::atomic<int> v1;
-    alignas(std::hardware_destructive_interference_size) std::atomic<int> v2;
-};
-```
--->
 
 <<< @/../examples/13_cache_ping_pong.cpp#solution

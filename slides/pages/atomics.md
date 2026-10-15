@@ -42,38 +42,6 @@ layout: center
 
 ## Busy wait
 
-<!-- old snippet
-```cpp
-int data{0};
-bool is_data_ready{false};
-```
-
-<div class="grid grid-cols-2 gap-4">
-<div>
-
-```cpp
-//Thread#1
-
-x = 42;
-
-is_data_ready = true;
-```
-
-</div>
-<div>
-
-```cpp
-//Thread#2
-
-while (!is_data_ready)
-{}
-
-assert(x == 42);
-```
-
-</div>
-</div>
--->
 
 <<< @/../examples/12_atomics.cpp#race_decl
 
@@ -94,40 +62,6 @@ assert(x == 42);
 
 ## Busy wait - przykład transformacji
 
-<!-- old snippet
-```cpp
-int data{0};
-bool is_data_ready{false};
-```
-
-<div class="grid grid-cols-2 gap-4">
-<div>
-
-```cpp
-//Thread#1
-
-x = 42;
-
-is_data_ready = true;
-```
-
-</div>
-<div>
-
-```cpp {all|3-4|6}
-//Thread#2
-
-bool tmp = is_data_ready;
-while (!tmp) {}
-
-assert(x == 42);
-```
-
-transformacja dokonana przez kompilator - assert fails
-
-</div>
-</div>
--->
 
 <<< @/../examples/12_atomics.cpp#race_decl
 
@@ -283,38 +217,6 @@ class: white-slide
 
 ## Busy wait - poprawna wersja
 
-<!-- old snippet
-```cpp
-int data{0};
-std::atomic<bool> is_data_ready{false};
-```
-
-<div class="grid grid-cols-2 gap-4">
-<div>
-
-```cpp
-//Thread#1
-
-x = 42;
-
-is_data_ready = true; 
-```
-
-</div>
-<div>
-
-```cpp
-//Thread#2
-
-while (!is_data_ready)
-{}
-
-assert(x == 42);
-```
-
-</div>
-</div>
--->
 
 <<< @/../examples/12_atomics.cpp#atomic_decl
 
@@ -335,38 +237,6 @@ assert(x == 42);
 
 ## Busy wait - z metodami store/load
 
-<!-- old snippet
-```cpp
-int data{0};
-std::atomic<bool> is_data_ready{false};
-```
-
-<div class="grid grid-cols-2 gap-4">
-<div>
-
-```cpp
-//Thread#1
-
-x = 42;
-
-is_data_ready.store(true); 
-```
-
-</div>
-<div>
-
-```cpp
-//Thread#2
-
-while (!is_data_ready.load())
-{}
-
-assert(x == 42);
-```
-
-</div>
-</div>
--->
 
 <<< @/../examples/12_atomics.cpp#atomic_decl
 

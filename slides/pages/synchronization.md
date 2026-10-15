@@ -391,24 +391,6 @@ private:
 
 ## std::unique_lock + std::timed_mutex
 
-<!-- old snippet
-```cpp
-std::timed_mutex mutex;
-std::unique_lock<std::timed_mutex> lock(mutex, std::try_to_lock);
-
-//...
-if (!lock.owns_lock())
-{
-    int count = 0;
-    do
-    {
-        std::cout << "Thread does not own a lock..."
-                  << " Tries to acquire a mutex..."
-                  << std::endl;
-    } while(!lock.try_lock_for(std::chrono::seconds(1)));
-}
-```
--->
 
 <<< @/../examples/06_mutex.cpp#timed_mutex
 
@@ -448,22 +430,6 @@ Do zakleszczenia dochodzi, jeśli spełnione są cztery warunki:
 
 Klasa ze stanem wewnętrznym, chroniona muteksem. Chcemy napisać operator porównania.
 
-<!-- old snippet
-```cpp {all|8-10}
-class X
-{
-    mutable std::mutex mtx_;
-    int data_;
-public:
-    bool operator<(const X& other) const
-    {
-        std::lock_guard<std::mutex> lk(mtx_);
-        std::lock_guard<std::mutex> lk(other.mtx_);
-        return data_ < other.data_;
-    }
-};
-```
--->
 
 <div class="text-code-09">
 
@@ -495,19 +461,6 @@ public:
 
 ## std::lock()
 
-<!-- old snippet
-```cpp {all|3-4|6|9}
-bool X::operator< (const X& other) const
-{
-    std::unique_lock<std::mutex> l1(mtx_, std::defer_lock);
-    std::unique_lock<std::mutex> l2(other.mtx_, std::defer_lock);
-
-    std::lock(l1, l2); // avoiding deadlock
-
-    return some_data < other.some_data;
-}
-```
--->
 
 <div class="text-code-09">
 
@@ -519,19 +472,6 @@ bool X::operator< (const X& other) const
 
 ## std::lock() - C++17
 
-<!-- old snippet
-```cpp {all|3-4|6|9}
-bool X::operator< (const X& other) const
-{
-    std::unique_lock l1(mtx_, std::defer_lock);
-    std::unique_lock l2(other.mtx_, std::defer_lock);
-
-    std::lock(l1, l2); // avoiding deadlock
-
-    return some_data < other.some_data;
-}
-```
--->
 
 <div class="text-code-09">
 
@@ -543,16 +483,6 @@ bool X::operator< (const X& other) const
 
 ## std::scoped_lock - C++17
 
-<!-- old snippet
-```cpp {all|3|6}
-bool X::operator< (const X& other) const
-{
-    std::scoped_lock{mtx_, other.mtx_};
-    
-    return some_data < other.some_data;
-}
-```
--->
 
 <div class="text-code-09">
 
@@ -614,47 +544,6 @@ Oczekiwanie na zdarzenie może być zaimplementowane jako:
 
 ## Busy waits - implementacja z muteksem
 
-<!-- old snippet
-```cpp
-bool data_ready;
-std::mutex mtx;
-```
-
-<div class="grid grid-cols-2 gap-4">
-<div>
-
-```cpp
-void set_data_ready()
-{
-  prepare_data();
-  std::unique_lock<std::mutex> lk(mtx);
-  data_ready = true;
-}
-```
-
-</div>
-<div>
-
-```cpp
-void task()
-{
-  bool ready_flag = data_ready;
-
-  do
-  {
-    {
-      std::lock_guard<std::mutex> lk{mtx};
-      ready_flag = data_ready;
-    }
-  } while(!ready_flag);
-
-  process_data();
-}
-```
-
-</div>
-</div>
--->
 
 <<< @/../examples/08_events.cpp#busy_mutex_decl
 
@@ -675,41 +564,6 @@ void task()
 
 ## Busy waits - implementacja z std::atomic\<bool\>
 
-<!-- old snippet
-```cpp
-std::atomic<bool> data_ready;
-```
-
-<div class="grid grid-cols-2 gap-4">
-<div>
-
-```cpp
-void set_data_ready()
-{
-    prepare_data();
-    data_ready = true;
-}
-```
-
-</div>
-<div>
-
-```cpp
-void task()
-{
-    while(!data_ready)
-    {
-        //..
-        std::this_thread::yield();
-    }
-
-    process_data();
-}
-```
-
-</div>
-</div>
--->
 
 <<< @/../examples/08_events.cpp#busy_atomic_decl
 
@@ -730,43 +584,6 @@ void task()
 
 ## Busy waits - z memory_order
 
-<!-- old snippet
-```cpp
-std::atomic<bool> data_ready;
-```
-
-<div class="grid grid-cols-2 gap-4">
-<div>
-
-```cpp {all|4-6}
-void set_data_ready()
-{
-    prepare_data();
-    data_ready.store(true, 
-      std::memory_order_release);
-}
-```
-
-</div>
-<div>
-
-```cpp {all|3-4}
-void task()
-{
-    while(!data_ready.load(
-        std::memory_order_acquire))
-    {
-        //..
-        std::this_thread::yield();
-    }
-
-    process_data();
-}
-```
-
-</div>
-</div>
--->
 
 <<< @/../examples/08_events.cpp#busy_atomic_decl
 
@@ -806,50 +623,6 @@ void task()
 
 ## Idle waits - CV
 
-<!-- old snippet
-```cpp
-bool data_ready = false;
-std::mutex mtx_ready;
-std::condition_variable cv_ready;
-```
-
-<div class="grid grid-cols-2 gap-4">
-<div>
-
-```cpp
-void set_data_ready()
-{
-  prepare_data();
-
-  {
-    std::lock_guard<std::mutex> lk(mtx_ready);
-    data_ready = true;
-  } // release lock
-
-  cv_ready.notify_one();
-}
-```
-
-</div>
-<div>
-
-```cpp
-void task()
-{
-  std::unique_lock<std::mutex> lk(mtx_ready);
-  while(!data_ready)
-  {
-    cv_ready.wait(lk);
-  }
-  lk.unlock();
-
-  process_data();
-}
-```
-
-</div>
-</div>
--->
 
 <<< @/../examples/08_events.cpp#cv_decl
 
@@ -882,48 +655,6 @@ void task()
 
 ## Idle waits - CV (z predykatem)
 
-<!-- old snippet
-```cpp
-bool data_ready = false;
-std::mutex mtx_ready;
-std::condition_variable cv_ready;
-```
-
-<div class="grid grid-cols-2 gap-4">
-<div>
-
-```cpp
-void set_data_ready()
-{
-  prepare_data();
-
-  {
-    std::lock_guard<std::mutex> lk(mtx_ready);
-    data_ready = true;
-  } // release lock
-
-  cv_ready.notify_one();
-}
-```
-
-</div>
-<div>
-
-```cpp {all|4}
-void task()
-{
-  std::unique_lock<std::mutex> lk(mtx_ready);
-  cv_ready.wait(lk, [] { return data_ready; });
-
-  lk.unlock();
-
-  process_data();
-}
-```
-
-</div>
-</div>
--->
 
 <<< @/../examples/08_events.cpp#cv_decl
 
@@ -952,39 +683,6 @@ void task()
 
 ## Idle waits - std::atomic - C++20
 
-<!-- old snippet
-```cpp
-std::atomic<bool> data_ready = false;
-```
-
-<div class="grid grid-cols-2 gap-4">
-<div>
-
-```cpp {all|5-8}
-void set_data_ready()
-{
-  prepare_data();
-
-  data_ready = true;
-  data_ready.notify_one();
-}
-```
-
-</div>
-<div>
-
-```cpp {all|3}
-void task()
-{
-  data_ready.wait(false);
-
-  process_data();
-}
-```
-
-</div>
-</div>
--->
 
 <<< @/../examples/08_events.cpp#atomic_wait_decl
 
@@ -1031,33 +729,6 @@ C++11 zapewnia dostęp do danych TLS za pomocą modyfikatora `thread_local`
 
 ## Unsafe random
 
-<!-- old snippet
-```cpp
-namespace Unsafe {
-    double rand() {
-        static int seed = 665; // shared state
-
-        seed = (seed * IMUL + IADD) & MASK;
-        return (seed * SCALE);
-    }
-}
-
-int main() {
-    std::thread thd1([] {
-        for (size_t i = 0; i < 100; ++i)
-            std::cout << Unsafe::rand() << std::endl;
-    });
-
-    std::thread thd2([] {
-        for (size_t i = 0; i < 100; ++i)
-            std::cout << Unsafe::rand() << std::endl;
-    });
-
-    thd1.join();
-    thd2.join();
-}
-```
--->
 
 <div class="text-code-sm">
 
@@ -1071,35 +742,6 @@ int main() {
 
 ## ThreadSafe random
 
-<!-- old snippet
-```cpp {all|3-11|6}
-namespace ThreadSafe {
-    double rand_double() {
-        std::hash<std::thread::id> hasher;
-        thread_local int thd_seed = 665 * hasher(std::this_thread::get_id());
-
-        int result = (thd_seed * IMUL + IADD) & MASK;
-        thd_seed = result;
-        return (result * SCALE);
-    }
-}
-
-int main() {
-    std::thread thd1([] {
-        for (size_t i = 0; i < 100; ++i)
-            std::cout << ThreadSafe::rand_double() << std::endl;
-    });
-
-    std::thread thd2([] {
-        for (size_t i = 0; i < 100; ++i)
-            std::cout << ThreadSafe::rand_double() << std::endl;
-    });
-
-    thd1.join();
-    thd2.join();
-}
-```
--->
 
 <div class="text-code-sm">
 
@@ -1138,24 +780,6 @@ background: /img/header-bg.svg
 
 Przydatny w testach, gdy chcemy mieć pewność, że wszystkie wątki wystartowały
 
-<!-- old snippet
-```cpp {all|1-2|4|13}
-void background_work(const int id, const std::string text, 
-                     std::latch& all_ready, std::latch& all_done) 
-{
-    all_ready.arrive_and_wait();
-    
-    std::cout << "BW#" << id << " started..." << std::endl;
-
-    for (const auto& letter : text) {
-        std::cout << "Thread#" << id << " - " << letter << std::endl;
-        std::this_thread::sleep_for(25ms);
-    }
-
-    all_done.count_down();
-}
-```
--->
 
 <<< @/../examples/10_cpp20_sync.cpp#latch_task {all|1-2|4|14}
 
@@ -1163,19 +787,6 @@ void background_work(const int id, const std::string text,
 
 ## std::latch - użycie
 
-<!-- old snippet
-```cpp {all|1-3|5-7|9}
-std::latch all_ready(4);
-std::latch all_done(4);
-std::vector<std::jthread> thds;
-
-for(size_t i = 0; i < 4; ++i)
-    thds.emplace_back([id = i + 1, &all_ready, &all_done]{ 
-        background_work(id, "LATCH", all_ready, all_done); });
-
-all_done.wait();
-```
--->
 
 <<< @/../examples/10_cpp20_sync.cpp#latch_usage {all|3-5|7-10|12}
 
@@ -1221,34 +832,6 @@ Faza bariery składa się z następujących kroków:
 
 ## std::barrier - przykład
 
-<!-- old snippet
-```cpp {all|5-12|12-20}
-const auto workers = { "A", "B", "C" };
-static int counter = 0;
-static std::string phase = "";
-
-auto on_completion = []() noexcept {
-    // locking is not needed here
-    ++counter;
-    phase = "--- done no. "s + std::to_string(counter) + "\n";
-    std::cout << phase;
-};
-
-std::barrier sync_point(std::ssize(workers), on_completion);
-
-auto work = [&sync_point](std::string name) {
-    for(int i = 0; i < 4; ++i) {
-        std::string product = ".." + name + " worked\n";
-        std::cout << product;
-        sync_point.arrive_and_wait();
-    }
-}; 
-
-std::vector<std::jthread> thds;
-for(const auto& worker : workers) 
-    thds.emplace_back(work, worker);
-```
--->
 
 <div class="text-code-07">
 
@@ -1272,32 +855,6 @@ for(const auto& worker : workers)
 
 ## std::atomic_ref
 
-<!-- old snippet
-```cpp {all|3,14-19}
-const int thds_count = 10;
-std::latch all_ready{thds_count};
-std::vector<uint32_t> data(10);
-
-{
-    std::vector<std::jthread> thds;
-
-    for(int i = 0; i < thds_count; ++i)
-        thds.emplace_back([&] {
-            all_ready.arrive_and_wait();
-
-            for(int i = 0; i < 100'000; ++i)
-            {
-                for(auto& item : data)
-                {
-                    //++item; // BUG!!! -> data-race
-                    std::atomic_ref synced_value{item}; // data-race free access
-                    ++synced_value;
-                }
-            }
-        });
-}
-```
--->
 
 <div class="text-code-07">
 
@@ -1309,26 +866,5 @@ std::vector<uint32_t> data(10);
 
 ## Synchronizowane strumienie wyjściowe
 
-<!-- old snippet
-```cpp {all|5,9-12}
-#include <syncstream>
-
-void do_calculations(int n)
-{
-    std::osyncstream synced_cout{std::cout};
-
-    for(int i = 0; i < n; ++i)
-    {
-        synced_cout 
-            << "Calculated value is " 
-            << fibonacci(i) << "\n"
-            << std::flush_emit;
-    }
-}
-
-std::jthread thd_1{do_calculations, 100};
-std::jthread thd_2{do_calculations, 100};
-```
--->
 
 <<< @/../examples/10_cpp20_sync.cpp#osyncstream {all|3|7-10}
