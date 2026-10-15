@@ -189,9 +189,9 @@ Koncept `Lockable` rozszerza koncept `BasicLockable` o wymóg posiadania metody:
 Klasa `std::mutex` implementuje koncept *Lockable* zapewniając podstawowy mechanizm synchronizacji, który może być użyty do implementacji
 bezpiecznego dostępu do współdzielonego zasobu.
 
-* Wywołujący wątek posiada muteks od momentu udanego wywołania metody `lock()` lub `try_lock()` do wywołanie metody `unlock()`.
-* Jeśli wątek posiada muteks, wszystkie inne wątki wywołujące `lock()` będą blokowane lub zwrócą `false` po wywołaniu `try_lock()`
-* Wywołujący wątek nie może posiadać muteksu przed wywołaniem  `lock()` lub `try_lock()` - `std::mutex` implementuje nie-rekursywną wersję muteksu.
+* Wywołujący wątek posiada muteks od momentu udanego wywołania metody `lock()` lub `try_lock()` do wywołania metody `unlock()`.
+* Jeśli wątek posiada muteks, wszystkie inne wątki wywołujące `lock()` będą blokowane, a wywołanie `try_lock()` zwróci `false`.
+* Wątek, który już posiada muteks, nie może ponownie wywołać `lock()` lub `try_lock()` - `std::mutex` implementuje nie-rekursywną wersję muteksu (ponowne pozyskanie muteksu przez ten sam wątek to *undefined behavior*, zwykle zakleszczenie).
 
 #### `std::recursive_mutex`
 
@@ -214,7 +214,7 @@ Implementacje w bibliotece standardowej - `std::timed_mutex` oraz `std::recursiv
 
 ## Blokady współdzielone (C++14)
 
-Blokady współdzielone wprowadzone są w standardzie C++14.
+Blokady współdzielone wprowadzone są w standardzie C++14 (`std::shared_timed_mutex`); w C++17 dodano prostszą i zwykle wydajniejszą klasę `std::shared_mutex`.
 
 Muteksy implementujące koncepty `Lockable` oraz ``TimedLockable`` szeregują odwołania do zasobów, lecz nie rozróżniają dostępów modyfikujących od niemodyfikujących.
 
@@ -231,15 +231,18 @@ Koncept SharedLockable rozszerza koncept `Lockable` o możliwość pozyskiwania 
 
 * `void lock_shared()`
 * `bool try_lock_shared()`
-* `bool try_lock_shared_for(rel_time)`
-* `bool try_lock_shared_until(abs_time)`
 * `void unlock_shared()`
 
-Implementacja - `std::shared_mutex`
+Wariant czasowy (*SharedTimedLockable*) dodaje metody:
+
+* `bool try_lock_shared_for(rel_time)`
+* `bool try_lock_shared_until(abs_time)`
+
+Implementacje w bibliotece standardowej - `std::shared_mutex` (C++17) oraz `std::shared_timed_mutex` (C++14, wariant czasowy).
 
 ### Klasa `std::shared_mutex` (C++17)
 
-Blokady współdzielone są implementowane przez klasę `std::shared_mutex`
+Blokady współdzielone są implementowane przez klasę `std::shared_mutex`. Wielu czytelników może jednocześnie posiadać blokadę współdzieloną, natomiast blokada na wyłączność (pisarz) wyklucza wszystkie pozostałe wątki.
 
 Do pozyskania wyłącznej blokady przed rozpoczęciem operacji zapisu należy użyć:
 
@@ -346,7 +349,7 @@ Rozbudowana wersja managera blokad umożliwiająca:
 * ochronę *RAII* przed wyciekami blokad
 * opóźnione pozyskiwanie blokad
 * adaptowanie pozyskanej przez wątek blokady
-* transfer prawa własności - instancja ``unique_lock`` nie jest kopiowalna, ale jest przenaszalna (*moveable*)
+* transfer prawa własności - instancja ``unique_lock`` nie jest kopiowalna, ale jest przenaszalna (*movable*)
 * podejmowanie nieblokujących prób pozyskania blokady
 * korzystanie z muteksów czasowych
 
@@ -356,7 +359,7 @@ Jeśli instancja managera ``std::unique_lock<>`` posiada blokadę:
 * metoda ``owns_lock()`` zwraca wartość ``true``
 * w momencie niszczenia obiektu destruktor wywoła metodę `unlock()` na obiekcie muteksu
 
-Opóźnione pozyskiwanie blokady jest możliwe przy pomocy konstruktora ``std::shared_lock(Lockable& m, std::defer_lock_t)``.
+Opóźnione pozyskiwanie blokady jest możliwe przy pomocy konstruktora ``std::unique_lock(Lockable& m, std::defer_lock_t)``.
 Po jego wywołaniu:
 
 * metoda ``owns_lock()`` zwraca `false`
@@ -364,7 +367,7 @@ Po jego wywołaniu:
   
 Adaptowanie pozyskanej przez wątek blokady - konstruktor ``unique_lock(Lockable& m, std::adopt_lock_t)``
 
-Nieblokujące próby pozyskania blokady - ``unique_lock(Lockable & m,std::try_to_lock_t)``
+Nieblokujące próby pozyskania blokady - ``unique_lock(Lockable& m, std::try_to_lock_t)``
 
 * w konstruktorze wywoływana jest dla muteksu nieblokująca metoda `try_lock()`
 * jeśli blokada zostanie pozyskana metoda ``owns_lock()`` zwraca ``true``, w przeciwnym wypadku zwraca `false`
@@ -377,19 +380,18 @@ Jeśli jako parametr szablonu ``unique_lock<Mutex>`` zostanie przekazany typ mut
 ```cpp
 using namespace std::literals;
 
-std::timed_mutex mutex;
-std::unique_lock<std::timed_mutex> lock(mutex, std::try_to_lock);
+std::timed_mutex mtx;
+std::unique_lock<std::timed_mutex> lk(mtx, std::try_to_lock);
 
-//...
-if (!lock.owns_lock())
+if (!lk.owns_lock())
 {
-    int count = 0;
     do
     {
-        std::cout << "Thread doesn't own a lock... Tries to acquire a mutex..."
-                    << std::endl;
-    } while(!lock.try_lock_for(1s));
+        std::cout << "Thread doesn't own a lock... Trying to acquire the mutex...\n";
+    } while (!lk.try_lock_for(1s));
 }
+
+// lk owns the mutex here
 ```
 
 #### Transfer własności blokad ``std::unique_lock<Mutex>``
@@ -408,7 +410,7 @@ std::unique_lock<std::mutex> acquire_lock()
 ## Zakleszczenie
 
 Zakleszczenie (*deadlock*)
-    sytuacja, w której co najmniej dwa różne wątki czekają na siebie nawzajem, więc żadny nie może się zakończyć.
+    sytuacja, w której co najmniej dwa różne wątki czekają na siebie nawzajem, więc żaden nie może się zakończyć.
 
 Do zakleszczenia może dojść w sytuacji, gdy istnieją przynajmniej dwa zasoby i dwa wątki ubiegające się o dostęp do tych zasobów.
 
@@ -431,8 +433,8 @@ class X
 public:
     bool operator<(const X& other) const
     {
-        std::lock_guard<std::mutex> lk(mtx_);
-        std::lock_guard<std::mutex> lk(other.mtx_);
+        std::lock_guard<std::mutex> lk1(mtx_);
+        std::lock_guard<std::mutex> lk2(other.mtx_);
         return some_data_ < other.some_data_;
     }
 };
@@ -452,7 +454,7 @@ jest rozwinięte do:
 ```cpp
 x1.mtx_.lock(); // 1
 /*******************************/
-x1.mtx_.lock(); // 3 <- DEADLOCK
+x2.mtx_.lock(); // 3 <- DEADLOCK (held by thread #2)
 ```
 :::
 
@@ -466,22 +468,23 @@ jest rozwinięte do:
 ```cpp
 x2.mtx_.lock(); // 2
 /*******************************/
-x1.mtx_.lock();
+x1.mtx_.lock(); // 4 <- DEADLOCK (held by thread #1)
 ```
 :::
 ::::
 
-Dwa wątki pozyskają muteksy w odwrotnej kolejności, co może spowodować zakleszczenie.
+Dwa wątki pozyskują muteksy w odwrotnej kolejności. Jeśli każdy z nich zdąży zablokować pierwszy muteks, zanim drugi wątek zablokuje drugi, żaden nie będzie mógł kontynuować - dochodzi do zakleszczenia.
 
 ### Zapobieganie zakleszczeniom
 
 #### Metoda ``std::lock()``
 
-* gwarantuje zablokowanie wszystkich muteksów bez zakleszczenia niezależnie od kolejności ich pozyskiwania
-* wymaga przekazania jako parametrów opóźnionych blokad typu ``std::unique_lock``
+* gwarantuje zablokowanie wszystkich muteksów bez zakleszczenia niezależnie od kolejności ich podania (stosuje algorytm unikania zakleszczeń)
+* przyjmuje dowolne obiekty implementujące koncept `Lockable` - najczęściej są to opóźnione blokady typu ``std::unique_lock`` lub same muteksy
+* nie zwalnia muteksów - odpowiedzialność za to ponoszą menadżery blokad (RAII)
 
 ```cpp
-bool X::operator< (const X& other)
+bool X::operator<(const X& other) const
 {
     std::unique_lock<std::mutex> l1(mtx_, std::defer_lock);
     std::unique_lock<std::mutex> l2(other.mtx_, std::defer_lock);
@@ -499,12 +502,12 @@ Wciąż może istnieć zagrożenie zakleszczeniem, jeśli blokady są pozyskiwan
 
 #### Klasa `std::scoped_lock` - C++17
 
-`std::scoped_lock` to klasa wprowadzona w C++17, która umożliwia wygodne zarządzanie wieloma mutexami w bezpieczny i efektywny sposób. Jest zaprojektowana tak, aby obsługiwać wiele mutexów i zapewnić, że wszystkie zostaną poprawnie zablokowane i odblokowane, unikając zakleszczeń.
+`std::scoped_lock` to klasa wprowadzona w C++17, która umożliwia wygodne zarządzanie wieloma muteksami. Wewnętrznie wykorzystuje `std::lock()`, więc blokuje wszystkie muteksy bez ryzyka zakleszczenia, a w destruktorze zwalnia je zgodnie z zasadą RAII.
 
 ```cpp
-bool X::operator< (const X& other)
+bool X::operator<(const X& other) const
 {
-    std::scoped_lock l(mtx_, other.mtx_);
+    std::scoped_lock lk(mtx_, other.mtx_); // locks both mutexes without deadlock
     return some_data_ < other.some_data_;
 }
 ```
@@ -512,21 +515,21 @@ bool X::operator< (const X& other)
 ## Synchronizacja za pomocą zdarzeń
 
 W programach wielowątkowych często zachodzi potrzeba zsynchronizowania pracy wielu wykonywanych współbieżnie zadań.
-Dzieje się tak w sytuacji, gdy jeden z pracujących wątków osiąga punkt, w którym nie może wykonać następnych operacji, dopóki inne wątki nie zakończą swojej częsci pracy, przygotowując dane potrzebne do zakończenia zadania. Fakt, że oczekiwane dane są dostępne jest określany jako **zdarzenie** (*event*).
+Dzieje się tak w sytuacji, gdy jeden z pracujących wątków osiąga punkt, w którym nie może wykonać następnych operacji, dopóki inne wątki nie zakończą swojej części pracy, przygotowując dane potrzebne do zakończenia zadania. Fakt, że oczekiwane dane są dostępne jest określany jako **zdarzenie** (*event*).
 
 Oczekiwanie na zdarzenie może być zaimplementowane jako:
 
 * *idle wait* - wątek oczekujący na zdarzenie przechodzi do stanu *blocked*, w którym nie zużywa cyklów CPU
-* *busy wait* - oczekiwanie na zdarzenie implementowane jest za pomocą pętli *do-while*
+* *busy wait* - oczekiwanie na zdarzenie implementowane jest za pomocą pętli (wątek aktywnie odpytuje o spełnienie warunku, zużywając cykle CPU)
 
 ### Busy waits - implementacje
 
 #### Implementacja z wykorzystaniem muteksu
 
-Implementacja komunikacji przy pomocy flagi ``data_ready`` typu ``bool`` oraz muteksu:
+Implementacja komunikacji przy pomocy flagi ``data_ready`` typu ``bool`` oraz muteksu. Dostęp do flagi musi być chroniony muteksem - słowo kluczowe ``volatile`` **nie** zapewnia synchronizacji między wątkami.
 
 ```cpp
-volatile bool data_ready;
+bool data_ready = false;
 std::mutex mtx;
 ```
 
@@ -539,7 +542,7 @@ void producer()
 {
   prepare_data();
     
-  std::unique_lock lk(mtx);
+  std::lock_guard lk(mtx);
   data_ready = true;
 }
 ```
@@ -571,10 +574,10 @@ void consumer()
 
 #### Implementacja z wykorzystaniem zmiennej atomowej
 
-Implementacja wykorzystująca atomową zmienną typu ``std::atomic<bool>`` nie wymaga do synchronizacji za pomocą muteksu.
+Implementacja wykorzystująca atomową zmienną typu ``std::atomic<bool>`` nie wymaga synchronizacji za pomocą muteksu.
 
 ```cpp
-std::atomic<bool> data_ready;
+std::atomic<bool> data_ready{false};
 ```
 
 
@@ -614,7 +617,7 @@ void consumer()
 
 Operacje na zmiennej atomowej dają gwarancję odpowiedniego uporządkowania kodu zgodnie z modelem pamięci C++11.
 Przygotowanie danych - operacja ``prepare_data()``, w której ustawiany jest stan zmiennych współdzielonych, odbywa się przed (*sequenced before*) operacją zapisu do atomowej flagi ``data_ready``.
-Kiedy w innym wątku wartość odczytana z zmiennej atomowej ``data_ready`` jest ``true``, operacja zapisu do zmiennej atomowej
+Kiedy w innym wątku wartość odczytana ze zmiennej atomowej ``data_ready`` jest ``true``, operacja zapisu do zmiennej atomowej
 synchronizuje się (*synchronizes with*) z tym odczytem tworząc relację *happens before*. Ponieważ relacja *happens before* jest przechodnia, przygotowanie danych odbywa się przed zmianą stanu flagi, ta odbywa się przed odczytem wartości ``true``, który z kolei odbywa się przed przetworzeniem danych.
 
 ### Idle waits
@@ -631,8 +634,8 @@ Biblioteka standardowa C++11 dostarcza dwie implementacje zmiennych warunkowych:
 
 Obie klasy współpracują z muteksem, aby zapewnić prawidłową synchronizację wątków:
 
-* ``conditional_variable`` współpracuje tylko z typem `std::mutex`
-* ``conditional_variable_any`` współpracuje z dowolnym typem muteksu
+* ``std::condition_variable`` współpracuje tylko z ``std::unique_lock<std::mutex>``
+* ``std::condition_variable_any`` współpracuje z dowolnym typem muteksu (blokady)
 
 ```cpp
 bool data_ready = false;
@@ -680,7 +683,9 @@ void consumer()
 ::::
 
 
-Można uprościć kod oczekujący na spełnienie warunku korzystając z przeciążonej wersji metody `wait(lock_type& lock, predicate_type pred)` przyjmującej jako argument predykat.
+Metoda `wait()` atomowo zwalnia muteks i usypia wątek; po obudzeniu ponownie pozyskuje muteks. Wątek może zostać obudzony bez powiadomienia (*spurious wakeup*), dlatego warunek zawsze należy sprawdzać w pętli.
+
+Można uprościć kod oczekujący na spełnienie warunku korzystając z przeciążonej wersji metody `wait(lock_type& lock, predicate_type pred)` przyjmującej jako argument predykat. Jest ona równoważna pętli `while(!pred()) wait(lock);`.
 
 Predykat może być zdefiniowany jako:
 
@@ -689,10 +694,11 @@ Predykat może być zdefiniowany jako:
 * obiekt funkcyjny zdefiniowany w momencie wywołania przy pomocy funkcji lambda
 
 ```cpp
-void process_data()
+void consumer()
 {
-    std::unique_lock<std::mutex> lk(mtx_data_ready);
-    cv_is_data_ready_.wait(lk, [] { return data_ready; });
+    std::unique_lock lk(mtx_data_ready);
+    cv_is_data_ready.wait(lk, [] { return data_ready; });
+
     process_data();
 }
 ```
@@ -760,14 +766,19 @@ void consumer()
 * C++11 zapewnia dostęp do danych TLS za pomocą modyfikatora ``thread_local``
 
 ```cpp
+constexpr std::uint32_t IMUL = 1103515245;
+constexpr std::uint32_t IADD = 12345;
+constexpr std::uint32_t MASK = 0x7FFFFFFF;
+constexpr double SCALE = 1.0 / 2147483648.0;
+
 namespace Unsafe
 {
-    double rand()
+    double rand_double()
     {
-        static int seed = 665; // shared state 
+        static std::uint32_t seed = 665; // shared state - data race
 
         seed = (seed * IMUL + IADD) & MASK;
-        return (seed * SCALE);
+        return seed * SCALE;
     }
 }
 
@@ -777,11 +788,10 @@ namespace ThreadSafe
     {
         auto thread_id = std::this_thread::get_id();
         std::hash<std::thread::id> hasher;
-        thread_local int thd_seed = 665 * hasher(thread_id);
+        thread_local std::uint32_t thd_seed = 665 * hasher(thread_id); // one copy per thread
 
-        int result = (thd_seed * IMUL + IADD) & MASK;
-        thd_seed = result;
-        return (result * SCALE);
+        thd_seed = (thd_seed * IMUL + IADD) & MASK;
+        return thd_seed * SCALE;
     }
 }
 
@@ -818,13 +828,13 @@ Podstawowe metody klasy `std::latch`, to:
 Mechanizm synchronizacji oferowany przez `std::latch` jest przydatny w testach, gdy chcemy mieć pewność, że wszystkie wątki wystartowały:
 
 ```cpp
-void background_work(const int id, const Data data, 
-                     std::latch& all_ready, std::latch& all_done) 
+void background_worker(int id, const Data& data,
+                       std::latch& all_ready, std::latch& all_done)
 {
     all_ready.arrive_and_wait(); // wait for all threads to be ready
-    
+
     // do some work
-    process_data(data);
+    process_data(id, data);
 
     all_done.count_down(); // signal that thread has finished
 }
@@ -833,16 +843,18 @@ void background_work(const int id, const Data data,
 ```cpp
 void test_latch()
 {
-    std::latch all_ready(4);
-    std::latch all_done(4);
+    constexpr size_t thread_count = 4;
+
+    std::latch all_ready(thread_count);
+    std::latch all_done(thread_count);
     std::vector<std::jthread> thds;
-    std::vector<Data> data = { /* data */ };
+    const Data data = { /* data */ };
 
-    for(size_t i = 1; i <= 4; ++i)
-        thds.emplace_back([id = i, &all_ready, &all_done]{ 
-            background_work(id, data, all_ready, all_done); });
+    for (size_t id = 1; id <= thread_count; ++id)
+        thds.emplace_back(background_worker, static_cast<int>(id), std::cref(data),
+                          std::ref(all_ready), std::ref(all_done));
 
-    all_done.wait();
+    all_done.wait(); // wait until all threads have finished
 }
 ```
 
@@ -854,7 +866,7 @@ Obiekt bariery przechodzi w trakcie swojego życia kilka faz. Każda faza defini
 
 
 
-Obiekt bariery przechodzie przez następujące fazy:
+Obiekt bariery przechodzi przez następujące fazy:
 
 1. Licznik bariery jest dekrementowany przez każde wywołanie `arrive()` lub `arrive_and_drop()`
 
@@ -911,7 +923,7 @@ int main()
 
 Potencjalny efekt działania programu:
 
-```{code}
+```text
 Starting...
   John worked
   Carl worked
@@ -930,45 +942,43 @@ Semafory są mechanizmem synchronizacji wątków, który pozwala na kontrolowani
 
 #### `std::counting_semaphore` - semafor zliczający
 
-Klasa `std::counting_semaphore` reprezentuje semafor zliczający, który pozwala na kontrolowanie dostępu do zasobów. Semafor zliczający pozwala na dostęp do zasobów w ilościach większych niż jeden (wartość licznika jest podawana jako parameter szablonu `LeastMaxValue`).
+Klasa `std::counting_semaphore` reprezentuje semafor zliczający, który pozwala na kontrolowanie dostępu do zasobów. Semafor zliczający pozwala na dostęp do zasobów w ilościach większych niż jeden (wartość licznika jest podawana jako parametr szablonu `LeastMaxValue`).
 
 Obiekt semafora zliczającego zawiera wewnętrzny licznik inicjowany w konstruktorze. Wartość licznika jest zwiększana przez wywołanie metody `release()` i zmniejszana przez wywołanie metody `acquire()`. Kiedy wartość licznika wynosi zero, wątki wywołujące `acquire()` są blokowane do momentu, aż wartość licznika zostanie zwiększona przez wywołanie `release()`.
 
 ```cpp
+#include <chrono>
 #include <iostream>
-#include <thread>
 #include <semaphore>
+#include <syncstream>
+#include <thread>
+#include <vector>
 
 std::counting_semaphore<3> semaphore(3); // Initialize with 3 resources
 
-void worker(int id) 
+void process_data(int id)
 {
-    semaphore.acquire();
-    std::cout << "Thread " << id << " acquired the semaphore" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+}
+
+void background_worker(int id)
+{
+    semaphore.acquire(); // at most 3 threads pass at the same time
+    std::osyncstream(std::cout) << "Thread " << id << " acquired the semaphore\n";
 
     // do some work with the resource
-    process_data();
-    
+    process_data(id);
 
-    std::cout << "Thread " << id << " released the semaphore" << std::endl;
+    std::osyncstream(std::cout) << "Thread " << id << " released the semaphore\n";
     semaphore.release();
 }
 
-int main() 
+int main()
 {
-    std::thread threads[5];
+    std::vector<std::jthread> threads;
 
-    // Create and start threads
-    for (int i = 0; i < 5; ++i) {
-        threads[i] = std::thread(worker, i);
-    }
-
-    // Join threads
-    for (int i = 0; i < 5; ++i) {
-        threads[i].join();
-    }
-
-    return 0;
+    for (int id = 0; id < 5; ++id)
+        threads.emplace_back(background_worker, id);
 }
 ```
 
@@ -989,7 +999,7 @@ std::binary_semaphore
     smph_signal_main_to_thread{0},
     smph_signal_thread_to_main{0};
  
-void background_work()
+void background_worker()
 {
     // wait for a signal from the main proc
     // by attempting to decrement the semaphore
@@ -1014,7 +1024,7 @@ void background_work()
 int main()
 {
     // create some worker thread
-    std::jthread worker(background_work);
+    std::jthread thd(background_worker);
  
     std::cout << "[main] Send the signal\n"; // message
  
