@@ -11,12 +11,12 @@ One is about structure, one is about execution.
 
 Concurrency provides a way to structure a solution to solve a problem that may (but not necessarily) be parallelizable.
 
--- Rob Pike, co-inventor of the Go language
+-- Rob Pike
 ```
 
 ## Współbieżność - *Concurrency*
 
-**Współbieżność** (ang. *Concurrency*) odnosi się do zdolności systemu do obsługi wielu zadań jednocześnie. Oznacza to, że system może przełączać się między różnymi zadaniami, sprawiając wrażenie, że są one wykonywane równolegle. W rzeczywistości zadania mogą się przeplatać, ale niekoniecznie są wykonywane w tym samym czasie (maszyna jednoprocesorowa + OS scheduler = *multitasking*).
+**Współbieżność** oznacza zdolność systemu do obsługi wielu zadań w tym samym okresie czasu. System może przełączać się między zadaniami, tworząc wrażenie równoległego wykonywania — nawet jeśli fizycznie działa na pojedynczym procesorze. To właśnie mechanizmy systemu operacyjnego (np. scheduler) umożliwiają *multitasking*, czyli przeplatanie wykonywania zadań.
 
 ```{image} ./images/concurrency-vs-parallel.png
 :alt: Concurrency vs Parallelism
@@ -27,9 +27,11 @@ Concurrency provides a way to structure a solution to solve a problem that may (
 
 **Równoległość** (ang. *Parallelism*) oznacza jednoczesne wykonywanie wielu zadań. Jest to możliwe dzięki wykorzystaniu wielu procesorów lub rdzeni, które współpracują ze sobą nad różnymi częściami problemu. Równoległość ma na celu przyspieszenie przetwarzania poprzez podzielenie zadania na mniejsze podzadania, które są wykonywane równocześnie.
 
+Współbieżność jest sposobem organizacji programu, a równoległość — sposobem jego wykonania. Program może być współbieżny, ale nie równoległy; może też być równoległy, ale nie współbieżny.
+
 ## Proces
 
-**Proces** to podstawowa jednostka pracy w systemie operacyjnym. Proces jest uruchomioną instancją programu, która zawiera kod programu oraz aktualny stan jego wykonania. Proces może być uruchomiony przez użytkownika lub system, a także może tworzyć inne procesy, które nazywają się **procesami potomnymi** (*child processes*).
+**Proces** jest niezależną jednostką wykonawczą, posiadającą własną przestrzeń adresową, zasoby systemowe oraz kontekst wykonania. Jest uruchomioną instancją programu, która zawiera kod programu oraz aktualny stan jego wykonania. Proces może być uruchomiony przez użytkownika lub system. Może także tworzyć inne procesy, które nazywają się **procesami potomnymi** (*child processes*).
 
 Współczesne systemy operacyjne zarządzają setkami procesów, które są jednocześnie uruchomione.
 
@@ -83,7 +85,7 @@ Procesy są izolowane. Dotyczy to także procesów potomnych. W rezultacie proce
 
 ## Wątek - *Thread*
 
-**Wątek** (ang. *Thread*) to jednostka wykonawcza w ramach procesu. Proces może składać się z jednego lub wielu wątków, które współdzielą zasoby procesu, takie jak pamięć i deskryptory plików. Każdy wątek posiada swój własny stos oraz rejestry, co pozwala mu na niezależne wykonywanie zadań.
+**Wątek** (ang. *Thread*) to jednostka wykonawcza działająca wewnątrz procesu. Proces może składać się z jednego lub wielu wątków, które współdzielą zasoby procesu. Każdy wątek posiada swój własny stos oraz rejestry, co pozwala mu na niezależne wykonywanie zadań.
 
 Wszystkie wątki działające w danym procesie współdzielą przestrzeń adresową oraz zasoby systemowe przydzielone procesowi. Dzięki temu wątki w obrębie procesu mają łatwy dostęp do:
 
@@ -94,6 +96,8 @@ Wszystkie wątki działające w danym procesie współdzielą przestrzeń adreso
 
 Zasobem, który wątki **nie współdzielą** jest stos (*stack*). Każdy utworzony wątek posiada własny stos, na którym alokowane są lokalne zmienne funkcji wywołanej w tym wątku.
 
+Wątki są lżejsze niż procesy, a przełączanie kontekstu między nimi jest tańsze.
+
 Wątki są udostępniane i kontrolowane przez system operacyjny. Natywne biblioteki umożliwiające zarządzanie wątkami to:
 
 * MS Windows – Win32 API
@@ -103,20 +107,18 @@ Wątki są udostępniane i kontrolowane przez system operacyjny. Natywne bibliot
 
 Procesy:
 
-* są niezależne (izolowane)
-* mają oddzielne przestrzenie adresowe
-* komunikują się ze sobą za pośrednictwem IPC
-* proces może zostać uruchomiony na innym komputerze (lepsza skalowalność)
-* jeśli stabilność jest istotna, należy użyć procesów
-* jeśli wykorzystywane są zasoby, które są dostępne tylko na zasadzie „jeden dla procesu”, należy wybrać proces
+* są izolowane i niezależne,
+* posiadają oddzielne przestrzenie adresowe,
+* komunikują się ze sobą za pośrednictwem IPC,
+* proces może zostać uruchomiony na innym komputerze (lepsza skalowalność),
+* są lepszym wyborem, gdy kluczowa jest stabilność lub izolacja.
   
 Wątki:
 
-* należą do procesu
-* dzielą przestrzenie adresowe - z wyjątkiem stosu
-* koszt przełączania kontekstu jest mniejszy dla wątków
-* komunikacja wewnątrz wątków jest mniej kosztowna niż komunikacja międzyprocesowa
-* jeśli wątki wymagają zasobów, które nie mogą być użyte przez wiele procesów jednocześnie, należy korzystać z wątków
+* współdzielą przestrzenie adresowe - z wyjątkiem stosu,
+* mają niższy koszt przełączania kontekstu,
+* komunikacja wewnątrz wątków jest mniej kosztowna niż komunikacja międzyprocesowa,
+* są odpowiednie, gdy zadania intensywnie współdzielą dane.
 
 
 ## Przełączanie kontekstu - *Context Switch*
