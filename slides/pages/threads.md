@@ -8,7 +8,7 @@ background: /img/header-bg.svg
 
 ---
 
-# Zarządzanie wątkami
+## Zarządzanie wątkami
 
 <v-clicks>
 
@@ -21,25 +21,24 @@ background: /img/header-bg.svg
 
 ---
 
-# Wątek pusty
+## Wątek pusty
 
 <v-clicks>
 
 * Instancja `std::thread` utworzona konstruktorem domyślnym 
 * lub obiekt wątku po wykonaniu na nim operacji `std::move()`
 
-```c++
-std::thread thd_empty; // not-a-thread
-
-std::thread thd1(&some_function);
-std::thread thd2 = std::move(thd1); // thd1 is now not-a-thread
-thd2.join();
-```
 </v-clicks>
+
+<div v-click>
+
+<<< @/../examples/01_threads_basics.cpp#empty_thread {all}
+
+</div>
 
 ---
 
-# std::thread + std::move
+## std::thread + std::move
 
 <v-clicks>
 
@@ -52,80 +51,35 @@ thd2.join();
 
 ---
 
-# Tworzenie wątku - wskaźnik do funkcji
+## Tworzenie wątku - wskaźnik do funkcji
 
-Tworzenie wątku przez przekazanie wskaźnika do funkcji
+* Tworzenie wątku przez przekazanie wskaźnika do funkcji
 
-```cpp {all|1|3-6|10-11}
-#include <thread>
-
-void background_task()
-{
-    std::cout << "My first thread..." << std::endl;
-}
-
-int main()
-{
-    std::thread thd(&background_task);
-    thd.join();
-}
-```
+<<< @/../examples/01_threads_basics.cpp#function_pointer {all|1-4|8-9}
 
 ---
 
-# Tworzenie wątku - obiekt funkcyjny
+## Tworzenie wątku - obiekt funkcyjny
  
-Tworzenie wątku przez przekazanie obiektu funkcyjnego (funktora)
+*  Tworzenie wątku przez przekazanie obiektu funkcyjnego (funktora)
 
 <div class="text-code-07">
-```cpp  {all|1-11|15-19} 
-class BackgroundTask
-{
-    const int id_;
-public:
-    BackgroundTask(int id) : id_{id} {}
 
-    void operator()() const
-    {
-        std::cout << "Background task " << id_ << " is running..." << std::endl;
-    }
-};
+<<< @/../examples/01_threads_basics.cpp#functor {all|1-13|17-21}
 
-int main()
-{
-    BackgroundTask bt{1};
-    std::thread thd_1(bt);
-    std::thread thd_2(BackgroundTask{2});
-    thd_1.join();
-    thd_2.join();
-}
-```
 </div>
 
 ---
 
-# Tworzenie wątku - obiekt domknięcia (lambda)
+## Tworzenie wątku - obiekt domknięcia (lambda)
 
-Tworzenie wątku przez przekazanie obiektu domknięcia (lambdy)
+* Tworzenie wątku przez przekazanie obiektu domknięcia (lambdy)
 
-```cpp
-auto task = [] {
-    std::cout << "My first task..." << std::endl;
-};
-
-std::thread thd_1(task);
-
-std::thread thd_2([] { 
-    std::cout << "My second task..." << std::endl; 
-});
-
-thd_1.join();
-thd_2.join();
-```
+<<< @/../examples/01_threads_basics.cpp#lambda
 
 ---
 
-# Dołączenie do wątku
+## Dołączenie do wątku
 
 * Aby poczekać na zakończenie wykonywania zadania przez dany wątek, należy wywołać na jego rzecz metodę `join()`
 * `join()` blokuje (wstrzymuje wywołanie) bieżący wątek, aż do czasu ukończenia zadania wykonywanego przez wskazany wątek
@@ -134,38 +88,27 @@ thd_2.join();
 
 ---
 
-# Dołączenie do wątku
+## Dołączenie do wątku
 
-```cpp
-int main()
-{
-    BackgroundTask bt{1};
-
-    std::thread thd(bt);
-    thd.join(); // wstrzymanie wykonania wątku głównego (main),
-                // aż do czasu zakończenia zadania w wątku t
-
-    assert(!thd.joinable());
-}
-```
+<<< @/../examples/01_threads_basics.cpp#join
 
 ---
 
-# C++ Core Guidelines - join
+## C++ Core Guidelines - join
 
 [Prefer gsl::joining_thread over std::thread](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#rconc-joining_thread)
 
 ---
 
-# Destruktor wątku
+## Destruktor wątku
 
-* Jeśli obiekt wątku jest skojarzony z wątkiem systemowym wywołanie metody `joinable()` zwraca `true`.
+* Jeśli obiekt wątku reprezentuje aktywny wątek systemowy (*active thread of execution*), metoda `joinable()` zwraca `true`.
 * Destrukcja obiektu wątku jest bezpieczna, jeśli obiekt wątku nie jest skojarzony z wątkiem systemowym. 
 * W przeciwnym wypadku wywołana jest funkcja `std::terminate()`
 
 ---
 
-# Destruktor wątku
+## Destruktor wątku
 
 * Obiekt wątku nie jest skojarzony z wątkiem systemowym:
   - jeśli został utworzony za pomocą konstruktora domyślnego
@@ -175,36 +118,28 @@ int main()
 
 ---
 
-# Destrukcja wątku
+## Destrukcja wątku
 
-Standard C++ wymusza jawne wywołanie `join()` lub `detach()` przed wywołaniem destruktora wątku, który jest skojarzony z wątkiem systemowym.
-
----
-
-# Przekazywanie parametrów do wątków
-
-## 3 sposoby
+* Standard C++ wymusza jawne wywołanie `join()` lub `detach()` przed wywołaniem destruktora wątku, który jest skojarzony z wątkiem systemowym.
 
 ---
 
-# Sposób 1
+## Przekazywanie parametrów do wątków
+
+### 3 sposoby
+
+---
+
+## Sposób 1
 
 * Przekazując argumenty jako kolejne (po funkcji lub obiekcie funkcyjnym) parametry konstruktora `std::thread`
 * Podane argumenty są kopiowane lub przenoszone do uruchamianego wątku
 
-```cpp
-void do_work(int value, std::string text)
-{
-    //...
-}
-
-std::thread thd{&do_work, 42, "some data"};
-thd.join();
-```
+<<< @/../examples/02_thread_args.cpp#by_value
 
 ---
 
-# Przekazanie referencji
+## Przekazanie referencji
 
 * Jeśli wymagane jest przekazanie referencji do funkcji uruchamianej w nowym wątku, należy użyć standardowych wraperów dla:
   * referencji - `std::ref()` 
@@ -212,115 +147,64 @@ thd.join();
 
 ---
 
-# Przekazanie referencji - przykład
+## Przekazanie referencji - przykład
 
-```cpp {all|1-5|1,9-15}
-void do_work(ThreadSafeQueue<Data>& q, const std::string& value)
-{
-    Data data = process_data(value);
-    q.push(data)
-}
-
-int main()
-{
-    ThreadSafeQueue<Data> data_queue;
-    const std::string value = "some data";
-
-    std::thread thd{&do_work, std::ref(data_queue), std::cref(value)};
-
-    //...
-    thd.join();
-}
-```
+<<< @/../examples/02_thread_args.cpp#by_reference {all|1-5|9-15}
 
 ---
 
-# Sposób 2
+## Sposób 2
 
 * Wykorzystując obiekt domknięcia, który przechwytuje zmienne będące argumentami wywoływanej funkcji
 
-```cpp
-void do_work(ThreadSafeQueue<Data>& q, std::string value)
-{
-    Data data = process_data(value);
-    q.push(data)
-}
-```
+<div class="text-08">
 
-```cpp {all|6}
-int main()
-{
-    ThreadSafeQueue<Data> data_queue;
-    const std::string value = "some data";
+<<< @/../examples/02_thread_args.cpp#by_closure {all|12}
 
-    std::thread thd{[&data_queue, value] { do_work(data_queue, value); }};
-
-    thd.join();
-}
-```
+</div>
 
 ---
 
-# Sposób 3
+## Sposób 3
 
 * Konstrukcja obiektu funkcyjnego przekazywanego do konstruktora instancji `std::thread`:
 
-```cpp
-class BackgroundTask {
-    const int id_;
-public: 
-    BackgroundTask(int id) : id_{id} {}
+<div class="text-07">
 
-    void operator()() 
-    {
-        std::cout << "Hello from a task#" << id_ << std::endl;
-    }
-};
+<<< @/../examples/01_threads_basics.cpp#functor {all}
 
-BackgroundTask background_task{1};
-std::thread thd1{background_task};
-std::thread thd2{BackgroundTask{2}};
-
-thd1.join();
-thd2.join();
-```
+</div>
 
 ---
 
-# Problem wiszących referencji
+## Problem wiszących referencji
 
-Przy przekazywaniu parametrów do wątków należy unikać wiszących referencji (dangling references)
+* Przy przekazywaniu parametrów do wątków należy unikać wiszących referencji (dangling references)
 
 [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#rconc-data-by-value)
 
 ---
 
-# std::thread & move semantics
+## std::thread i semantyka przenoszenia
 
-Klasa `std::thread` implementuje tylko semantykę przenoszenia
+* Klasa `std::thread` jest **move-only**
+* Nie można kopiować obiektów `std::thread`, można je jedynie przenosić
+* Obiekty `std::thread` można przechowywać w kontenerach, takich jak `std::vector`, pod warunkiem użycia semantyki przenoszenia
+
+---
+
+## std::thread i kontenery std
+
+<div class="text-09">
+
+* Wątki można grupować w kontenerach, takich jak `std::vector`, przy użyciu semantyki przenoszenia
+
+</div>
 
 <div class="text-sm">
-```cpp {all|3-7|12|15-16}
-void task() { /* implementation */ }
 
-std::thread create_thread() 
-{
-    std::thread thd(&task);
-    return thd;
-}
+<<< @/../examples/02_thread_args.cpp#move_semantics {all|3-7|14|16-18}
 
-std::vector<std::thread> threads;
-
-// implicit move of r-value
-threads.push_back(create_thread());
-
-// explicit move of l-value
-std::thread thd(&task);
-threads.push_back(std::move(thd));
-
-for(auto& thd : threads)
-    thd.join();
-```
 </div>
 
 ---
@@ -332,7 +216,7 @@ background: /img/header-bg.svg
 
 ---
 
-# std::jthread
+## std::jthread
 
 * Ulepszona wersja `std::thread`, która:
   * wywołuje `join()` w destruktorze
@@ -340,38 +224,17 @@ background: /img/header-bg.svg
 
 ---
 
-# std::jthread
+## std::jthread
 
 <div class="text-code-08">
-```cpp{all|16,21|17,22}
-void background_work(const int id, const std::string text, 
-                     const std::chrono::milliseconds delay) 
-{
-    std::cout << "Thread#" << id << " started..." << std::endl;
 
-    for(const auto& letter : text)
-    {
-        std::cout << "Thread#" << id << " - " << letter << std::endl;
-        std::this_thread::sleep_for(delay);
-    }
-}
+<<< @/../examples/03_jthread.cpp#safe_join {all|15-16|18|20-21}
 
-
-void safe_join_in_cpp20() 
-{
-    std::jthread thd1{&background_work, 1, "Hello", 100ms};
-    std::jthread thd2{&background_work, 2, "Multithreading", 250ms};
-    
-    may_throw(); 
-    
-    thd1.join(); // explicit join
-} // implicit join in the destructor for thd2 & thd1 joins in case of exception
-```
 </div>
 
 ---
 
-# std::jthread - destruktor
+## std::jthread - destruktor
 
 * Implementacja destruktora `std::jthread`:
 
@@ -388,9 +251,9 @@ std::jthread::~jthread()
 
 ---
 
-# Kooperatywne anulowanie zadań
+## Kooperatywne anulowanie zadań
 
-* Model kooperatywnego anulowania zadań może być uniwersalnie stosowany
+* Model kooperatywnego anulowania zadań może być uniwersalnie stosowany przez
   * wątki, korutyny, operacje sieciowe, I/O, itp.
 * Nagłówek `<stop_token>`
 * Podstawowe typy:
@@ -400,69 +263,48 @@ std::jthread::~jthread()
 
 ---
 
-# std::stop_source / std::stop_token
+## std::stop_source / std::stop_token
 
-Implementacja zadania:
+* Implementacja zadania z obsługą kooperatywnego anulowania:
 
-```cpp {all|1|4-7,10-11,15}
-void background_work(std::stop_token st, const int id, const std::string text) {
-    std::cout << "Thread#" << id << " started..." << std::endl;
+<div class="text-code-08">
 
-    for(const auto& letter : text)
-    {
-        if (st.stop_requested())
-        {
-            std::cout << "Stop has been requested..." << std::endl;
-            std::cout << "Thread#" << id << " cancelled" << std::endl;
-            return;
-        }
+<<< @/../examples/03_jthread.cpp#stop_token_task {all|1|7-12|14-15}
 
-        std::cout << "Thread#" << id << " - " << letter << std::endl;
-        std::this_thread::sleep_for(250ms);
-    }
-}
-```
+</div>
 
 ---
 
-# std::stop_source / std::stop_token
+## std::stop_source / std::stop_token
 
-Uruchomienia zadania i jego anulowanie
+* Uruchomienia zadania i jego anulowanie
 
-```cpp {all|3-4|6-7|11|1-14}
-void run_task_and_cancel()
-{
-    std::stop_source stop_src;
-    std::stop_token st = stop_src.get_token();
-
-    std::jthread thd1{&background_work, st, 1, "FIRST_TASK"};
-    std::jthread thd2{&background_work, st, 2, "SECOND_TASK"};
-    
-    std::this_thread::sleep_for(2s);
-    
-    stop_src.request_stop();
-
-    //...
-}
-```
+<<< @/../examples/03_jthread.cpp#run_task_and_cancel {all|3-4|6-7|11}
 
 ---
 
-# std::jthread - internal stop-state
+## std::jthread - internal stop-state
 
-Jeśli nie przekażemy w wywołaniu konstruktora `std::jthread` jawnie tokena (a funkcja go oczekuje), to wykorzystany zostanie wewnętrzny stan obiektu wątku (*internal stop-state*)
+* Jeśli nie przekażemy w wywołaniu konstruktora `std::jthread` jawnie tokena (a funkcja go oczekuje), to wykorzystany zostanie wewnętrzny stan obiektu wątku (*internal stop-state*)
 
-```cpp
-void background_work(std::stop_token st, 
-                     const int id, const std::string text);
+<<< @/../examples/03_jthread.cpp#internal_stop_state
 
-std::jthread thd1{&background_work, 1, "TASK"}; // missing stop-token
+---
 
-std::stop_source stop_src = thd1.get_stop_source(); // get stop_source from jthread
-std::stop_token st = thd1.get_stop_token();
+## std::stop_callback
 
-stop_src.request_stop(); // or thd1.request_stop();
-```
+* Obiekt RAII, umożliwiający rejestrację callbacku dla skojarzonego obiektu `std::stop_token`
+* Callback zostanie wywołany, gdy skojarzony z obiektem `std::stop_token` obiekt `std::stop_source` zgłosi żądanie zatrzymania wątku
+* Destruktor obiektu `std::stop_callback` automatycznie wyrejestruje callback, jeśli nie został on wcześniej wywołany
+* Callback jest wywołany:
+  *  w wątku, który zgłosił żądanie zatrzymania wątku
+  *  lub w przypadku, gdy żądanie anulowania wątku zostało zgłoszone przed rejestracją callbacku, w wątku, w którym nastąpiła rejestracja callbacku
+
+---
+
+## std::stop_callback
+
+<<< @/../examples/03_jthread.cpp#stop_callback
 
 ---
 layout: cover
@@ -473,14 +315,14 @@ background: /img/header-bg.svg
 
 ---
 
-# Obsługa wyjątków w wątkach
+## Obsługa wyjątków w wątkach
 
 * Jeżeli z funkcji uruchomionej w osobnym wątku wydostanie się wyjątek, zostanie wywołana funkcja `std::terminate()`
 * W celu prawidłowej obsługi wyjątków, należy przechwycić rzucony wyjątek i jeżeli istnieje taka potrzeba, przekazać go do wątku rodzica wykorzystując klasę `std::exception_ptr`
 
 ---
 
-# Klasa std::exception_ptr
+## Klasa std::exception_ptr
 
 * Umożliwia przechowanie wskaźnika do obiektu wyjątku, który został zgłoszony instrukcją `throw` i przechwycony funkcją `std::current_exception()`
 * Instancja `std::exception_ptr` może być przekazana do innej funkcji, również takiej, która uruchomiona jest w osobnym wątku
@@ -488,7 +330,7 @@ background: /img/header-bg.svg
 
 ---
 
-# Klasa std::exception_ptr
+## Klasa std::exception_ptr
 
 * Domyślnie skonstruowany obiekt `std::exception_ptr` ma wartość `nullptr`
 * Dwa obiekty są uznawane za równe, jeśli są puste lub wskazują na ten sam obiekt wyjątku
@@ -496,49 +338,19 @@ background: /img/header-bg.svg
 
 ---
 
-# Przechwytywanie wyjątku w wątku
+## Przechwytywanie wyjątku w wątku
 
-```cpp {all|3-12|5|9-12}
-void background_work(std::exception_ptr& excpt)
-{
-    try
-    {
-        may_throw();
-
-        // ...
-    }
-    catch(...)
-    {
-        excpt = std::current_exception();
-    }
-}
-```
+<<< @/../examples/04_thread_exceptions.cpp#capture_exception {all|3-8|5|9-12}
 
 ---
 
-# Obsługa wyjątku w wątku głównym
+## Obsługa wyjątku w wątku głównym
 
-```cpp {all|3|5|6|8-16}
-int main()
-{
-    std::exception_ptr thd_exception;
+<div class="text-08">
 
-    std::thread thd(&background_work, std::ref(thd_exception));
-    thd.join();
+<<< @/../examples/04_thread_exceptions.cpp#handle_exception {all|3|5|6|8-18}
 
-    if (thd_exception)
-    {
-        try
-        {
-            std::rethrow_exception(thd_exception);
-        }
-        catch(const std::runtime_error& e)
-        {
-            // ... handling an error
-        }
-    }
-}
-```
+</div>
 
 ---
 layout: cover
@@ -549,25 +361,20 @@ background: /img/header-bg.svg
 
 ---
 
-# std::thread::hardware_concurrency()
+## std::thread::hardware_concurrency()
 
 * Statyczna metoda zwracająca ilość dostępnych wątków sprzętowych
 * Zwykle podawana jest ilość procesorów, rdzeni, itp. Jeżeli informacja nie jest dostępna zwraca wartość `0`
 
-<v-click>
+<div v-click>
 
-```cpp
-auto hardware_threads_count = 
-    std::max(1u, std::thread::hardware_concurrency());
+<<< @/../examples/05_thread_helpers.cpp#hardware_concurrency {all}
 
-std::vector<std::thread> threads(hardware_threads_count);
-```
-
-</v-click>
+</div>
 
 ---
 
-# Przestrzeń nazw std::this_thread
+## Przestrzeń nazw std::this_thread
 
 * `sleep_for(const chrono::duration<R, P>& sleep_duration)`
   - wstrzymuje wykonanie bieżącego wątku na (przynajmniej) określony interwał czasu
@@ -580,14 +387,14 @@ std::vector<std::thread> threads(hardware_threads_count);
 
 ---
 
-# Identyfikator wątku
+## Identyfikator wątku
 
 * `std::thread::id` jest lekką, trywialnie kopiowalną klasą, która opakowuje unikalny identyfikator wątku
 * Celem klasy jest możliwość użycia jej jako klucza w kontenerach asocjacyjnych
 
 ---
 
-# Klasa std::thread::id
+## Klasa std::thread::id
 
 * Domyślny konstruktor tworzy obiekt identyfikujący tzw. pusty wątek (Not-A-Thread)
 * Instancje `thread::id` są kopiowalne, porównywalne oraz hashowalne

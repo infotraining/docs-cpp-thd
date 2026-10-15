@@ -434,8 +434,17 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .slogan {
-  font-size: xx-large;
-  color: #045475;
+  font-size: xxx-large;
+  font-weight: 500;
+  color: #2d6881;
+  background-color: rgba(201, 208, 214, 0.1);
+}
+
+.dark .slogan {
+  font-size: xxx-large;
+  font-weight: 500;
+  color: #ffed9c;
+  background-color: rgba(201, 208, 214, 0.1);
 }
 
 .no-bullets ul {

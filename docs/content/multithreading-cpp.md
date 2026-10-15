@@ -5,4 +5,4 @@
 :align: center
 ```
 
-Materiały pomocnicze do [szkolenia z programowania wielowątkowego w C++](https://www.infotraining.pl/szkolenie/c-plus-plus/multithreading)
+Materiały pomocnicze do [szkolenia z programowania wielowątkowego w C++](https://www.infotraining.pl/pl/szkolenie/c-plus-plus-multithreading)

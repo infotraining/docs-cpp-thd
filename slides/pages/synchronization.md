@@ -18,71 +18,156 @@ background: /img/header-bg.svg
 
 ## Bezpieczeństwo
 
-* *Safety*
-  - nigdy nie doprowadza do niepożądanego stanu (*nothing bad will ever happen*)
+* **Safety** - *nothing bad will ever happen*
+  - nigdy nie doprowadza do **niepożądanego stanu**
   - bezpieczeństwo może być naruszone przez:
-    - data-race
-    - invariant violation
+    - data-race - dwa wątki jednocześnie wchodzą do sekcji krytycznej
+    - stan końcowy operacji nie spełnia postawionych wymagań (*invariant violation*)
+    - deadlock
 
 ---
 
 ## Żywotność
 
-* *Liveness*
+* **Liveness** - *something good will eventually happen*
   - zapewnia, że każde pożądane zdarzenie w końcu zajdzie
+  - opisuje **gwarancję postępu** programu
   - żywotność może być naruszona poprzez:
-    - deadlock
     - livelock
     - zagłodzenie wątków
 
 ---
 
-## Thread safety
+## Thread-Safety = Safety ^ Liveness
 
-* Segment kodu jest „thread-safe" jeśli manipuluje współdzielonym stanem w taki sposób, że gwarantowane jest bezpieczne (prawidłowe) wykonanie go przez wiele wątków pracujących w tym samym czasie
-* Oznacza to, że kod „thread-safe" musi w odpowiedni sposób chronić współdzielony między wątkami stan programu
+* **Thread‑Safety** to własność obejmująca zarówno safety, jak i liveness.
+* Segment kodu jest „thread-safe" jeśli:
+  * manipuluje *współdzielonym stanem* w taki sposób, że gwarantowane jest bezpieczne (prawidłowe) wykonanie go przez wiele wątków pracujących w tym samym czasie
+  * zapewnia *gwarancję postępu* - brak zagłodzenia wątków i livelock
 
 ---
 
 ## Unsafe code
 
-* nieprawidłowo chroni współdzielone dane oraz zasoby (data race)
-* zależy od przechowywanego między wywołaniami stanu - np. funkcja `strtok()`, `rand()`
-* wywołuje kod, który jest „unsafe"
+* Nieprawidłowo chroni współdzielone dane oraz zasoby (data race)
+* Zależy od przechowywanego między wywołaniami stanu - np. funkcja `strtok()`, `rand()`
+* Nie gwarantuje postępu (może prowadzić do zagłodzenia wątków lub livelock)
+* Wywołuje kod, który jest „unsafe"
 
 ---
 
-## Safe code
+## Jak osiągnąć Thread-Safety?
 
-* Niezmienność danych (*immutability*) 
-  - stan obiektu nie może być zmieniony po jego utworzeniu
-  - obiekty mogą być bezpiecznie współdzielone, jeśli wątki mogą jedynie odczytywać ich stan
-* Stosowanie jawnego blokowania (*explicit locking*) 
-  - muteksów, do ochrony danych współdzielonych
-  - operacje synchronizacji mogą znacznie spowolnić działanie programu
-* Atomowość (*atomicity*) 
-  - stosowanie zmiennych i flag atomowych
+<v-clicks depth="2">
+
+* Eliminacja współdzielonego stanu (najlepsza opcja)
+  - niezmienność danych (**Immutability**)
+  - **Message Passing** (np. kolejki komunikatów, kanały)
+  - **Actor Model**
+  - dane używane tylko przez jeden wątek - **Thread confinement**
+* Synchronizacja dostępu do współdzielonego stanu
+  * Stosowanie jawnego blokowania (**Explicit Locking**) 
+    - muteksów i semaforów do synchronizacji dostępu do danych współdzielonych
+    - blokad readers-writers (**Shared locks**)
+  * Atomowość (**Atomicity**) 
+    - stosowanie zmiennych i flag atomowych
+    - struktury danych **Lock-free**
+  
+</v-clicks> 
 
 ---
-layout: center
+
+## Jak osiągnąć Thread-Safety?
+
+<v-clicks depth="2">
+
+* Inwarianty i spójność danych
+  * Thread‑safety nie polega tylko na „braku race condition”
+  * należy zapewnić, że inwarianty są utrzymane w każdym interleavingu
+
+* Unikanie deadlocków
+  * stosowanie stałej kolejności blokowania zasobów
+  * unikanie blokowania w callbackach
+  * unikanie blokowania w destruktorach
+  * unikanie blokowania w kodzie, który może być wywołany ponownie (reentrancy)
+
+</v-clicks> 
+
 ---
 
-## Shared mutable state is an evil of all multithreading
+## Jak osiągnąć Thread-Safety?
+
+<v-clicks depth="2">
+
+* Unikanie livelocków i starvation (liveness)
+  * **fairness** w algorytmach *Lock‑free*
+  * unikanie agresywnego spinowania
+  * stosowanie backoff (np. exponential backoff)
+  * priorytety wątków ustawione rozsądnie
+  * unikanie „busy waiting” bez limitu
+
+</v-clicks>
 
 ---
 
 ## Immutability
 
-* Zmienne, które są niezmienne (immutable) mogą być bezpiecznie współdzielone bez blokad
+* Obiekty **immutable** są automatycznie **thread‑safe**.
 * `const` w C++11 znaczy thread-safe
+  * brak mutujących metod (enkapsulacja stałego stanu)
+  * immutable views - `std::string_view` i `std::span<const T>`
+  * `constexpr` - umożliwia tworzenie stałych wyrażeń, które są niezmienne i thread-safe
 
 ---
 
-## Współdzielenie kontenerów
+## Immutability - przykład
+
+* Przykład klasy konfiguracyjnej, która jest niemutowalna i thread-safe
+
+```c++
+class AppConfig {
+  const std::string name_;
+  const size_t threads_count_;
+  inline static constexpr size_t max_connections = 1024;
+public:
+  AppConfig(std::string name, size_t threads_count = std::thread::hardware_concurrency())
+    : name_(std::move(name)), threads_count_(threads_count) {}
+
+  std::string name() const { return name_; }
+  size_t threads_count() const { return threads_count_; }
+};
+```
+
+---
+
+## Immutability - przykład
+
+* Aby obiekt immutable gwarantował odpowiednio długi czas życia należy używać `std::shared_ptr<const T>`
+
+```c++
+using ImmutableAppConfig = std::shared_ptr<const AppConfig>;
+
+void run_service(ImmutableAppConfig config) {
+  // implementation of the service using the immutable configuration
+}
+
+void run(ImmutableAppConfig config) 
+{
+    std::jthread service_thread_1(&run_service, config);
+    std::jthread service_thread_2(&run_service, config);
+
+    // implementation of the main thread while the service threads are running
+}
+
+```
+
+---
+
+## Współdzielenie kontenerów standardowych
 
 * Dozwolony jest współbieżny odczyt (operacje read-only) np:
   - wywołanie metod `begin()`, `end()`, `rbegin()`, `rend()`, `front()`, `back()`, `lower_bound()`, `upper_bound()`, `equal_range()`, `at()`
-  - `operator []` - z wyjątkiem kontenerów asocjacyjnych
+  - odczyt za pomocą `operator []` - z wyjątkiem kontenerów asocjacyjnych
   - dostęp za pomocą iteratorów, jeśli nie modyfikujemy stanu wskazywanych elementów
 * Dozwolony jest współbieżny dostęp do różnych elementów kontenera za wyjątkiem obiektów `bitset` oraz `vector<bool>`
 
@@ -90,22 +175,33 @@ layout: center
 
 ## Współdzielenie strumieni
 
-* Dla formatowanych operacji wejścia oraz wyjścia na obiektach strumieni standardowych (cin, cout, cerr, …)
-  - dozwolony jest dostęp współbieżny
+* Dla formatowanych operacji wejścia oraz wyjścia na obiektach strumieni standardowych (`std::cin`, `std::cout`, `std::cerr`, …)
+  - dozwolony jest dostęp współbieżny - brak *data race*
   - może wystąpić przemieszanie kolejności znaków (interleaved characters)
+  - pojedyncze operacje wejścia/wyjścia są atomowe, ale sekwencje wielu operacji mogą być przerywane przez inne wątki (np. `std::cout << "Hello" << "World";`)
 
 ---
 layout: center
 ---
 
-## Shared mutable state is an evil of all multithreading
+<div class="slogan">
+Sahred muteabl steta is na ivel of all multthrieading
+</div>
+
+---
+layout: center
+---
+
+<div class="slogan">
+Shared mutable state is an evil of all multithreading
+</div>
 
 ---
 layout: cover
 background: /img/header-bg.svg
 ---
 
-# Muteksy
+# Muteksy - Explicit Locking
 
 ---
 
@@ -113,6 +209,7 @@ background: /img/header-bg.svg
 
 * Fragment kodu programu, który w danej chwili może być wykonywany tylko przez jeden wątek
 * Sekcja krytyczna zapewnia właściwość **wzajemnego wykluczenia**
+* Powinna być **krótka i deterministyczna**, aby minimalizować czas blokady i ryzyko zakleszczenia (deadlock)
 
 ---
 
@@ -127,27 +224,41 @@ background: /img/header-bg.svg
 
 ## Muteks
 
-* Standardową realizacją wzajemnego wykluczenia jest wykorzystanie obiekt blokady (**muteksu**) zawierającego operacje
-  * `lock()`
-  * `unlock()`
+* **Muteks** jest mechanizmem zapewniającym **mutual exclusion** — wzajemne wykluczanie
+* Zapewnia wyłączny dostęp do zasobu
+* W danym momencie **tylko jeden wątek może posiadać muteks**
+
+---
+
+## Muteks - operacje podstawowe
+
+* Muteks ma dwa stany
+  * zablokowany - **locked**
+  * i odblokowany - **unlocked**
+* Operacja`lock()` - blokuje muteks, jeśli jest dostępny, w przeciwnym razie wątek zostaje zablokowany do momentu jego odblokowania
+* Operacja `unlock()` - odblokowuje muteks, umożliwiając innym wątkom jego pozyskanie
+* Tylko wątek posiadający muteks może go odblokować poprzez wywołanie `unlock()`
 
 ---
 
 ## Muteksy w bibliotece standardowej
 
-* Zapewnia implementację operacji wzajemnego wykluczenia (*mutual exclusion*)
-* Umożliwia ochronę współdzielonych zmiennych przed sytuacją wyścigu (*race condition*)
-  * wątek pozyskuje muteks (wchodzi do sekcji krytycznej) wywołując na rzecz muteksu metodę `lock()`
-  * wątek opuszcza sekcję krytyczną - zwalnia muteks - wywołując metodę `unlock()`
+* Biblioteka standardowa C++ udostępnia kilka typów muteksów, w tym:
+  * `std::mutex`
+  * `std::recursive_mutex`
+  * `std::timed_mutex`
+  * `std::recursive_timed_mutex`
+  * `std::shared_mutex` - C++17
 
 ---
 
 ## Koncepty obiektów blokad
 
-* `BasicLockable`
-* `Lockable`
-* `TimedLockable`
-* `SharedLockable`
+* Standard definiuje następujące koncepty dla obiektów blokad:
+  * `BasicLockable`
+  * `Lockable`
+  * `TimedLockable`
+  * `SharedLockable`
 
 ---
 
@@ -199,16 +310,16 @@ requires (L m) {
 ## Menadżery blokad
 
 * Zarządzanie blokadami (obiektami muteksów) odbywa się za pomocą następujących klas implementujących RAII:
-  * `lock_guard<Mutex>`
-  * `unique_lock<Mutex>`
-  * `shared_lock<Mutex>` - C++14 (w praktyce C++17)
-  * `scoped_lock<Mutex>` - C++17
+  * `std::lock_guard<Mutex>`
+  * `std::unique_lock<Mutex>`
+  * `std::shared_lock<Mutex>` - C++14 (w praktyce C++17)
+  * `std::scoped_lock<Mutex>` - C++17
 
 ---
 
 ## std::lock_guard\<Mutex\>
 
-<div class="text-code-09">
+<div class="text-code-08">
 ```cpp {all|7-8|13-14|10-11}
 template<typename _Mutex>
 class lock_guard
@@ -236,35 +347,14 @@ private:
 
 ---
 
-## std::lock_guard - przykład
+## std::lock_guard\<std::mutex\> - przykład
 
-<div class="text-code-08">
-```cpp {all|1-5|7-12|13|16-19}
-template <typename Value_>
-struct Synchronized {
-    Value_ value;
-    std::mutex mtx_value;
-};
+<div class="text-code-07">
 
-template <typename F_, typename Value_>
-void apply(F_ f, Synchronized<Value_> &sync_value)
-{
-    std::lock_guard<std::mutex> lk{sync_value.mtx_value};
-    f(sync_value.value);
-}
-```
+<<< @/../examples/06_mutex.cpp#lock_guard {all|1-6|8-13}
 
-```cpp
-Synchronized<std::vector<int>> sync_vec;
+<<< @/../examples/06_mutex.cpp#lock_guard_usage {all}
 
-std::thread thd([&] {
-    apply([](std::vector<int> &v) {
-        v.push_back(1);
-        v.push_back(2);
-    }, sync_vec);
-});
-thd.join();
-```
 </div>
 
 ---
@@ -301,22 +391,8 @@ thd.join();
 
 ## std::unique_lock + std::timed_mutex
 
-```cpp
-std::timed_mutex mutex;
-std::unique_lock<std::timed_mutex> lock(mutex, std::try_to_lock);
 
-//...
-if (!lock.owns_lock())
-{
-    int count = 0;
-    do
-    {
-        std::cout << "Thread does not own a lock..."
-                  << " Tries to acquire a mutex..."
-                  << std::endl;
-    } while(!lock.try_lock_for(std::chrono::seconds(1)));
-}
-```
+<<< @/../examples/06_mutex.cpp#timed_mutex
 
 ---
 layout: cover
@@ -354,31 +430,23 @@ Do zakleszczenia dochodzi, jeśli spełnione są cztery warunki:
 
 Klasa ze stanem wewnętrznym, chroniona muteksem. Chcemy napisać operator porównania.
 
-```cpp {all|8-10}
-class X
-{
-    mutable std::mutex mtx_;
-    int data_;
-public:
-    bool operator<(const X& other) const
-    {
-        std::lock_guard<std::mutex> lk(mtx_);
-        std::lock_guard<std::mutex> lk(other.mtx_);
-        return data_ < other.data_;
-    }
-};
-```
+
+<div class="text-code-09">
+
+<<< @/../examples/07_deadlock.cpp#deadlock {all|14-16}
+
+</div>
 
 ---
 
 ## Deadlock
 
-| Thread A                    | Thread B         |
-|:--------------------------- |:-----------------|
-| `if(x1 < x2)`               | `if(x2 < x1)`    |
-|                             | `x2.mtx.lock()`  |
-| `x1.mtx.lock()`             |                  |
-| `x2.mtx.lock() <-` deadlock |                  |
+| Thread A                     | Thread B         |
+|:-----------------------------|:-----------------|
+| `if(x1 < x2)`                | `if(x2 < x1)`    |
+|                              | `x2.mtx_.lock()` |
+| `x1.mtx_.lock()`             |                  |
+| `x2.mtx_.lock() <-` deadlock |                  |
 
 ---
 
@@ -393,46 +461,56 @@ public:
 
 ## std::lock()
 
-```cpp {all|3-4|6|9}
-bool X::operator< (const X& other) const
-{
-    std::unique_lock<std::mutex> l1(mtx_, std::defer_lock);
-    std::unique_lock<std::mutex> l2(other.mtx_, std::defer_lock);
 
-    std::lock(l1, l2); // avoiding deadlock
+<div class="text-code-09">
 
-    return some_data < other.some_data;
-}
-```
+<<< @/../examples/07_deadlock.cpp#std_lock {all|13-14|16-17}
+
+</div>
 
 ---
 
 ## std::lock() - C++17
 
-```cpp {all|3-4|6|9}
-bool X::operator< (const X& other) const
-{
-    std::unique_lock l1(mtx_, std::defer_lock);
-    std::unique_lock l2(other.mtx_, std::defer_lock);
 
-    std::lock(l1, l2); // avoiding deadlock
+<div class="text-code-09">
 
-    return some_data < other.some_data;
-}
-```
+<<< @/../examples/07_deadlock.cpp#std_lock_cpp17 {all|14-15|17-18|14-18}
+
+</div>
 
 ---
 
 ## std::scoped_lock - C++17
 
-```cpp {all|3|6}
-bool X::operator< (const X& other) const
-{
-    std::scoped_lock{mtx_, other.mtx_};
-    
-    return some_data < other.some_data;
-}
-```
+
+<div class="text-code-09">
+
+<<< @/../examples/07_deadlock.cpp#scoped_lock {all|14-16}
+
+</div>
+
+--- 
+
+## Blokady Readers/Writers
+
+* Mechanizm synchronizacji, który pozwala wielu wątkom **czytać jednocześnie**, ale tylko jednemu **pisać**
+* Implementacja w C++
+  * `std::shared_mutex` lub `std::shared_timed_mutex`
+  * `std::shared_lock` dla blokad do odczytu (readers)
+  * `std::unique_lock` dla blokad do zapisu (writers)
+* Kluczowy prymityw, gdy mamy dużo odczytów i mało zapisów
+  * klasyczny przypadek w konfiguracjach, cache’ach, mapach DNS, strukturach indeksujących itd.
+
+---
+
+## Przykład użycia std::shared_mutex
+
+<div class="text-code-08">
+
+<<< @/../examples/06_mutex.cpp#shared_mutex_usage {all}
+
+</div>
 
 ---
 layout: cover
@@ -455,49 +533,29 @@ background: /img/header-bg.svg
 
 Oczekiwanie na zdarzenie może być zaimplementowane jako:
 
-* *busy wait* - oczekiwanie na zdarzenie implementowane jest za pomocą pętli `do-while`
-* *idle wait* - wątek oczekujący na zdarzenie przechodzi do stanu uśpienia, w którym nie zużywa cyklów CPU
+<v-clicks>
+
+* **Busy wait** - oczekiwanie na zdarzenie implementowane jest za pomocą pętli `do-while`
+* **Idle wait** - wątek oczekujący na zdarzenie przechodzi do stanu uśpienia, w którym nie zużywa cyklów CPU
+
+</v-clicks>
 
 ---
 
 ## Busy waits - implementacja z muteksem
 
-```cpp
-bool data_ready;
-std::mutex mtx;
-```
+
+<<< @/../examples/08_events.cpp#busy_mutex_decl
 
 <div class="grid grid-cols-2 gap-4">
 <div>
 
-```cpp
-void set_data_ready()
-{
-  prepare_data();
-  std::unique_lock<std::mutex> lk(mtx);
-  data_ready = true;
-}
-```
+<<< @/../examples/08_events.cpp#busy_mutex_set {all|3|4-5}
 
 </div>
 <div>
 
-```cpp
-void task()
-{
-  bool ready_flag = data_ready;
-
-  do
-  {
-    {
-      std::lock_guard<std::mutex> lk{mtx};
-      ready_flag = data_ready;
-    }
-  } while(!ready_flag);
-
-  process_data();
-}
-```
+<<< @/../examples/08_events.cpp#busy_mutex_task {all|3-9|11}
 
 </div>
 </div>
@@ -506,36 +564,18 @@ void task()
 
 ## Busy waits - implementacja z std::atomic\<bool\>
 
-```cpp
-std::atomic<bool> data_ready;
-```
+
+<<< @/../examples/08_events.cpp#busy_atomic_decl
 
 <div class="grid grid-cols-2 gap-4">
 <div>
 
-```cpp
-void set_data_ready()
-{
-    prepare_data();
-    data_ready = true;
-}
-```
+<<< @/../examples/08_events.cpp#busy_atomic_set {all|3-4}
 
 </div>
 <div>
 
-```cpp
-void task()
-{
-    while(!data_ready)
-    {
-        //..
-        std::this_thread::yield();
-    }
-
-    process_data();
-}
-```
+<<< @/../examples/08_events.cpp#busy_atomic_task {all|3-7|9 }
 
 </div>
 </div>
@@ -544,38 +584,18 @@ void task()
 
 ## Busy waits - z memory_order
 
-```cpp
-std::atomic<bool> data_ready;
-```
+
+<<< @/../examples/08_events.cpp#busy_atomic_decl
 
 <div class="grid grid-cols-2 gap-4">
-<div>
+<div class="text-09">
 
-```cpp {all|4-6}
-void set_data_ready()
-{
-    prepare_data();
-    data_ready.store(true, 
-      std::memory_order_release);
-}
-```
+<<< @/../examples/08_events.cpp#busy_mo_set {all|4-5}
 
 </div>
-<div>
+<div class="text-09">
 
-```cpp {all|3-4}
-void task()
-{
-    while(!data_ready.load(
-        std::memory_order_acquire))
-    {
-        //..
-        std::this_thread::yield();
-    }
-
-    process_data();
-}
-```
+<<< @/../examples/08_events.cpp#busy_mo_task {all|3}
 
 </div>
 </div>
@@ -603,90 +623,50 @@ void task()
 
 ## Idle waits - CV
 
-```cpp
-bool data_ready = false;
-std::mutex mtx_ready;
-std::condition_variable cv_ready;
-```
+
+<<< @/../examples/08_events.cpp#cv_decl
 
 <div class="grid grid-cols-2 gap-4">
 <div>
 
-```cpp
-void set_data_ready()
-{
-  prepare_data();
-
-  {
-    std::lock_guard<std::mutex> lk(mtx_ready);
-    data_ready = true;
-  } // release lock
-
-  cv_ready.notify_one();
-}
-```
+<<< @/../examples/08_events.cpp#cv_set {all|3|5-8|10}
 
 </div>
 <div>
 
-```cpp
-void task()
-{
-  std::unique_lock<std::mutex> lk(mtx_ready);
-  while(!data_ready)
-  {
-    cv_ready.wait(lk);
-  }
-  lk.unlock();
-
-  process_data();
-}
-```
+<<< @/../examples/08_events.cpp#cv_task {all|3|4-6|4,6-8|10}
 
 </div>
 </div>
 
 ---
 
+## Spourious weakups
+
+* Wątki oczekujące na zmienne warunkowe mogą zostać obudzone bez spełnienia oczekiwanego warunku
+* Dlatego <span v-mark.underline.orange>zawsze należy sprawdzać warunek w pętli po powrocie z `wait()`</span>
+* Takie nieoczekiwane przebudzenia nazywane są **spurious wakeups**
+* Powody wybudzeń:
+  * optymalizacje jądra systemu operacyjnego (kernel może obudzić wątek "przy okazji" migracji CPU)
+  * sygnały wysyłane przez inne wątki lub procesy
+  * implementacja futexów w jądrze systemu operacyjnego
+
+---
+
 ## Idle waits - CV (z predykatem)
 
-```cpp
-bool data_ready = false;
-std::mutex mtx_ready;
-std::condition_variable cv_ready;
-```
+
+<<< @/../examples/08_events.cpp#cv_decl
 
 <div class="grid grid-cols-2 gap-4">
 <div>
 
-```cpp
-void set_data_ready()
-{
-  prepare_data();
-
-  {
-    std::lock_guard<std::mutex> lk(mtx_ready);
-    data_ready = true;
-  } // release lock
-
-  cv_ready.notify_one();
-}
-```
+<<< @/../examples/08_events.cpp#cv_set {all}
 
 </div>
 <div>
 
-```cpp {all|4}
-void task()
-{
-  std::unique_lock<std::mutex> lk(mtx_ready);
-  cv_ready.wait(lk, [] { return data_ready; });
-
-  lk.unlock();
-
-  process_data();
-}
-```
+<<< @/../examples/08_events.cpp#cv_pred_task {all|3-5|7-9}
 
 </div>
 </div>
@@ -703,34 +683,18 @@ void task()
 
 ## Idle waits - std::atomic - C++20
 
-```cpp
-std::atomic<bool> data_ready = false;
-```
+
+<<< @/../examples/08_events.cpp#atomic_wait_decl
 
 <div class="grid grid-cols-2 gap-4">
 <div>
 
-```cpp {all|5-8}
-void set_data_ready()
-{
-  prepare_data();
-
-  data_ready = true;
-  data_ready.notify_one();
-}
-```
+<<< @/../examples/08_events.cpp#atomic_wait_set {all|5-6}
 
 </div>
 <div>
 
-```cpp {all|3}
-void task()
-{
-  data_ready.wait(false);
-
-  process_data();
-}
-```
+<<< @/../examples/08_events.cpp#atomic_wait_task {all|3}
 
 </div>
 </div>
@@ -765,66 +729,26 @@ C++11 zapewnia dostęp do danych TLS za pomocą modyfikatora `thread_local`
 
 ## Unsafe random
 
+
 <div class="text-code-sm">
-```cpp
-namespace Unsafe {
-    double rand() {
-        static int seed = 665; // shared state
 
-        seed = (seed * IMUL + IADD) & MASK;
-        return (seed * SCALE);
-    }
-}
+<<< @/../examples/09_tls.cpp#unsafe_random {all}
 
-int main() {
-    std::thread thd1([] {
-        for (size_t i = 0; i < 100; ++i)
-            std::cout << Unsafe::rand() << std::endl;
-    });
+<<< @/../examples/09_tls.cpp#unsafe_random_usage {all}
 
-    std::thread thd2([] {
-        for (size_t i = 0; i < 100; ++i)
-            std::cout << Unsafe::rand() << std::endl;
-    });
-
-    thd1.join();
-    thd2.join();
-}
-```
 </div>
 
 ---
 
 ## ThreadSafe random
 
+
 <div class="text-code-sm">
-```cpp {all|3-11|6}
-namespace ThreadSafe {
-    double rand_double() {
-        std::hash<std::thread::id> hasher;
-        thread_local int thd_seed = 665 * hasher(std::this_thread::get_id());
 
-        int result = (thd_seed * IMUL + IADD) & MASK;
-        thd_seed = result;
-        return (result * SCALE);
-    }
-}
+<<< @/../examples/09_tls.cpp#thread_safe_random {all|3-10|6-7}
 
-int main() {
-    std::thread thd1([] {
-        for (size_t i = 0; i < 100; ++i)
-            std::cout << ThreadSafe::rand_double() << std::endl;
-    });
+<<< @/../examples/09_tls.cpp#thread_safe_random_usage {all}
 
-    std::thread thd2([] {
-        for (size_t i = 0; i < 100; ++i)
-            std::cout << ThreadSafe::rand_double() << std::endl;
-    });
-
-    thd1.join();
-    thd2.join();
-}
-```
 </div>
 
 ---
@@ -856,38 +780,15 @@ background: /img/header-bg.svg
 
 Przydatny w testach, gdy chcemy mieć pewność, że wszystkie wątki wystartowały
 
-```cpp {all|1-2|4|13}
-void background_work(const int id, const std::string text, 
-                     std::latch& all_ready, std::latch& all_done) 
-{
-    all_ready.arrive_and_wait();
-    
-    std::cout << "BW#" << id << " started..." << std::endl;
 
-    for (const auto& letter : text) {
-        std::cout << "Thread#" << id << " - " << letter << std::endl;
-        std::this_thread::sleep_for(25ms);
-    }
-
-    all_done.count_down();
-}
-```
+<<< @/../examples/10_cpp20_sync.cpp#latch_task {all|1-2|4|14}
 
 ---
 
 ## std::latch - użycie
 
-```cpp {all|1-3|5-7|9}
-std::latch all_ready(4);
-std::latch all_done(4);
-std::vector<std::jthread> thds;
 
-for(size_t i = 0; i < 4; ++i)
-    thds.emplace_back([id = i + 1, &all_ready, &all_done]{ 
-        background_work(id, "LATCH", all_ready, all_done); });
-
-all_done.wait();
-```
+<<< @/../examples/10_cpp20_sync.cpp#latch_usage {all|3-5|7-10|12}
 
 ---
 
@@ -931,33 +832,11 @@ Faza bariery składa się z następujących kroków:
 
 ## std::barrier - przykład
 
-<div class="text-code-sm">
-```cpp {all|5-12|12-20}
-const auto workers = { "A", "B", "C" };
-static int counter = 0;
-static std::string phase = "";
 
-auto on_completion = []() noexcept {
-    // locking is not needed here
-    ++counter;
-    phase = "--- done no. "s + std::to_string(counter) + "\n";
-    std::cout << phase;
-};
+<div class="text-code-07">
 
-std::barrier sync_point(std::ssize(workers), on_completion);
+<<< @/../examples/10_cpp20_sync.cpp#barrier {all|6-11|13|15-22}
 
-auto work = [&sync_point](std::string name) {
-    for(int i = 0; i < 4; ++i) {
-        std::string product = ".." + name + " worked\n";
-        std::cout << product;
-        sync_point.arrive_and_wait();
-    }
-}; 
-
-std::vector<std::jthread> thds;
-for(const auto& worker : workers) 
-    thds.emplace_back(work, worker);
-```
 </div>
 
 ---
@@ -974,55 +853,18 @@ for(const auto& worker : workers)
 
 ---
 
-# std::atomic_ref
+## std::atomic_ref
 
-<div class="text-code-08">
-```cpp {all|3,14-19}
-const int thds_count = 10;
-std::latch all_ready{thds_count};
-std::vector<uint32_t> data(10);
 
-{
-    std::vector<std::jthread> thds;
+<div class="text-code-07">
 
-    for(int i = 0; i < thds_count; ++i)
-        thds.emplace_back([&] {
-            all_ready.arrive_and_wait();
+<<< @/../examples/10_cpp20_sync.cpp#atomic_ref {all|5|16-21}
 
-            for(int i = 0; i < 100'000; ++i)
-            {
-                for(auto& item : data)
-                {
-                    //++item; // BUG!!! -> data-race
-                    std::atomic_ref synced_value{item}; // data-race free access
-                    ++synced_value;
-                }
-            }
-        });
-}
-```
 </div>
 
 ---
 
 ## Synchronizowane strumienie wyjściowe
 
-```cpp {all|5,9-12}
-#include <syncstream>
 
-void do_calculations(int n)
-{
-    std::osyncstream synced_cout{std::cout};
-
-    for(int i = 0; i < n; ++i)
-    {
-        synced_cout 
-            << "Calculated value is " 
-            << fibonacci(i) << "\n"
-            << std::flush_emit;
-    }
-}
-
-std::jthread thd_1{do_calculations, 100};
-std::jthread thd_2{do_calculations, 100};
-```
+<<< @/../examples/10_cpp20_sync.cpp#osyncstream {all|3|7-10}
