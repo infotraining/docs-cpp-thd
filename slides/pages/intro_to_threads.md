@@ -9,7 +9,7 @@ background: /img/header-bg.svg
 layout: default
 ---
  
-# Concurrency vs. Parallelism
+## Concurrency vs. Parallelism
 
 * **Concurrency** is about dealing with lots of things at once.
 * **Parallelism** is about doing lots of things at once.
@@ -22,7 +22,7 @@ layout: default
 
 ---
 
-# Jak osiągnąć współbieżność?
+## Jak osiągnąć współbieżność?
 
 * Multiprocessing
   * wykorzystanie wielu procesów kontrolowanych przez system operacyjny
@@ -39,11 +39,11 @@ layout: cover
 background: /img/header-bg.svg
 ---
 
-# Proces vs. Wątek
+## Proces vs. Wątek
 
 ---
 
-# Proces
+## Proces
 
 * Egzemplarz wykonywanego programu z własną przestrzenią adresową
 * System operacyjny przydziela procesowi odpowiednie zasoby
@@ -57,7 +57,7 @@ background: /img/header-bg.svg
 
 ---
 
-# Komunikacja między procesami
+## Komunikacja między procesami
 
 * Sygnały
 * Pamięć współdzielona
@@ -68,13 +68,13 @@ background: /img/header-bg.svg
 
 ---
 
-# Wątek
+## Wątek
 
 niezależny ciąg instrukcji wykonywany współbieżnie w ramach jednego procesu
 
 ---
 
-# Wątki i zasoby
+## Wątki i zasoby
 
 * Każdy wątek posiada własny stos (*stack*) 
 * Kontroluje stan rejestrów procesora
@@ -86,7 +86,7 @@ niezależny ciąg instrukcji wykonywany współbieżnie w ramach jednego procesu
 
 ---
 
-# Natywne API dla wątków
+## Natywne API dla wątków
 
 * Wątki są zarządzane przez system operacyjny
 * Konkretny interfejs API zależy od systemu operacyjnego
@@ -95,7 +95,7 @@ niezależny ciąg instrukcji wykonywany współbieżnie w ramach jednego procesu
 
 ---
 
-# Cross-platform C++ API
+## Cross-platform C++ API
 
 * Boost.Thread
 * Threading Building Blocks - Intel
@@ -104,7 +104,7 @@ niezależny ciąg instrukcji wykonywany współbieżnie w ramach jednego procesu
 
 ---
 
-# GCC - opcje kompilacji
+## GCC - opcje kompilacji
 
 ```bash
 g++ -std=c++11 -pthread main.cpp
@@ -112,7 +112,7 @@ g++ -std=c++11 -pthread main.cpp
 
 ---
 
-# Po co używać współbieżności
+## Po co używać współbieżności
 
 <v-clicks>
 
@@ -128,7 +128,7 @@ g++ -std=c++11 -pthread main.cpp
 
 ---
 
-# Kiedy nie używać współbieżności
+## Kiedy nie używać współbieżności
 
 <v-clicks>
 
@@ -147,7 +147,7 @@ g++ -std=c++11 -pthread main.cpp
 
 ---
 
-# Testowanie aplikacji wielowątkowych
+## Testowanie aplikacji wielowątkowych
 
 <v-clicks>
 
@@ -162,7 +162,7 @@ g++ -std=c++11 -pthread main.cpp
 
 ---
 
-# Testowanie współbieżności
+## Testowanie współbieżności
 
 * Testy współbieżności muszą być:
   * stresowe (dużo wątków, dużo iteracji)
@@ -174,4 +174,3 @@ g++ -std=c++11 -pthread main.cpp
   * Valgrind/Helgrind
   * model checking (TLA+)
   * chaos testing (np. losowe opóźnienia)
-

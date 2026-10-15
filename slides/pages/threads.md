@@ -8,7 +8,7 @@ background: /img/header-bg.svg
 
 ---
 
-# Zarządzanie wątkami
+## Zarządzanie wątkami
 
 <v-clicks>
 
@@ -21,7 +21,7 @@ background: /img/header-bg.svg
 
 ---
 
-# Wątek pusty
+## Wątek pusty
 
 <v-clicks>
 
@@ -38,7 +38,7 @@ background: /img/header-bg.svg
 
 ---
 
-# std::thread + std::move
+## std::thread + std::move
 
 <v-clicks>
 
@@ -51,7 +51,7 @@ background: /img/header-bg.svg
 
 ---
 
-# Tworzenie wątku - wskaźnik do funkcji
+## Tworzenie wątku - wskaźnik do funkcji
 
 * Tworzenie wątku przez przekazanie wskaźnika do funkcji
 
@@ -59,7 +59,7 @@ background: /img/header-bg.svg
 
 ---
 
-# Tworzenie wątku - obiekt funkcyjny
+## Tworzenie wątku - obiekt funkcyjny
  
 *  Tworzenie wątku przez przekazanie obiektu funkcyjnego (funktora)
 
@@ -71,7 +71,7 @@ background: /img/header-bg.svg
 
 ---
 
-# Tworzenie wątku - obiekt domknięcia (lambda)
+## Tworzenie wątku - obiekt domknięcia (lambda)
 
 * Tworzenie wątku przez przekazanie obiektu domknięcia (lambdy)
 
@@ -79,7 +79,7 @@ background: /img/header-bg.svg
 
 ---
 
-# Dołączenie do wątku
+## Dołączenie do wątku
 
 * Aby poczekać na zakończenie wykonywania zadania przez dany wątek, należy wywołać na jego rzecz metodę `join()`
 * `join()` blokuje (wstrzymuje wywołanie) bieżący wątek, aż do czasu ukończenia zadania wykonywanego przez wskazany wątek
@@ -88,19 +88,19 @@ background: /img/header-bg.svg
 
 ---
 
-# Dołączenie do wątku
+## Dołączenie do wątku
 
 <<< @/../examples/01_threads_basics.cpp#join
 
 ---
 
-# C++ Core Guidelines - join
+## C++ Core Guidelines - join
 
 [Prefer gsl::joining_thread over std::thread](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#rconc-joining_thread)
 
 ---
 
-# Destruktor wątku
+## Destruktor wątku
 
 * Jeśli obiekt wątku reprezentuje aktywny wątek systemowy (*active thread of execution*), metoda `joinable()` zwraca `true`.
 * Destrukcja obiektu wątku jest bezpieczna, jeśli obiekt wątku nie jest skojarzony z wątkiem systemowym. 
@@ -108,7 +108,7 @@ background: /img/header-bg.svg
 
 ---
 
-# Destruktor wątku
+## Destruktor wątku
 
 * Obiekt wątku nie jest skojarzony z wątkiem systemowym:
   - jeśli został utworzony za pomocą konstruktora domyślnego
@@ -118,19 +118,19 @@ background: /img/header-bg.svg
 
 ---
 
-# Destrukcja wątku
+## Destrukcja wątku
 
 * Standard C++ wymusza jawne wywołanie `join()` lub `detach()` przed wywołaniem destruktora wątku, który jest skojarzony z wątkiem systemowym.
 
 ---
 
-# Przekazywanie parametrów do wątków
+## Przekazywanie parametrów do wątków
 
-## 3 sposoby
+### 3 sposoby
 
 ---
 
-# Sposób 1
+## Sposób 1
 
 * Przekazując argumenty jako kolejne (po funkcji lub obiekcie funkcyjnym) parametry konstruktora `std::thread`
 * Podane argumenty są kopiowane lub przenoszone do uruchamianego wątku
@@ -139,7 +139,7 @@ background: /img/header-bg.svg
 
 ---
 
-# Przekazanie referencji
+## Przekazanie referencji
 
 * Jeśli wymagane jest przekazanie referencji do funkcji uruchamianej w nowym wątku, należy użyć standardowych wraperów dla:
   * referencji - `std::ref()` 
@@ -147,13 +147,13 @@ background: /img/header-bg.svg
 
 ---
 
-# Przekazanie referencji - przykład
+## Przekazanie referencji - przykład
 
 <<< @/../examples/02_thread_args.cpp#by_reference {all|1-5|9-15}
 
 ---
 
-# Sposób 2
+## Sposób 2
 
 * Wykorzystując obiekt domknięcia, który przechwytuje zmienne będące argumentami wywoływanej funkcji
 
@@ -165,7 +165,7 @@ background: /img/header-bg.svg
 
 ---
 
-# Sposób 3
+## Sposób 3
 
 * Konstrukcja obiektu funkcyjnego przekazywanego do konstruktora instancji `std::thread`:
 
@@ -177,7 +177,7 @@ background: /img/header-bg.svg
 
 ---
 
-# Problem wiszących referencji
+## Problem wiszących referencji
 
 * Przy przekazywaniu parametrów do wątków należy unikać wiszących referencji (dangling references)
 
@@ -185,7 +185,7 @@ background: /img/header-bg.svg
 
 ---
 
-# std::thread i semantyka przenoszenia
+## std::thread i semantyka przenoszenia
 
 * Klasa `std::thread` jest **move-only**
 * Nie można kopiować obiektów `std::thread`, można je jedynie przenosić
@@ -193,7 +193,7 @@ background: /img/header-bg.svg
 
 ---
 
-# std::thread i kontenery std
+## std::thread i kontenery std
 
 <div class="text-09">
 
@@ -216,7 +216,7 @@ background: /img/header-bg.svg
 
 ---
 
-# std::jthread
+## std::jthread
 
 * Ulepszona wersja `std::thread`, która:
   * wywołuje `join()` w destruktorze
@@ -224,7 +224,7 @@ background: /img/header-bg.svg
 
 ---
 
-# std::jthread
+## std::jthread
 
 <div class="text-code-08">
 
@@ -234,7 +234,7 @@ background: /img/header-bg.svg
 
 ---
 
-# std::jthread - destruktor
+## std::jthread - destruktor
 
 * Implementacja destruktora `std::jthread`:
 
@@ -251,7 +251,7 @@ std::jthread::~jthread()
 
 ---
 
-# Kooperatywne anulowanie zadań
+## Kooperatywne anulowanie zadań
 
 * Model kooperatywnego anulowania zadań może być uniwersalnie stosowany przez
   * wątki, korutyny, operacje sieciowe, I/O, itp.
@@ -263,7 +263,7 @@ std::jthread::~jthread()
 
 ---
 
-# std::stop_source / std::stop_token
+## std::stop_source / std::stop_token
 
 * Implementacja zadania z obsługą kooperatywnego anulowania:
 
@@ -275,7 +275,7 @@ std::jthread::~jthread()
 
 ---
 
-# std::stop_source / std::stop_token
+## std::stop_source / std::stop_token
 
 * Uruchomienia zadania i jego anulowanie
 
@@ -283,7 +283,7 @@ std::jthread::~jthread()
 
 ---
 
-# std::jthread - internal stop-state
+## std::jthread - internal stop-state
 
 * Jeśli nie przekażemy w wywołaniu konstruktora `std::jthread` jawnie tokena (a funkcja go oczekuje), to wykorzystany zostanie wewnętrzny stan obiektu wątku (*internal stop-state*)
 
@@ -291,7 +291,7 @@ std::jthread::~jthread()
 
 ---
 
-# std::stop_callback
+## std::stop_callback
 
 * Obiekt RAII, umożliwiający rejestrację callbacku dla skojarzonego obiektu `std::stop_token`
 * Callback zostanie wywołany, gdy skojarzony z obiektem `std::stop_token` obiekt `std::stop_source` zgłosi żądanie zatrzymania wątku
@@ -302,7 +302,7 @@ std::jthread::~jthread()
 
 ---
 
-# std::stop_callback
+## std::stop_callback
 
 <<< @/../examples/03_jthread.cpp#stop_callback
 
@@ -315,14 +315,14 @@ background: /img/header-bg.svg
 
 ---
 
-# Obsługa wyjątków w wątkach
+## Obsługa wyjątków w wątkach
 
 * Jeżeli z funkcji uruchomionej w osobnym wątku wydostanie się wyjątek, zostanie wywołana funkcja `std::terminate()`
 * W celu prawidłowej obsługi wyjątków, należy przechwycić rzucony wyjątek i jeżeli istnieje taka potrzeba, przekazać go do wątku rodzica wykorzystując klasę `std::exception_ptr`
 
 ---
 
-# Klasa std::exception_ptr
+## Klasa std::exception_ptr
 
 * Umożliwia przechowanie wskaźnika do obiektu wyjątku, który został zgłoszony instrukcją `throw` i przechwycony funkcją `std::current_exception()`
 * Instancja `std::exception_ptr` może być przekazana do innej funkcji, również takiej, która uruchomiona jest w osobnym wątku
@@ -330,7 +330,7 @@ background: /img/header-bg.svg
 
 ---
 
-# Klasa std::exception_ptr
+## Klasa std::exception_ptr
 
 * Domyślnie skonstruowany obiekt `std::exception_ptr` ma wartość `nullptr`
 * Dwa obiekty są uznawane za równe, jeśli są puste lub wskazują na ten sam obiekt wyjątku
@@ -338,13 +338,13 @@ background: /img/header-bg.svg
 
 ---
 
-# Przechwytywanie wyjątku w wątku
+## Przechwytywanie wyjątku w wątku
 
 <<< @/../examples/04_thread_exceptions.cpp#capture_exception {all|3-8|5|9-12}
 
 ---
 
-# Obsługa wyjątku w wątku głównym
+## Obsługa wyjątku w wątku głównym
 
 <div class="text-08">
 
@@ -361,7 +361,7 @@ background: /img/header-bg.svg
 
 ---
 
-# std::thread::hardware_concurrency()
+## std::thread::hardware_concurrency()
 
 * Statyczna metoda zwracająca ilość dostępnych wątków sprzętowych
 * Zwykle podawana jest ilość procesorów, rdzeni, itp. Jeżeli informacja nie jest dostępna zwraca wartość `0`
@@ -374,7 +374,7 @@ background: /img/header-bg.svg
 
 ---
 
-# Przestrzeń nazw std::this_thread
+## Przestrzeń nazw std::this_thread
 
 * `sleep_for(const chrono::duration<R, P>& sleep_duration)`
   - wstrzymuje wykonanie bieżącego wątku na (przynajmniej) określony interwał czasu
@@ -387,14 +387,14 @@ background: /img/header-bg.svg
 
 ---
 
-# Identyfikator wątku
+## Identyfikator wątku
 
 * `std::thread::id` jest lekką, trywialnie kopiowalną klasą, która opakowuje unikalny identyfikator wątku
 * Celem klasy jest możliwość użycia jej jako klucza w kontenerach asocjacyjnych
 
 ---
 
-# Klasa std::thread::id
+## Klasa std::thread::id
 
 * Domyślny konstruktor tworzy obiekt identyfikujący tzw. pusty wątek (Not-A-Thread)
 * Instancje `thread::id` są kopiowalne, porównywalne oraz hashowalne
