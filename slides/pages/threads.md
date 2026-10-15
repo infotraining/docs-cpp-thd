@@ -23,16 +23,6 @@ background: /img/header-bg.svg
 
 # Wątek pusty
 
-<!-- old snippet
-```cpp
-std::thread thd_empty; // not-a-thread
-
-std::thread thd1(&some_function);
-std::thread thd2 = std::move(thd1); // thd1 is now not-a-thread
-thd2.join();
-```
--->
-
 <v-clicks>
 
 * Instancja `std::thread` utworzona konstruktorem domyślnym 
@@ -65,23 +55,6 @@ thd2.join();
 
 * Tworzenie wątku przez przekazanie wskaźnika do funkcji
 
-<!-- old snippet
-```cpp {all|1|3-6|10-11}
-#include <thread>
-
-void background_task()
-{
-    std::cout << "My first thread..." << std::endl;
-}
-
-int main()
-{
-    std::thread thd(&background_task);
-    thd.join();
-}
-```
--->
-
 <<< @/../examples/01_threads_basics.cpp#function_pointer {all|1-4|8-9}
 
 ---
@@ -89,33 +62,6 @@ int main()
 # Tworzenie wątku - obiekt funkcyjny
  
 *  Tworzenie wątku przez przekazanie obiektu funkcyjnego (funktora)
-
-<!-- old snippet
-<div class="text-code-07">
-```cpp  {all|1-11|15-19} 
-class BackgroundTask
-{
-    const int id_;
-public:
-    BackgroundTask(int id) : id_{id} {}
-
-    void operator()() const
-    {
-        std::cout << "Background task " << id_ << " is running..." << std::endl;
-    }
-};
-
-int main()
-{
-    BackgroundTask bt{1};
-    std::thread thd_1(bt);
-    std::thread thd_2(BackgroundTask{2});
-    thd_1.join();
-    thd_2.join();
-}
-```
-</div>
--->
 
 <div class="text-code-07">
 
@@ -128,23 +74,6 @@ int main()
 # Tworzenie wątku - obiekt domknięcia (lambda)
 
 * Tworzenie wątku przez przekazanie obiektu domknięcia (lambdy)
-
-<!-- old snippet
-```cpp
-auto task = [] {
-    std::cout << "My first task..." << std::endl;
-};
-
-std::thread thd_1(task);
-
-std::thread thd_2([] { 
-    std::cout << "My second task..." << std::endl; 
-});
-
-thd_1.join();
-thd_2.join();
-```
--->
 
 <<< @/../examples/01_threads_basics.cpp#lambda
 
@@ -160,21 +89,6 @@ thd_2.join();
 ---
 
 # Dołączenie do wątku
-
-<!-- old snippet
-```cpp
-int main()
-{
-    BackgroundTask bt{1};
-
-    std::thread thd(bt);
-    thd.join(); // wstrzymanie wykonania wątku głównego (main),
-                // aż do czasu zakończenia zadania w wątku t
-
-    assert(!thd.joinable());
-}
-```
--->
 
 <<< @/../examples/01_threads_basics.cpp#join
 
@@ -221,18 +135,6 @@ int main()
 * Przekazując argumenty jako kolejne (po funkcji lub obiekcie funkcyjnym) parametry konstruktora `std::thread`
 * Podane argumenty są kopiowane lub przenoszone do uruchamianego wątku
 
-<!-- old snippet
-```cpp
-void do_work(int value, std::string text)
-{
-    //...
-}
-
-std::thread thd{&do_work, 42, "some data"};
-thd.join();
-```
--->
-
 <<< @/../examples/02_thread_args.cpp#by_value
 
 ---
@@ -247,27 +149,6 @@ thd.join();
 
 # Przekazanie referencji - przykład
 
-<!-- old snippet
-```cpp {all|1-5|1,9-15}
-void do_work(ThreadSafeQueue<Data>& q, const std::string& value)
-{
-    Data data = process_data(value);
-    q.push(data)
-}
-
-int main()
-{
-    ThreadSafeQueue<Data> data_queue;
-    const std::string value = "some data";
-
-    std::thread thd{&do_work, std::ref(data_queue), std::cref(value)};
-
-    //...
-    thd.join();
-}
-```
--->
-
 <<< @/../examples/02_thread_args.cpp#by_reference {all|1-5|9-15}
 
 ---
@@ -275,28 +156,6 @@ int main()
 # Sposób 2
 
 * Wykorzystując obiekt domknięcia, który przechwytuje zmienne będące argumentami wywoływanej funkcji
-
-<!-- old snippet
-```cpp
-void do_work(ThreadSafeQueue<Data>& q, std::string value)
-{
-    Data data = process_data(value);
-    q.push(data)
-}
-```
-
-```cpp {all|6}
-int main()
-{
-    ThreadSafeQueue<Data> data_queue;
-    const std::string value = "some data";
-
-    std::thread thd{[&data_queue, value] { do_work(data_queue, value); }};
-
-    thd.join();
-}
-```
--->
 
 <div class="text-08">
 
@@ -309,28 +168,6 @@ int main()
 # Sposób 3
 
 * Konstrukcja obiektu funkcyjnego przekazywanego do konstruktora instancji `std::thread`:
-
-<!-- old snippet
-```cpp
-class BackgroundTask {
-    const int id_;
-public: 
-    BackgroundTask(int id) : id_{id} {}
-
-    void operator()() 
-    {
-        std::cout << "Hello from a task#" << id_ << std::endl;
-    }
-};
-
-BackgroundTask background_task{1};
-std::thread thd1{background_task};
-std::thread thd2{BackgroundTask{2}};
-
-thd1.join();
-thd2.join();
-```
--->
 
 <div class="text-07">
 
@@ -364,32 +201,6 @@ thd2.join();
 
 </div>
 
-<!-- old snippet
-<div class="text-sm">
-```cpp {all|3-7|12|15-16}
-void task() { /* implementation */ }
-
-std::thread create_thread() 
-{
-    std::thread thd(&task);
-    return thd;
-}
-
-std::vector<std::thread> threads;
-
-// implicit move of r-value
-threads.push_back(create_thread());
-
-// explicit move of l-value
-std::thread thd(&task);
-threads.push_back(std::move(thd));
-
-for(auto& thd : threads)
-    thd.join();
-```
-</div>
--->
-
 <div class="text-sm">
 
 <<< @/../examples/02_thread_args.cpp#move_semantics {all|3-7|14|16-18}
@@ -414,35 +225,6 @@ background: /img/header-bg.svg
 ---
 
 # std::jthread
-
-<!-- old snippet
-<div class="text-code-08">
-```cpp{all|16,21|17,22}
-void background_work(const int id, const std::string text, 
-                     const std::chrono::milliseconds delay) 
-{
-    std::cout << "Thread#" << id << " started..." << std::endl;
-
-    for(const auto& letter : text)
-    {
-        std::cout << "Thread#" << id << " - " << letter << std::endl;
-        std::this_thread::sleep_for(delay);
-    }
-}
-
-
-void safe_join_in_cpp20() 
-{
-    std::jthread thd1{&background_work, 1, "Hello", 100ms};
-    std::jthread thd2{&background_work, 2, "Multithreading", 250ms};
-    
-    may_throw(); 
-    
-    thd1.join(); // explicit join
-} // implicit join in the destructor for thd2 & thd1 joins in case of exception
-```
-</div>
--->
 
 <div class="text-code-08">
 
@@ -485,27 +267,6 @@ std::jthread::~jthread()
 
 * Implementacja zadania z obsługą kooperatywnego anulowania:
 
-<!-- old snippet
-```cpp {all|1|4-7,10-11,15}
-void background_work(std::stop_token st, const int id, const std::string text) {
-    std::cout << "Thread#" << id << " started..." << std::endl;
-
-    for(const auto& letter : text)
-    {
-        if (st.stop_requested())
-        {
-            std::cout << "Stop has been requested..." << std::endl;
-            std::cout << "Thread#" << id << " cancelled" << std::endl;
-            return;
-        }
-
-        std::cout << "Thread#" << id << " - " << letter << std::endl;
-        std::this_thread::sleep_for(250ms);
-    }
-}
-```
--->
-
 <div class="text-code-08">
 
 <<< @/../examples/03_jthread.cpp#stop_token_task {all|1|7-12|14-15}
@@ -518,25 +279,6 @@ void background_work(std::stop_token st, const int id, const std::string text) {
 
 * Uruchomienia zadania i jego anulowanie
 
-<!-- old snippet
-```cpp {all|3-4|6-7|11|1-14}
-void run_task_and_cancel()
-{
-    std::stop_source stop_src;
-    std::stop_token st = stop_src.get_token();
-
-    std::jthread thd1{&background_work, st, 1, "FIRST_TASK"};
-    std::jthread thd2{&background_work, st, 2, "SECOND_TASK"};
-    
-    std::this_thread::sleep_for(2s);
-    
-    stop_src.request_stop();
-
-    //...
-}
-```
--->
-
 <<< @/../examples/03_jthread.cpp#run_task_and_cancel {all|3-4|6-7|11}
 
 ---
@@ -544,20 +286,6 @@ void run_task_and_cancel()
 # std::jthread - internal stop-state
 
 * Jeśli nie przekażemy w wywołaniu konstruktora `std::jthread` jawnie tokena (a funkcja go oczekuje), to wykorzystany zostanie wewnętrzny stan obiektu wątku (*internal stop-state*)
-
-<!-- old snippet
-```cpp
-void background_work(std::stop_token st, 
-                     const int id, const std::string text);
-
-std::jthread thd1{&background_work, 1, "TASK"}; // missing stop-token
-
-std::stop_source stop_src = thd1.get_stop_source(); // get stop_source from jthread
-std::stop_token st = thd1.get_stop_token();
-
-stop_src.request_stop(); // or thd1.request_stop();
-```
--->
 
 <<< @/../examples/03_jthread.cpp#internal_stop_state
 
@@ -612,53 +340,11 @@ background: /img/header-bg.svg
 
 # Przechwytywanie wyjątku w wątku
 
-<!-- old snippet
-```cpp {all|3-12|5|9-12}
-void background_work(std::exception_ptr& excpt)
-{
-    try
-    {
-        may_throw();
-
-        // ...
-    }
-    catch(...)
-    {
-        excpt = std::current_exception();
-    }
-}
-```
--->
-
 <<< @/../examples/04_thread_exceptions.cpp#capture_exception {all|3-8|5|9-12}
 
 ---
 
 # Obsługa wyjątku w wątku głównym
-
-<!-- old snippet
-```cpp {all|3|5|6|8-16}
-int main()
-{
-    std::exception_ptr thd_exception;
-
-    std::thread thd(&background_work, std::ref(thd_exception));
-    thd.join();
-
-    if (thd_exception)
-    {
-        try
-        {
-            std::rethrow_exception(thd_exception);
-        }
-        catch(const std::runtime_error& e)
-        {
-            // ... handling an error
-        }
-    }
-}
-```
--->
 
 <div class="text-08">
 
@@ -679,11 +365,6 @@ background: /img/header-bg.svg
 
 * Statyczna metoda zwracająca ilość dostępnych wątków sprzętowych
 * Zwykle podawana jest ilość procesorów, rdzeni, itp. Jeżeli informacja nie jest dostępna zwraca wartość `0`
-
-<!-- old snippet
-    auto hardware_threads_count = std::max(1u, std::thread::hardware_concurrency());
-    std::vector<std::thread> threads(hardware_threads_count);
--->
 
 <div v-click>
 
