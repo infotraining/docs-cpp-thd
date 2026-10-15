@@ -11,7 +11,7 @@
 
 #### False sharing
 
-Mechanizm gwarantujący spójność danych w cache'ach może czasami znacznie spowolnić działanie aplikacji wielowątkowej. Jeśli pracujące wątki nie współdzielą danych, lecz dane te fizycznie leżą blisko siebie, to mogą one znaleźć się na tej samej lini cache'a w procesorach. W rezultacie jakakolwiek modyfikacja stanu zmiennych (teoretycznie niezależnych od siebie) wymusza inwalidację cache'ów.
+Mechanizm gwarantujący spójność danych w cache'ach może czasami znacznie spowolnić działanie aplikacji wielowątkowej. Jeśli pracujące wątki nie współdzielą danych, lecz dane te fizycznie leżą blisko siebie, to mogą one znaleźć się na tej samej linii cache'a w procesorach. W rezultacie jakakolwiek modyfikacja stanu zmiennych (teoretycznie niezależnych od siebie) wymusza inwalidację cache'ów.
 
 ### Memory consistency
   
@@ -42,13 +42,15 @@ Mechanizm gwarantujący spójność danych w cache'ach może czasami znacznie sp
 
 Spójność sekwencyjna w programach wielowątkowych, które są wykonywane na maszynach wieloprocesorowych wymaga generowania dodatkowych ograniczeń dotyczących operacji na pamięci (np. barier pamięci - **memory fence**). Ponieważ ograniczenia te znacznie obniżają wydajność często wymagane jest poluzowanie tych ograniczeń przy zachowaniu prawidłowego (*thread-safe*) przebiegu programu.
 
-### Wyścig - *Race condition (data race)*
+### Wyścig danych - *data race*
   
   W sytuacji, kiedy ewaluacja jednego wyrażenia zapisuje wartość zmiennej (**memory location**) i jednocześnie inne ewaluowane wyrażenie modyfikuje
-  lub odczytuje tą samą zmienną, powstaje **konflikt**. Program, który posiada dwie konfliktowe ewaluacje wyrażeń jest w sytuacji wyścigu (**data race**), chyba, że:
+  lub odczytuje tę samą zmienną, powstaje **konflikt**. Program, który posiada dwie konfliktowe ewaluacje wyrażeń w różnych wątkach jest w sytuacji wyścigu danych (**data race**), chyba że:
 
-* oba wyrażenia są operacjami atomowymi (``std::atomics``)
-* jedno z wyrażeń poprzedza (**happens-before**) drugie (``std::memory_order``)
+* oba wyrażenia są operacjami atomowymi (``std::atomic``)
+* jedno z wyrażeń poprzedza (**happens-before**) drugie (np. dzięki muteksom lub operacjom atomowym z odpowiednim ``std::memory_order``)
+
+Wyścig danych (*data race*) to nie to samo co *race condition* - błąd logiczny zależny od kolejności wykonania operacji (np. dwa wątki sprawdzają stan i podejmują decyzje na podstawie nieaktualnych danych). Program może zawierać *race condition* bez *data race* (np. gdy wszystkie operacje są atomowe).
 
   ```{warning}
   Jeśli w programie pojawia się wyścig (*data race*), zachowanie programu staje się niezdefiniowane (*undefined behaviour*)
@@ -61,10 +63,10 @@ Jeśli jakaś operacja poprzedza (**happens-before**) inną operację, to pierws
 
 Relacja **happens-before** jest przechodnia, tzn. jeżeli *A* poprzedza *B*, a *B* poprzedza *C*, to *A* poprzedza *C*.
 
-W przypadku operacji na muteksach, relacja **happens-before** jest wygląda następująco:
+W przypadku operacji na muteksie `mtx`, relacja **happens-before** wygląda następująco:
 
-1. Pozyskanie muteksu (*lock*) *A* poprzedza zwolnienie muteksu (*unlock*) *B* przez ten sam wątek
-2. Operacja `unlock()` na muteksie *A* poprzedza operację `lock()` na muteksie *B* przez inny wątek. Jakiekolwiek zmiany dokonane w sekcji krytycznej na współdzielonych w pamięci zmiennych są widoczne dla wątku, który pozyskał muteks *B*.
+1. W obrębie jednego wątku pozyskanie muteksu (`mtx.lock()`) poprzedza jego zwolnienie (`mtx.unlock()`) oraz wszystkie operacje wykonane w sekcji krytycznej (porządek programu)
+2. Operacja `mtx.unlock()` w jednym wątku poprzedza kolejną operację `mtx.lock()` na tym samym muteksie w innym wątku. Jakiekolwiek zmiany dokonane w sekcji krytycznej na współdzielonych zmiennych są widoczne dla wątku, który następnie pozyskał ten muteks.
 
 ```{image} ./images/happens-before.png
 :alt: happens-before
@@ -72,7 +74,7 @@ W przypadku operacji na muteksach, relacja **happens-before** jest wygląda nast
 :align: center
 ```
 
-Dwie operacje dostępu do pamięci (*memory location*) A i B biorą udział w wyścigu (*data race*), jeżeli:
+Dwie operacje dostępu do tej samej komórki pamięci (*memory location*) A i B, z których co najmniej jedna jest zapisem, a żadna nie jest operacją atomową, biorą udział w wyścigu danych (*data race*), jeżeli:
 
   * A nie poprzedza B
   * ani B nie poprzedza A
@@ -85,13 +87,14 @@ An atomic operation A that performs a release operation on an atomic object M sy
 -- C++11 standard
 ```
 
-Relacja **synchronizes-with** ustanawia porządek między operacjami wykonywanymi na zmiennych, które sa współdzielone między wątkami. Zapewnia, że wszystkie operacje zapisu do pamięci wykonane przed punktem synchronizacji są widoczne (gotowe do odczytu) dla innego wątku po punkcie synchronizacji.
+Relacja **synchronizes-with** ustanawia porządek między operacjami wykonywanymi na zmiennych, które są współdzielone między wątkami. Zapewnia, że wszystkie operacje zapisu do pamięci wykonane przed punktem synchronizacji są widoczne (gotowe do odczytu) dla innego wątku po punkcie synchronizacji.
 
 Relacja synchronizacji zachodzi między innymi dla:
 
 * muteksów - kiedy wątek zwalnia muteks (operacją `mtx.unlock()`) synchronizuje się z innym wątkiem, który pozyskuje ten muteks (operacją `mtx.lock()`)
 * zmiennych atomowych - operacja zapisu do zmiennej atomowej (operacja `var.store(std::memory_order_release)`) synchronizuje się z operacją odczytu (operacją `var.load(std::memory_order_acquire)`) tej zmiennej
-* zmiennych warunkowych - operacja `cond_var.notify_one()` lub `cond_var.notify_all()` synchronizuje się z operacją `cond_var.wait()` wykonaną przez inny wątek
+* zmiennych warunkowych - powiadomienie (`cond_var.notify_one()` lub `cond_var.notify_all()`) budzi wątek oczekujący w `cond_var.wait()`; widoczność danych zapewnia muteks chroniący warunek, który oczekujący wątek ponownie pozyskuje
+* wątków - uruchomienie wątku synchronizuje się z początkiem wykonywania jego funkcji, a zakończenie wątku z powrotem z `join()`
 
 
 ```{note}
@@ -198,10 +201,11 @@ assert(x == 42);
 
 ::::
 
-#### Algorytm Dekker'a
+#### Algorytm Dekkera
 
 ```cpp
-int flag1 = flag2 = 0;
+int flag_1 = 0;
+int flag_2 = 0;
 ```
 
 ::::{grid} 2
@@ -209,11 +213,15 @@ int flag1 = flag2 = 0;
 :::{grid-item-card} Thread#1
 
 ```cpp
-flag_1 = 1        // (a)
-if (flag_2 != 0)  // (b)
-  // contention         
-else                    
-  // critical section   
+flag_1 = 1;        // (a)
+if (flag_2 != 0)   // (b)
+{
+    // contention
+}
+else
+{
+    // critical section
+}
 ```
 
 :::
@@ -221,16 +229,22 @@ else
 :::{grid-item-card} Thread#2
 
 ```cpp
-flag_2 = 1        // (c)
-if (flag_1 != 0)  // (d)
-  // contention         
-else                    
-  // critical section   
+flag_2 = 1;        // (c)
+if (flag_1 != 0)   // (d)
+{
+    // contention
+}
+else
+{
+    // critical section
+}
 ```
 
 :::
 
 ::::
+
+Algorytm zakłada, że przynajmniej jeden z wątków zobaczy flagę ustawioną przez drugi wątek. Procesor (bufor zapisów) lub kompilator może jednak przestawić zapis (a) za odczyt (b) oraz zapis (c) za odczyt (d). Wtedy oba wątki odczytają `0` i jednocześnie wejdą do sekcji krytycznej. Poprawność algorytmu zapewnia dopiero użycie zmiennych `std::atomic<int>` z domyślnym uporządkowaniem `std::memory_order_seq_cst`.
 
 ## Ochrona przed wyścigiem (*data-race protection*)
 
@@ -246,7 +260,7 @@ C++11 umożliwia uniknięcie wyścigu poprzez stosowanie:
 Stosując atomową flagę typu ``atomic<bool>`` możemy rozwiązać problem implementacji algorytmu *busy-wait*:
 
 ```cpp
-std::atomic<bool> done;
+std::atomic<bool> done{false};
 int x;
 ```
 
@@ -274,7 +288,7 @@ assert(x == 42);
 
 Zastosowanie zmiennej atomowej ``done`` zapewnia odpowiednie porządkowanie operacji dostępu do pamięci.
 
-Zapis do atomowej flagi ``done`` poprzedza (**happens-before**) zapis wartości ``42`` do zmiennej ``x``.
+Zapis wartości ``42`` do zmiennej ``x`` poprzedza (**sequenced-before**) zapis do atomowej flagi ``done``.
 
 Kiedy wartość flagi odczytana w drugim wątku ma wartość ``true``, zapis flagi synchronizuje się (**synchronizes-with**) z jej odczytem, tworząc relację
 **happens-before**. Ponieważ relacja **happens-before** jest przechodnia wymuszone zostaje następujące uporządkowanie:
@@ -291,7 +305,7 @@ Kiedy wartość flagi odczytana w drugim wątku ma wartość ``true``, zapis fla
 
 * **A**tomicity - Atomowo: All-or-nothing.
 * **C**onsistency - Spójnie: Odczyt spójnego stanu lub zmiana stanu w inny spójny stan.
-* **I**soloation - Niezależnie: Poprawne działanie gdy wykonywane są inne transakcje.
+* **I**solation - Niezależnie: Poprawne działanie gdy wykonywane są inne transakcje.
 * **D**urability - Trwale
 
 ```cpp
@@ -338,15 +352,15 @@ whose_turn = someone_else;    // exit critical region
 #### Pamięć transakcyjna (work in progress)
 
 Pamięć transakcyjna (*transactional memory*) umożliwi zgrupowanie szeregu instrukcji
-w transakcję, która jest **atomowa** oraz **izolowana**.
+w transakcję, która jest **atomowa** oraz **izolowana**. Jest to rozszerzenie eksperymentalne (*Transactional Memory TS*), które nie jest częścią standardu C++ i jest dostępne tylko w wybranych kompilatorach (np. GCC z opcją `-fgnu-tm`).
 
-Implementacja może korzystać z wsparcia sprzętowego (na wspieranych architekturach).
+Implementacja może korzystać ze wsparcia sprzętowego (na wspieranych architekturach).
 
-Przykład:
+Przykład (składnia z *Transactional Memory TS*):
 
 ```cpp
-// each call to worker() retrieves a unique value of i, even when done in parallel
-int worker()
+// each call to get_next_id() retrieves a unique value of i, even when done in parallel
+int get_next_id()
 {
     static int i = 0;
     atomic_noexcept { // begin transaction
@@ -354,7 +368,7 @@ int worker()
         ++i;
         return i; // commit transaction
     }
-}                           
+}
 ```
 
 ## Typy atomowe w C++11
@@ -377,11 +391,9 @@ Za pomocą tej flagi można skonstruować prosty obiekt blokady, zachowujący si
 ```cpp
 class SpinLock
 {
-    std::atomic_flag flag;
+    std::atomic_flag flag = ATOMIC_FLAG_INIT; // since C++20 a default-constructed flag is clear
 
 public:
-    SpinLock() : flag{ATOMIC_FLAG_INIT} {}
-
     bool try_lock()
     {
         return !flag.test_and_set(std::memory_order_acquire);
@@ -389,7 +401,10 @@ public:
     
     void lock()
     {
-        while(flag.test_and_set(std::memory_order_acquire));
+        while (flag.test_and_set(std::memory_order_acquire))
+        {
+            // busy wait
+        }
     }
     
     void unlock()
@@ -403,7 +418,7 @@ public:
 
 Klasa szablonowa, generująca typy, które zachowują się "atomowo".
 
-  `bool is_lock_free()`
+  `bool is_lock_free() const noexcept`
   : zwraca ``true``, jeśli operacje wykonywane na obiekcie są *lock-free*
 
   `void store(T desired, std::memory_order order = std::memory_order_seq_cst)`
@@ -416,29 +431,32 @@ Klasa szablonowa, generująca typy, które zachowują się "atomowo".
   : atomowo zmienia wartość obiektu i zwraca poprzednią wartość
 
   `compare_exchange_weak/strong(T& expected, T desired, std::memory_order success, std::memory_order failure)`
-  : atomowo porównuje wartość obiektu z argumentem i wykonuje `exchange` jeśli wartość jest równa, lub `load` jeśli nie
+  : atomowo porównuje wartość obiektu z argumentem `expected` i jeśli są równe, zapisuje `desired` (`exchange`); w przeciwnym razie zapisuje aktualną wartość obiektu w `expected` (`load`). Wersja `weak` może zwrócić `false` mimo równości (*spurious failure*), dlatego powinna być używana w pętli
 
   `T fetch_add(T arg, std::memory_order order = std::memory_order_seq_cst )`
-  : atomowo dodaje argument do wartości przechowywanej w obiekcie i zwraca poprzednią wartość
+  : atomowo dodaje argument do wartości przechowywanej w obiekcie i zwraca poprzednią wartość (dostępna dla typów całkowitych i wskaźników)
 
   `T fetch_sub(T arg, std::memory_order order = std::memory_order_seq_cst )`
-  : atomowo odejmuje argument od wartości przechowywanej w obiekcie i zwraca poprzednią wartość
+  : atomowo odejmuje argument od wartości przechowywanej w obiekcie i zwraca poprzednią wartość (dostępna dla typów całkowitych i wskaźników)
+
+Przykład - wstawianie elementu na stos bez blokad (*lock-free*):
 
 ```cpp
-template<typename T>
+template <typename T>
 class Stack
 {
     struct Node
     {
-       Node* next;
-       Node* prev;
+        T data;
+        Node* next;
     };
 
-    std::atomic<Node<T>*> head;
- public:
+    std::atomic<Node*> head{nullptr};
+
+public:
     void push(const T& data)
     {
-        Node<T>* new_node = new Node<T>(data);
+        Node* new_node = new Node{data, nullptr};
         
         // put the current value of head into new_node->next
         new_node->next = head.load(std::memory_order_relaxed);
@@ -447,9 +465,11 @@ class Stack
         // is no longer what's stored in new_node->next
         // (some other thread must have inserted a Node just now)
         // then put that new head into new_node->next and try again
-        while(!head.compare_exchange_weak(new_node->next, new_node,
-                                          std::memory_order_release,
-                                          std::memory_order_relaxed))
+        while (!head.compare_exchange_weak(new_node->next, new_node,
+                                           std::memory_order_release,
+                                           std::memory_order_relaxed))
+        {
+        }
     }
 
     //... rest of implementation
@@ -463,8 +483,8 @@ przez kompilator lub hardware. Opcje te są definiowane poprzez wyliczenie typu 
 
 * **Sequential consistency** (``std::memory_order_seq_cst``) - ta opcja narzuca największe ograniczenia
   dotyczące uporządkowania operacji dostępu do pamięci. Wymuszona jest spójność sekwencyjna, tzn. wszystkie wątki muszą zobaczyć wszystkie operacje
-  synchronizacji w programie, które są sekwencyjnie spójne (*sequentialy consistent*) w ściśle określonej kolejności.
-  Operacje dostępu do pamięci poprzedzajęce operację oznaczoną jako ``memory_order_seq_cst`` nie mogą być przeniesione
+  synchronizacji w programie, które są sekwencyjnie spójne (*sequentially consistent*) w ściśle określonej kolejności.
+  Operacje dostępu do pamięci poprzedzające operację oznaczoną jako ``memory_order_seq_cst`` nie mogą być przeniesione
   poniżej punktu synchronizacji. Z kolei operacje dostępu do pamięci występujące poniżej operacji ``memory_order_seq_cst``
   nie mogą być przeniesione powyżej punktu synchronizacji.
 
@@ -473,18 +493,18 @@ przez kompilator lub hardware. Opcje te są definiowane poprzez wyliczenie typu 
   
   Dostępne są następujące opcje:
   * ``std::memory_order_release`` - gwarantuje ochronę przed przeniesieniem poprzedzających operacji dostępu do pamięci poniżej punktu synchronizacji
-  * ``std::memory_order_acquire`` - gwarantuje ochronę przed przeniesieniem późniejszyc operacji dostępu do pamięci powyżej punktu synchronizacji
-  * ``std::memory_order_consume`` - luźniejsza wersja operacji ``acquire`` - dotyczy tylko operacji, które są obliczeniowo zależne od odczytanej wartości zmiennej atomowej
-  * ``std::memory_order_acq_rel`` - połączenie ograniczeń ``acquire`` i ``release`` - w miejscu synchronizacji z tą opcją wstawiana jest pełna bariera
+  * ``std::memory_order_acquire`` - gwarantuje ochronę przed przeniesieniem późniejszych operacji dostępu do pamięci powyżej punktu synchronizacji
+  * ``std::memory_order_consume`` - luźniejsza wersja operacji ``acquire`` - dotyczy tylko operacji, które są obliczeniowo zależne od odczytanej wartości zmiennej atomowej (obecnie kompilatory traktują ją jak ``acquire``, a jej użycie nie jest zalecane)
+  * ``std::memory_order_acq_rel`` - dla operacji *read-modify-write* (np. ``fetch_sub``, ``exchange``) - połączenie ograniczeń ``acquire`` i ``release``: operacja jednocześnie "pobiera" i "publikuje" zmiany
   
-* **Relaxed** (``std::memory_order_relaxed``) - w tym modelu jest zapewniona jedynie niepodzielność wykonywanej operacj. Nie istnieje relacja synchronizacji store-load, a co za tym idzie nie ma relacji *happens-before*  
+* **Relaxed** (``std::memory_order_relaxed``) - w tym modelu jest zapewniona jedynie niepodzielność wykonywanej operacji. Nie istnieje relacja synchronizacji store-load, a co za tym idzie nie ma relacji *happens-before*.
 
 
 | Typ operacji    | Opcja synchronizacji        |
 |-----------------|-----------------------------|
 |  store  |  `memory_order_seq_cst`<br/>`memory_order_release`<br/>`memory_order_relaxed` |
 |  load   |   `memory_order_seq_cst`<br/>`memory_order_acquire`<br/>`memory_order_consume`<br/>`memory_order_relaxed` |
-| read-write-read |   wszystkie opcje           |
+| read-modify-write |   wszystkie opcje           |
 
 ## Przykłady wykorzystania typów atomowych
 
@@ -530,15 +550,19 @@ między wątkami.
 
 ### Licznik referencji (*reference counting*)
 
+Klasa bazowa wykorzystuje idiom CRTP - typ `T` dziedziczy po `RefCounted<T>`:
+
 ```cpp
 // thread-safe counter
 template <typename T>
-class RefCounted : boost::noncopyable
+class RefCounted
 {
     std::atomic<int> ref_count_{0};
 
 public:
     RefCounted() = default;
+    RefCounted(const RefCounted&) = delete;
+    RefCounted& operator=(const RefCounted&) = delete;
 
     void add_ref()
     {
@@ -558,4 +582,7 @@ public:
 W operacji ``add_ref()`` inkrementacja może zostać zaimplementowana z tagiem ``memory_order_relaxed``, ponieważ
 nie publikuje ona danych dla innych wątków.
 
-W operacji ``release()`` dekrementacja musi być zaimplementowana przynajmniej z tagiem ``memory_order_acq_rel``.
+W operacji ``release()`` dekrementacja musi być zaimplementowana przynajmniej z tagiem ``memory_order_acq_rel``:
+
+* część *release* gwarantuje, że wszystkie wcześniejsze operacje danego wątku na obiekcie są zakończone, zanim licznik zostanie zmniejszony
+* część *acquire* gwarantuje, że wątek, który zmniejszył licznik do zera i usuwa obiekt, widzi wszystkie zmiany dokonane na obiekcie przez pozostałe wątki

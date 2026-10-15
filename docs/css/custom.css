@@ -36,7 +36,14 @@ kbd,
 samp {
   font-family: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
   font-weight: 500;
+  font-size: 1.04em !important;
   line-height: 1.5em;
+}
+
+.article :where(code):not(:where([class~=not-prose],[class~=not-prose] *)) {
+    color: #057b6f;
+    font-weight: 500;
+    font-size: 1em !important;
 }
 
 .article :where(p):not(:where([class~=not-prose],[class~=not-prose] *)) {

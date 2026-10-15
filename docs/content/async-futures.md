@@ -12,13 +12,12 @@ Obiekty future mogą pełnić rolę wysokopoziomowych konstrukcji synchronizują
 
 Obiektów *future* można używać nie tylko w programowaniu wielowątkowym, ale także w programach jednowątkowych.
 
-Do obsługi wartości typu *future* wykorzystywane są cztery klasy:
+Do obsługi wartości typu *future* wykorzystywane są cztery klasy szablonowe oraz funkcja `std::async()`:
 
 * ``std::future<T>``
 * ``std::shared_future<T>``
 * ``std::promise<T>``
-* ``std::packaged_task<T>``
-* oraz funkcja ``std::async()``
+* ``std::packaged_task<R(Args...)>``
 
 ## Futures
 
@@ -59,7 +58,7 @@ Obiekty typu futures umożliwiają odczytanie wyników funkcji asynchronicznych:
     `std::future_status wait_for(const std::chrono::duration<R, P>& timeout_duration) const`
     : czeka przez określony interwał czasu aż wynik zostanie obliczony. Zwracany jest status, który może przyjąć jedną z trzech wartości:
 
-      - ``future_status::deferred`` - funkcja nie została jeszcze uruchomiona
+      - ``future_status::deferred`` - funkcja została uruchomiona z polityką `std::launch::deferred` i nie jest jeszcze wykonywana (zostanie wykonana dopiero przez `get()` lub `wait()`)
       - ``future_status::ready`` - wynik obliczenia jest gotowy
       - ``future_status::timeout`` - czas oczekiwania na wynik się zakończył (funkcja jeszcze nie zwróciła wyniku)
 
@@ -105,66 +104,75 @@ Obiekty typu futures umożliwiają odczytanie wyników funkcji asynchronicznych:
 
 Możliwa jest konwersja obiektu ``std::future<T>`` do współdzielonego obiektu ``std::shared_future<T>`` przy pomocy:
 
-* konstruktora przenoszącego ``std::shared_future<T>(std::future&& other)``
+* konstruktora przenoszącego ``std::shared_future<T>(std::future<T>&& other)``
 * metody ``std::future<T>::share()`` zwracającej obiekt typu ``std::shared_future<T>``
+
+W odróżnieniu od `std::future<T>`, obiekt `std::shared_future<T>` jest kopiowalny, a metodę `get()` można wywołać wielokrotnie (zwraca referencję do wyniku) - także z różnych wątków, każdy na własnej kopii obiektu.
 
 ## Wywołania asynchroniczne za pomocą funkcji `std::async()`
 
 Funkcja szablonowa ``async()`` umożliwia asynchroniczne uruchomienie obiektu wywoływalnego *Callable* (potencjalnie w osobnym wątku). Zwracana jest instancja ``std::future``, która przechowuje przyszły wynik wywołania funkcji.
 
 `auto async(std::launch policy, Function&& f, Args&&... args)`
-: Wywołuje funkcję ``f`` przekazując do niej argumenty ``args`` zgodnie wybraną polityką uruchomienia:
+: Wywołuje funkcję ``f`` przekazując do niej argumenty ``args`` zgodnie z wybraną polityką uruchomienia:
 
-    * ``std::launch::async``- wywołanie w osobnym wątku (wywołanie asynchroniczne)
+    * ``std::launch::async`` - wywołanie w osobnym wątku (wywołanie asynchroniczne)
 
-    * ``std::lauch::deferred`` - nie tworzy osobnego wątku. Leniwie wykonuje funkcję ``f`` (wywołanie następuje
-      w momencie pierwszego wywołania na obiekcie *future* metod ``get()`` lub ``wait()``
+    * ``std::launch::deferred`` - nie tworzy osobnego wątku. Leniwie wykonuje funkcję ``f`` (wywołanie następuje
+      w momencie pierwszego wywołania na obiekcie *future* metod ``get()`` lub ``wait()``)
 
 `auto async(Function&& f, Args&&... args)`
-: Zachowuje się tak samo jak ``async(std::launch::async | std::launch::deferred, f, args...)``, tzn. funkcja ``f`` może zostać wykonana w osobnym wątku lub synchronicznie w wątku bieżącym, gdy obiekt *future* zostanie odpytany o wynik operacji. Od wersji C++14 ta wersja funkcji ``async()`` jest uznana za *deprecated*.
+: Zachowuje się tak samo jak ``async(std::launch::async | std::launch::deferred, f, args...)``, tzn. o sposobie wykonania decyduje implementacja: funkcja ``f`` może zostać wykonana w osobnym wątku lub synchronicznie w wątku bieżącym, gdy obiekt *future* zostanie odpytany o wynik operacji. Ponieważ nie ma gwarancji współbieżnego wykonania, w kodzie, który tego wymaga, należy jawnie podawać politykę ``std::launch::async``.
+
+```{attention}
+Destruktor obiektu ``std::future`` zwróconego przez ``std::async()`` (z polityką ``std::launch::async``) **blokuje** bieżący wątek do momentu zakończenia zadania. Dlatego wywołanie ``std::async(std::launch::async, f);`` bez zapisania zwróconego obiektu jest w praktyce wywołaniem synchronicznym.
+```
 
 ## Klasa `std::promise`
 
 `std::promise<T>`
-: Implementuje niskopoziomowe mechanizmy przechowanie wartości lub wyjątku, które później mogą być odczytane asynchronicznie poprzez obiekt ``std::future<T>`` wygenerowany przez instancję ``std::promise<T>``.
+: Implementuje niskopoziomowe mechanizmy przechowywania wartości lub wyjątku, które później mogą być odczytane asynchronicznie poprzez obiekt ``std::future<T>`` wygenerowany przez instancję ``std::promise<T>``.
 
 Obiekt ``promise<T>`` jest związany ze **współdzielonym stanem** (*shared state*), który przechowuje pewną informację o
 stanie oraz wynik, który może być jeszcze nie obliczony, obliczony do wartości lub obliczony do wyjątku.
 
 Obiekt ``promise<T>`` może zrobić trzy rzeczy ze stanem współdzielonym:
 
-* oznaczyć stan współdzielony jako gotowy do  odczytu - ``promise<T>`` zapisuje wartość ``set_value(T)``
-    lub wyjątek ``set_exception(T)``
+* oznaczyć stan współdzielony jako gotowy do odczytu - ``promise<T>`` zapisuje wartość ``set_value(T)``
+    lub wyjątek ``set_exception(std::exception_ptr)``
 
 * zwolnić go - instancja ``promise<T>`` zwalnia referencję do stanu współdzielonego. Jeśli to była ostatnia
     referencja do stanu współdzielonego, stan ten jest niszczony. Operacja ta nie jest blokująca, za wyjątkiem
     sytuacji, gdy stan współdzielony został utworzony przy pomocy funkcji ``std::async()``
 
 * porzucić go - ustawiając jako wyjątek instancję typu ``std::future_error`` z kodem błędu
-    ``std::future_error::broken_promise``
+    ``std::future_errc::broken_promise``
 
-Każdy obiekt ``std::promise<T>`` związany jest jednym obiektem ``std::future<T>``.
+Każdy obiekt ``std::promise<T>`` związany jest z jednym obiektem ``std::future<T>`` - metodę ``get_future()`` można wywołać tylko raz.
 
-Wątek z dostępem do obiektu *future* po wywołaniu metody ``wait()`` będzie czekać na rezultat zwrócony przez obiekt
-``std::promise`` z innego wątku przy pomocy metody ``set_value()``.
+Wątek z dostępem do obiektu *future*, po wywołaniu metody ``get()`` lub ``wait()``, będzie czekać na rezultat ustawiony przez
+obiekt ``std::promise`` z innego wątku przy pomocy metody ``set_value()`` lub ``set_exception()``.
 
 ```cpp
-#include <thread>
-#include <future>
 #include <chrono>
+#include <future>
 #include <iostream>
+#include <stdexcept>
+#include <string>
+#include <thread>
 
 std::string load_file_content()
 {
     std::string content = "FILE content";
     using namespace std::chrono;
+    // simulation of a random I/O failure
     if (duration_cast<milliseconds>(
             steady_clock::now().time_since_epoch()).count() % 2 == 0)
         throw std::runtime_error("I/O error");
     return content;
 }
 
-class BackgroundTask
+class BackgroundWorker
 {
     std::promise<std::string> promise_;
 public:
@@ -193,7 +201,7 @@ void waiter(std::future<std::string> f)
     {
         std::cout << f.get() << std::endl;
     }
-    catch(const std::runtime_error& e)
+    catch (const std::runtime_error& e)
     {
         std::cout << "Exception caught: " << e.what() << std::endl;
     }
@@ -201,10 +209,10 @@ void waiter(std::future<std::string> f)
 
 int main()
 {
-    BackgroundTask bt;
-    std::future<std::string> future = bt.get_future();
+    BackgroundWorker background_worker;
+    std::future<std::string> future = background_worker.get_future();
     std::thread thd1(waiter, std::move(future));
-    std::thread thd2(std::ref(bt));
+    std::thread thd2(std::ref(background_worker)); // std::ref - the promise is not copyable
     thd1.join();
     thd2.join();
 }
@@ -217,6 +225,7 @@ int main()
 
 ```cpp
 #include <future>
+#include <iostream>
 #include <thread>
 
 int main()
@@ -232,12 +241,12 @@ int main()
     // calling task synchronously
     pt_1(17);
 
-    // calling task in new thread
-    std::jthread(std::move(pt_2));
+    // calling task in a new thread (the argument is passed to the thread constructor)
+    std::jthread thd(std::move(pt_2), 18);
 
-    // odczytanie wyniku
-    std::cout << "result#1: " << fresult_1.get();
-    std::cout << "result#2: " << fresult_2.get();
+    // reading results
+    std::cout << "result#1: " << fresult_1.get() << '\n';
+    std::cout << "result#2: " << fresult_2.get() << '\n';
 }
 ```
 
@@ -250,6 +259,7 @@ Wrapper ``std::packaged_task`` pozwala oddzielić:
 Przykład wykorzystania obiektów ``std::packaged_task``:
 
 ```cpp
+#include <chrono>
 #include <iostream>
 #include <thread>
 #include <future>
@@ -267,12 +277,12 @@ void run_all_tasks(std::vector<std::packaged_task<int (char)>>& tasks)
     }
 }
 
-int func(char c)
+int background_worker(char c)
 {
     for(int i = 0; i < 10; ++i)
     {
         std::cout.put(c).flush();
-        std::this_thread::sleep_for(chrono::milliseconds(300));
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
     }
     return c;
 }
@@ -282,11 +292,11 @@ int main()
     std::vector<std::packaged_task<int (char)>> tasks;
 
     // definition of some tasks
-    std::packaged_task<int (char)> t1(&func);
+    std::packaged_task<int (char)> t1(&background_worker);
     tasks.push_back(std::move(t1));
     std::packaged_task<int (char)> t2([](char c) { return c; });
     tasks.push_back(std::move(t2));
-    tasks.emplace_back(&func);
+    tasks.emplace_back(&background_worker);
     
     // start all tasks in one separate thread
     auto future_all_tasks = std::async(std::launch::async, &run_all_tasks, std::ref(tasks));
@@ -294,15 +304,15 @@ int main()
     // wait until all tasks are done
     future_all_tasks.wait();
     
-    // process results of each task
+    // process results of each task (get_future() is called for the first time here)
     for(auto& task : tasks)
     {
-        cout << "result: " << task.get_future().get() << endl;
+        std::cout << "\nresult: " << task.get_future().get() << std::endl;
     }
 }
 ```
 
-Obiekt ``packaged_task`` może zostać użyty w połączeniu z obiektami ``shared_future`` do implementacji funkcji asynchronicznych.
+Obiekt ``packaged_task`` może zostać użyty w połączeniu z obiektami ``shared_future`` do implementacji własnych funkcji asynchronicznych. Wynik pobrany jest współdzielony przez wiele wątków:
 
 ```cpp
 #include <iostream>
@@ -313,7 +323,7 @@ Obiekt ``packaged_task`` może zostać użyty w połączeniu z obiektami ``share
 
 using namespace std::literals;
 
-typedef std::string FileContent;
+using FileContent = std::string;
 
 FileContent download_file(const std::string& url)
 {
@@ -323,16 +333,17 @@ FileContent download_file(const std::string& url)
 
 std::shared_future<FileContent> download_file_async(const std::string& url)
 {
-    std::packaged_task<FileContent ()> task([=] { return download_file(url); });
+    std::packaged_task<FileContent ()> task([url] { return download_file(url); });
     std::shared_future<FileContent> sf(task.get_future());
     std::thread thd(std::move(task));
-    thd.detach();
+    thd.detach(); // the result is delivered through the shared_future
     return sf;
 }
 
-void process(std::shared_future<FileContent> file_content)
+void background_worker(std::shared_future<FileContent> file_content)
 {
-    std::cout << "Processing " << file_content.get() << " in a thread#" 
+    std::cout << "Processing " << file_content.get() << " in a thread#"
+              << std::this_thread::get_id() << '\n';
 }
 
 int main()
@@ -340,11 +351,11 @@ int main()
     std::shared_future<FileContent> content =
         download_file_async("http://infotraining.pl");
 
-    std::thread thd1{&process, content};
-    std::thread thd2{ [content]() -> void { 
-        cout << "Processed " << content.get() 
-             << " by lambda in a thread#" << this_thread::get_id() << en
-    };
+    std::thread thd1{&background_worker, content};
+    std::thread thd2{[content] {
+        std::cout << "Processed " << content.get()
+                  << " by lambda in a thread#" << std::this_thread::get_id() << '\n';
+    }};
 
     thd1.join();
     thd2.join();
