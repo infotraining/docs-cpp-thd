@@ -39,7 +39,7 @@ layout: cover
 background: /img/header-bg.svg
 ---
 
-## Proces vs. Wątek
+# Proces vs. Wątek
 
 ---
 
