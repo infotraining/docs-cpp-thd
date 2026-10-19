@@ -40,6 +40,16 @@ layout: default
 - Przerwy
 - Ankieta
 
+---
+
+# Plan szkolenia
+
+* Concurrency vs. Parallelism
+* Wątki - Low-Level API
+* Synchronizacja wątków - mutexy i zmienne warunkowe
+* ConcurrentQueue & Thread-Pool - implementacja
+* Typy atomowe
+* Futures - High-Level API
 
 ---
 src: ./pages/intro_to_threads.md
